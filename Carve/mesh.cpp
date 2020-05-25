@@ -22,6 +22,7 @@
 #include <carve/rtree.hpp>
 
 #include <carve/poly.hpp>
+#include <functional>
 
 namespace {
   inline double CALC_X(const carve::geom::plane<3> &p, double y, double z) { return -(p.d + p.N.y * y + p.N.z * z) / p.N.x; }

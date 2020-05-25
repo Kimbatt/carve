@@ -26,6 +26,7 @@
 #include <cstdlib>
 
 #include <iostream>
+#include <algorithm>
 
 typedef carve::geom::vector<3> vec3;
 typedef carve::geom::vector<2> vec2;

@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 3.0.0)
 
 set(CARVE_SRC
+    main.cpp
+
     carve.cpp
     convex_hull.cpp
     csg.cpp
@@ -34,7 +36,7 @@ set(CARVE_SRC
     tag.cpp
     triangle_intersection.cpp
     triangulator.cpp
-    
+
     carve/aabb.hpp
     carve/aabb_impl.hpp
     carve/carve.hpp
@@ -106,7 +108,7 @@ set(CARVE_SRC
     carve/vertex_impl.hpp
     carve/win32.h
     carve/xcode_config.h
-    
+
     carve/collection/unordered.hpp
     carve/collection/unordered/boost_impl.hpp
     carve/collection/unordered/fallback_impl.hpp
@@ -133,3 +135,6 @@ set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ${CARVE_RE
 set(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE} ${CARVE_RELEASE_COMPILER_FLAGS}")
 
 add_library(Carve STATIC ${CARVE_SRC})
+
+target_include_directories(Carve PRIVATE ${CMAKE_SOURCE_DIR})
+target_include_directories(Carve PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

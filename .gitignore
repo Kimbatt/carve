@@ -1,0 +1,12 @@
+CMakeFiles/
+CMakeCache.txt
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.cmake
+.vs/
+*/*.Dir/
+*.pdb
+*.lib
+x64/

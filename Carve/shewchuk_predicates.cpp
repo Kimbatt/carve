@@ -116,7 +116,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <sys/time.h>
+#include <random>
 
 /* On some machines, the exact arithmetic routines might be defeated by the  */
 /*   use of internal extended precision floating-point registers.  Sometimes */
@@ -517,10 +517,14 @@ namespace shewchuk {
     double expo;
     long a, b, c;
     long i;
-  
-    a = random();
-    b = random();
-    c = random();
+
+    std::random_device rd;
+    std::mt19937_64 mt(rd());
+    std::uniform_int_distribution<int64_t> dist(std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::max());
+
+    a = dist(mt);
+    b = dist(mt);
+    c = dist(mt);
     result = (double) (a - 1073741824) * 8388608.0 + (double) (b >> 8);
     for (i = 512, expo = 2; i <= 131072; i *= 2, expo = expo * expo) {
       if (c & i) {
@@ -543,10 +547,14 @@ namespace shewchuk {
     double expo;
     long a, b, c;
     long i;
-  
-    a = random();
-    b = random();
-    c = random();
+
+    std::random_device rd;
+    std::mt19937_64 mt(rd());
+    std::uniform_int_distribution<int64_t> dist(std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::max());
+
+    a = dist(mt);
+    b = dist(mt);
+    c = dist(mt);
     result = (double) (a - 1073741824) * 8388608.0 + (double) (b >> 8);
     for (i = 512, expo = 2; i <= 2048; i *= 2, expo = expo * expo) {
       if (c & i) {
@@ -566,9 +574,13 @@ namespace shewchuk {
   {
     double result;
     long a, b;
-  
-    a = random();
-    b = random();
+
+    std::random_device rd;
+    std::mt19937_64 mt(rd());
+    std::uniform_int_distribution<int64_t> dist(std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::max());
+
+    a = dist(mt);
+    b = dist(mt);
     result = (double) (a - 1073741824) * 8388608.0 + (double) (b >> 8);
     return result;
   }

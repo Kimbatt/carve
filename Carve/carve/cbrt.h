@@ -1,3 +1,5 @@
+#if false
+
 // N.B. only appropriate for IEEE doubles.
 // Cube root implementation obtained from code with the following notice:
 
@@ -91,3 +93,5 @@ inline double cbrt(double x) {
   __HI(t) |= sign;
   return(t);
 }
+
+#endif
