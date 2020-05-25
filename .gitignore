@@ -7,6 +7,10 @@ CMakeCache.txt
 *.cmake
 .vs/
 */*.Dir/
+*.dll
+*.ilk
 *.pdb
 *.lib
+*.exp
+*.exe
 x64/
