@@ -798,9 +798,14 @@ namespace carve {
 
       std::vector<std::pair<const face_t *, carve::geom3d::Vector> > manifold_intersections;
 
+      util::pcg_random rand(0, 0);
       for (;;) {
-        double a1 = random() / double(RAND_MAX) * M_TWOPI;
-        double a2 = random() / double(RAND_MAX) * M_TWOPI;
+        //double a1 = random() / double(RAND_MAX) * M_TWOPI;
+        //double a2 = random() / double(RAND_MAX) * M_TWOPI;
+
+        // use deterministic pseudo-random values
+        double a1 = rand.f64(0.0, M_TWOPI);
+        double a2 = rand.f64(0.0, M_TWOPI);
 
         carve::geom3d::Vector ray_dir = carve::geom::VECTOR(sin(a1) * sin(a2), cos(a1) * sin(a2), cos(a2));
 

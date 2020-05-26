@@ -73,7 +73,7 @@ namespace carve {
         }
       }
 
-      double l = n.length();
+      double l = n.length2();
 
       if (l == 0.0) {
         n.x = 1.0;
