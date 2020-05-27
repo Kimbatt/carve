@@ -1,4 +1,7 @@
 
+#ifndef CARVE_DLL_H
+#define CARVE_DLL_H
+
 #include <iostream>
 #include <vector>
 
@@ -11,34 +14,18 @@ enum class CSGOp : int
     SymmetricDifference
 };
 
-class ILeoCSGMesh
-{
-public:
-    virtual void setVertices(int vertexCount, const float* vertices) = 0;
-    virtual void setTriangles(int triangleCount, const int* triangles) = 0;
-    virtual int getVertexCount() const = 0;
-    virtual int getTriangleCount() const = 0;
-    virtual const float* getVertices() const = 0;
-    virtual const int* getTriangles() const = 0;
-
-protected:
-    ILeoCSGMesh() {};
-    virtual ~ILeoCSGMesh() {};
-};
-
-
-class CSGMesh : public ILeoCSGMesh
+class CSGMesh
 {
 public:
     CSGMesh();
-    virtual ~CSGMesh();
+    ~CSGMesh();
 
-    virtual void setVertices(int vertexCount, const float* vertices) override;
-    virtual void setTriangles(int triangleCount, const int* triangles) override;
-    virtual int getVertexCount() const override;
-    virtual int getTriangleCount() const override;
-    virtual const float* getVertices() const override;
-    virtual const int* getTriangles() const override;
+    void setVertices(int vertexCount, const float* vertices);
+    void setTriangles(int triangleCount, const int* triangles);
+    int getVertexCount() const;
+    int getTriangleCount() const;
+    const float* getVertices() const;
+    const int* getTriangles() const;
 
     void log(std::ostream& stream) const;
 
@@ -53,13 +40,17 @@ private:
 
 extern "C"
 {
-    EXPORT ILeoCSGMesh* STDCALL leoCreateCSGMesh();
-    EXPORT void STDCALL leoDestroyCSGMesh(const ILeoCSGMesh* mesh);
-    EXPORT void STDCALL leoCSGMeshSetVertices(ILeoCSGMesh* mesh, int vertexCount, const float* vertices);
-    EXPORT void STDCALL leoCSGMeshSetTriangles(ILeoCSGMesh* mesh, int triangleCount, const int* triangles);
-    EXPORT int STDCALL leoCSGMeshGetVertexCount(const ILeoCSGMesh* mesh);
-    EXPORT int STDCALL leoCSGMeshGetTriangleCount(const ILeoCSGMesh* mesh);
-    EXPORT void STDCALL leoCSGMeshGetVertices(const ILeoCSGMesh* mesh, float* dstBuffer);
-    EXPORT void STDCALL leoCSGMeshGetTriangles(const ILeoCSGMesh* mesh, int* dstBuffer);
-    EXPORT ILeoCSGMesh* STDCALL leoPerformCSG(const ILeoCSGMesh* meshA, const ILeoCSGMesh* meshB, CSGOp op, char* errorMessage, int errorMessageLength = 0);
+    EXPORT CSGMesh* STDCALL leoCreateCSGMesh();
+    EXPORT void STDCALL leoDestroyCSGMesh(const CSGMesh* mesh);
+    EXPORT void STDCALL leoCSGMeshSetVertices(CSGMesh* mesh, int vertexCount, const float* vertices);
+    EXPORT void STDCALL leoCSGMeshSetTriangles(CSGMesh* mesh, int triangleCount, const int* triangles);
+    EXPORT int STDCALL leoCSGMeshGetVertexCount(const CSGMesh* mesh);
+    EXPORT int STDCALL leoCSGMeshGetTriangleCount(const CSGMesh* mesh);
+    EXPORT void STDCALL leoCSGMeshGetVertices(const CSGMesh* mesh, float* dstBuffer);
+    EXPORT void STDCALL leoCSGMeshGetTriangles(const CSGMesh* mesh, int* dstBuffer);
+    EXPORT const float* STDCALL leoCSGMeshGetVertexPointer(const CSGMesh* mesh);
+    EXPORT const int* STDCALL leoCSGMeshGetTrianglePointer(const CSGMesh* mesh);
+    EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB, CSGOp op, char* errorMessage, int errorMessageLength = 0);
 }
+
+#endif

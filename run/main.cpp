@@ -1,15 +1,17 @@
 
 #include "../carve_dll/carve_dll.h"
+#include "3DFileReader.h"
 
 #include <iostream>
 
-void logMesh(ILeoCSGMesh* mesh)
+void logMesh(CSGMesh* mesh)
 {
-    int numTris = mesh->getTriangleCount();
-    int numVerts = mesh->getVertexCount();
+    
+    int numTris = leoCSGMeshGetTriangleCount(mesh);
+    int numVerts = leoCSGMeshGetVertexCount(mesh);
 
-    const float* verts = mesh->getVertices();
-    const int* tris = mesh->getTriangles();
+    const float* verts = leoCSGMeshGetVertexPointer(mesh);
+    const int* tris = leoCSGMeshGetTrianglePointer(mesh);
 
     int k = 0;
     std::cout << "vertices: " << numVerts << std::endl;
@@ -64,15 +66,15 @@ void testPyramids()
         1, 2, 3
     };
 
-    ILeoCSGMesh* meshA = leoCreateCSGMesh();
-    meshA->setVertices(5, vertsA);
-    meshA->setTriangles(6, tris);
+    CSGMesh* meshA = leoCreateCSGMesh();
+    leoCSGMeshSetVertices(meshA, 5, vertsA);
+    leoCSGMeshSetTriangles(meshA, 6, tris);
 
-    ILeoCSGMesh* meshB = leoCreateCSGMesh();
-    meshB->setVertices(5, vertsB);
-    meshB->setTriangles(6, tris);
+    CSGMesh* meshB = leoCreateCSGMesh();
+    leoCSGMeshSetVertices(meshB, 5, vertsB);
+    leoCSGMeshSetTriangles(meshB, 6, tris);
 
-    ILeoCSGMesh* result = leoPerformCSG(meshA, meshB, CSGOp::Union, nullptr, 0);
+    CSGMesh* result = leoPerformCSG(meshA, meshB, CSGOp::Union, nullptr, 0);
     if (result != nullptr)
     {
         logMesh(result);
@@ -126,15 +128,15 @@ void testCubes()
         4, 3, 7
     };
 
-    ILeoCSGMesh* meshA = leoCreateCSGMesh();
-    meshA->setVertices(8, vertsA);
-    meshA->setTriangles(12, tris);
+    CSGMesh* meshA = leoCreateCSGMesh();
+    leoCSGMeshSetVertices(meshA, 8, vertsA);
+    leoCSGMeshSetTriangles(meshA, 12, tris);
 
-    ILeoCSGMesh* meshB = leoCreateCSGMesh();
-    meshB->setVertices(8, vertsB);
-    meshB->setTriangles(12, tris);
+    CSGMesh* meshB = leoCreateCSGMesh();
+    leoCSGMeshSetVertices(meshB, 8, vertsB);
+    leoCSGMeshSetTriangles(meshB, 12, tris);
 
-    ILeoCSGMesh* result = leoPerformCSG(meshA, meshB, CSGOp::Union, nullptr, 0);
+    CSGMesh* result = leoPerformCSG(meshA, meshB, CSGOp::Union, nullptr, 0);
     if (result != nullptr)
     {
         logMesh(result);
@@ -220,15 +222,15 @@ void testCustom()
         20, 23, 22,
     };
 
-    ILeoCSGMesh* meshA = leoCreateCSGMesh();
-    meshA->setVertices(24, vertsA);
-    meshA->setTriangles(12, tris);
+    CSGMesh* meshA = leoCreateCSGMesh();
+    leoCSGMeshSetVertices(meshA, 24, vertsA);
+    leoCSGMeshSetTriangles(meshA, 12, tris);
 
-    ILeoCSGMesh* meshB = leoCreateCSGMesh();
-    meshB->setVertices(24, vertsB);
-    meshB->setTriangles(12, tris);
+    CSGMesh* meshB = leoCreateCSGMesh();
+    leoCSGMeshSetVertices(meshB, 24, vertsB);
+    leoCSGMeshSetTriangles(meshB, 12, tris);
 
-    ILeoCSGMesh* result = leoPerformCSG(meshA, meshB, CSGOp::Union, nullptr, 0);
+    CSGMesh* result = leoPerformCSG(meshA, meshB, CSGOp::Union, nullptr, 0);
     if (result != nullptr)
     {
         logMesh(result);
@@ -241,8 +243,40 @@ void testCustom()
 
 int main()
 {
-    testCubes();
-    testPyramids();
+    Mesh* meshA = StlReader::loadFromFile("../stl_test/Stanford_Bunny_sample.stl");
+    Mesh* meshB = StlReader::loadFromFile("../stl_test/Menger_sponge_sample.stl");
+    meshB->scale(float3(100, 100, 100));
+
+    CSGMesh* csgMeshA = meshA->makeNewCSGMesh();
+    CSGMesh* csgMeshB = meshB->makeNewCSGMesh();
+
+
+    char errorMsg[2048];
+    CSGMesh* result = leoPerformCSG(csgMeshA, csgMeshB, CSGOp::Union, errorMsg, 2048);
+
+    if (result != nullptr)
+    {
+        Mesh* resultMesh = Mesh::fromCSGMesh(result);
+
+        StlWriter::writeToFile(resultMesh, "../stl_test/csg_result.stl");
+
+        delete resultMesh;
+        leoDestroyCSGMesh(result);
+    }
+    else
+    {
+        std::cout << errorMsg << std::endl;
+    }
+
+
+    leoDestroyCSGMesh(csgMeshA);
+    leoDestroyCSGMesh(csgMeshB);
+
+    delete meshA;
+    delete meshB;
+
+    //testCubes();
+    //testPyramids();
     //testCustom();
     return 0;
 }

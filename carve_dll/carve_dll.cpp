@@ -72,51 +72,61 @@ void CSGMesh::log(std::ostream& stream) const
     stream << std::endl;
 }
 
-EXPORT ILeoCSGMesh* STDCALL leoCreateCSGMesh()
+EXPORT CSGMesh* STDCALL leoCreateCSGMesh()
 {
     return new CSGMesh();
 }
 
-EXPORT void STDCALL leoDestroyCSGMesh(const ILeoCSGMesh* mesh)
+EXPORT void STDCALL leoDestroyCSGMesh(const CSGMesh* mesh)
 {
     const CSGMesh* csgMesh = static_cast<const CSGMesh*>(mesh);
     delete csgMesh;
 }
 
-EXPORT void STDCALL leoCSGMeshSetVertices(ILeoCSGMesh* mesh, int vertexCount, const float* vertices)
+EXPORT void STDCALL leoCSGMeshSetVertices(CSGMesh* mesh, int vertexCount, const float* vertices)
 {
     mesh->setVertices(vertexCount, vertices);
 }
 
-EXPORT void STDCALL leoCSGMeshSetTriangles(ILeoCSGMesh* mesh, int triangleCount, const int* triangles)
+EXPORT void STDCALL leoCSGMeshSetTriangles(CSGMesh* mesh, int triangleCount, const int* triangles)
 {
     mesh->setTriangles(triangleCount, triangles);
 }
 
-EXPORT int STDCALL leoCSGMeshGetVertexCount(const ILeoCSGMesh* mesh)
+EXPORT int STDCALL leoCSGMeshGetVertexCount(const CSGMesh* mesh)
 {
     return mesh->getVertexCount();
 }
 
-EXPORT int STDCALL leoCSGMeshGetTriangleCount(const ILeoCSGMesh* mesh)
+EXPORT int STDCALL leoCSGMeshGetTriangleCount(const CSGMesh* mesh)
 {
     return mesh->getTriangleCount();
 }
 
-EXPORT void STDCALL leoCSGMeshGetVertices(const ILeoCSGMesh* mesh, float* dstBuffer)
+EXPORT void STDCALL leoCSGMeshGetVertices(const CSGMesh* mesh, float* dstBuffer)
 {
     memcpy(dstBuffer, mesh->getVertices(), mesh->getVertexCount() * 3 * sizeof(float));
 }
 
-EXPORT void STDCALL leoCSGMeshGetTriangles(const ILeoCSGMesh* mesh, int* dstBuffer)
+EXPORT void STDCALL leoCSGMeshGetTriangles(const CSGMesh* mesh, int* dstBuffer)
 {
     memcpy(dstBuffer, mesh->getTriangles(), mesh->getTriangleCount() * 3 * sizeof(int));
+}
+
+const float* STDCALL leoCSGMeshGetVertexPointer(const CSGMesh* mesh)
+{
+    return mesh->getVertices();
+}
+
+const int* STDCALL leoCSGMeshGetTrianglePointer(const CSGMesh* mesh)
+{
+    return mesh->getTriangles();
 }
 
 
 typedef carve::poly::Polyhedron Poly;
 
-EXPORT ILeoCSGMesh* STDCALL leoPerformCSG(const ILeoCSGMesh* meshA, const ILeoCSGMesh* meshB, CSGOp op, char* errorMessage, int errorMessageLength)
+EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB, CSGOp op, char* errorMessage, int errorMessageLength)
 {
     try
     {
@@ -125,7 +135,7 @@ EXPORT ILeoCSGMesh* STDCALL leoPerformCSG(const ILeoCSGMesh* meshA, const ILeoCS
 
         for (int i = 0; i < 2; ++i)
         {
-            const ILeoCSGMesh* mesh = i == 0 ? meshA : meshB;
+            const CSGMesh* mesh = i == 0 ? meshA : meshB;
             Poly*& model = models[i];
 
             std::vector<Poly::vertex_t> vertices;
