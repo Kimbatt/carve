@@ -7,13 +7,21 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#set(USE_CLANG true)
+set(USE_CLANG true)
 
 if (USE_CLANG)
     set(CMAKE_GENERATOR_TOOLSET "clangcl")
 endif (USE_CLANG)
 
 project (Carve)
+
+# Enable enhanced instruction set:      Advanced Vector Extensions 2 (/arch:AVX2)
+# Enable intrinsic functions:           Yes (/Oi)
+# Favor size or speed:                  Favor fast code (/Ot)
+# Inline function expansion:            Any Suitable (/Ob2)
+set(CARVE_RELEASE_COMPILER_FLAGS  "/arch:AVX2 /Oi /Ot /Ob2")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ${CARVE_RELEASE_COMPILER_FLAGS}")
+set(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE} ${CARVE_RELEASE_COMPILER_FLAGS}")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin/)

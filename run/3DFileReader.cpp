@@ -2,6 +2,7 @@
 #include <fstream>
 #include <regex>
 #include "3DFileReader.h"
+#include <unordered_map>
 
 Mesh* StlReader::loadFromFile(std::string path)
 {
@@ -113,10 +114,10 @@ Mesh* StlReader::loadAscii(std::vector<unsigned char>& data)
             mesh->vertices.push_back(float3(v1x, v1y, v1z));
             mesh->vertices.push_back(float3(v2x, v2y, v2z));
 
-			int index = mesh->indices.size();
-			mesh->indices.push_back(index);
-			mesh->indices.push_back(index + 1);
-			mesh->indices.push_back(index + 2);
+            int index = mesh->indices.size();
+            mesh->indices.push_back(index);
+            mesh->indices.push_back(index + 1);
+            mesh->indices.push_back(index + 2);
         }
         catch (...)
         {
@@ -189,6 +190,72 @@ void Mesh::translate(float3 tr)
     for (size_t i = 0; i < vertices.size(); ++i)
     {
         vertices[i] = vertices[i] + tr;
+    }
+}
+
+void Mesh::weldVertices()
+{
+    std::vector<float3> uniqueVerts;    // new list of unique vertices
+
+    auto hasher = [](float3 value)
+    {
+        std::hash<int> hasher;
+
+        int x = *(int*)(&value.x);
+        int y = *(int*)(&value.y);
+        int z = *(int*)(&value.z);
+
+        size_t seed = 0;
+        seed ^= hasher(x) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        seed ^= hasher(y) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        seed ^= hasher(z) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+
+        return seed;
+    };
+
+    auto eq = [](float3 a, float3 b)
+    {
+        return a == b;
+    };
+
+    std::unordered_map<float3, int, decltype(hasher), decltype(eq)> vertexMap(vertices.size(), hasher, eq);     // maps vertices to index in unique vertex list
+    std::unordered_map<int, int> vertexIndexMap;                                                                // maps new vertex list indices to original vertex indices
+
+    for (int i = 0; i < vertices.size(); ++i)
+    {
+        float3 v = vertices[i];
+
+        int mappedIndex;
+        auto it = vertexMap.find(v);
+        if (it == vertexMap.end())
+        {
+            mappedIndex = uniqueVerts.size();
+            vertexMap.insert({ v, mappedIndex });
+            uniqueVerts.push_back(v);
+        }
+        else
+        {
+            mappedIndex = it->second;
+        }
+
+        vertexIndexMap.insert({ i, mappedIndex });
+    }
+
+    // change vertices to new unique list
+    vertices.clear();
+    for (int i = 0; i < uniqueVerts.size(); ++i)
+    {
+        vertices.push_back(uniqueVerts[i]);
+    }
+
+    // change indices
+    for (int i = 0; i < indices.size(); ++i)
+    {
+        auto it = vertexIndexMap.find(indices[i]);
+        if (it != vertexIndexMap.end())
+        {
+            indices[i] = it->second;
+        }
     }
 }
 

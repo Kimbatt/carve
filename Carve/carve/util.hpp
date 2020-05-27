@@ -29,8 +29,8 @@ namespace carve {
     };
     class pcg_random {
     private:
-      uint64_t state;
       uint64_t seed;
+      uint64_t state;
 
       uint32_t rand_internal() {
           uint64_t oldstate = state;

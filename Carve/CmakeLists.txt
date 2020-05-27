@@ -126,14 +126,6 @@ foreach(source IN LISTS CARVE_SRC)
 endforeach()
 endif (MSVC_VERSION)
 
-# Enable enhanced instruction set:      Advanced Vector Extensions 2 (/arch:AVX2)
-# Enable intrinsic functions:           Yes (/Oi)
-# Favor size or speed:                  Favor fast code (/Ot)
-# Inline function expansion:            Any Suitable (/Ob2)
-set(CARVE_RELEASE_COMPILER_FLAGS  "/arch:AVX2 /Oi /Ot /Ob2")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ${CARVE_RELEASE_COMPILER_FLAGS}")
-set(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE} ${CARVE_RELEASE_COMPILER_FLAGS}")
-
 add_library(carve STATIC ${CARVE_SRC})
 
 target_include_directories(carve PRIVATE ${CMAKE_SOURCE_DIR})

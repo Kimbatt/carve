@@ -245,7 +245,10 @@ int main()
 {
     Mesh* meshA = StlReader::loadFromFile("../stl_test/Stanford_Bunny_sample.stl");
     Mesh* meshB = StlReader::loadFromFile("../stl_test/Menger_sponge_sample.stl");
-    meshB->scale(float3(100, 100, 100));
+    meshB->scale(float3(20, 20, 20));
+    meshB->translate(float3(0, 0, 40));
+    meshA->weldVertices();
+    meshB->weldVertices();
 
     CSGMesh* csgMeshA = meshA->makeNewCSGMesh();
     CSGMesh* csgMeshB = meshB->makeNewCSGMesh();
