@@ -20,14 +20,14 @@ CSGMesh::~CSGMesh()
 
 void CSGMesh::setVertices(int vertexCount, const float* vertices)
 {
-    m_vertices.resize(vertexCount * 3);
-    memcpy(m_vertices.data(), vertices, vertexCount * 3 * sizeof(float));
+    m_vertices.resize((size_t)vertexCount * 3);
+    memcpy(m_vertices.data(), vertices, (size_t)vertexCount * 3 * sizeof(float));
 }
 
 void CSGMesh::setTriangles(int triangleCount, const int* triangles)
 {
-    m_triangles.resize(triangleCount * 3);
-    memcpy(m_triangles.data(), triangles, triangleCount * 3 * sizeof(int));
+    m_triangles.resize((size_t)triangleCount * 3);
+    memcpy(m_triangles.data(), triangles, (size_t)triangleCount * 3 * sizeof(int));
 }
 
 int CSGMesh::getVertexCount() const
@@ -53,7 +53,7 @@ const int* CSGMesh::getTriangles() const
 
 void CSGMesh::log(std::ostream& stream) const
 {
-    int k = 0;
+    size_t k = 0;
     stream << "vertices: " << m_vertices.size() / 3 << std::endl;
     for (size_t i = 0; i < m_vertices.size() / 3; ++i)
     {
@@ -105,12 +105,12 @@ EXPORT int STDCALL leoCSGMeshGetTriangleCount(const CSGMesh* mesh)
 
 EXPORT void STDCALL leoCSGMeshGetVertices(const CSGMesh* mesh, float* dstBuffer)
 {
-    memcpy(dstBuffer, mesh->getVertices(), mesh->getVertexCount() * 3 * sizeof(float));
+    memcpy(dstBuffer, mesh->getVertices(), (size_t)mesh->getVertexCount() * 3 * sizeof(float));
 }
 
 EXPORT void STDCALL leoCSGMeshGetTriangles(const CSGMesh* mesh, int* dstBuffer)
 {
-    memcpy(dstBuffer, mesh->getTriangles(), mesh->getTriangleCount() * 3 * sizeof(int));
+    memcpy(dstBuffer, mesh->getTriangles(), (size_t)mesh->getTriangleCount() * 3 * sizeof(int));
 }
 
 const float* STDCALL leoCSGMeshGetVertexPointer(const CSGMesh* mesh)
@@ -184,19 +184,19 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
         switch (op)
         {
         case CSGOp::Union:
-            res = csg.compute(meshA, meshB, carve::csg::CSG::UNION);
+            res = csg.compute(meshA, meshB, carve::csg::CSG::CSG_OP::UNION);
             break;
         case CSGOp::Intersection:
-            res = csg.compute(meshA, meshB, carve::csg::CSG::INTERSECTION);
+            res = csg.compute(meshA, meshB, carve::csg::CSG::CSG_OP::INTERSECTION);
             break;
         case CSGOp::AMinusB:
-            res = csg.compute(meshA, meshB, carve::csg::CSG::A_MINUS_B);
+            res = csg.compute(meshA, meshB, carve::csg::CSG::CSG_OP::A_MINUS_B);
             break;
         case CSGOp::BMinusA:
-            res = csg.compute(meshA, meshB, carve::csg::CSG::B_MINUS_A);
+            res = csg.compute(meshA, meshB, carve::csg::CSG::CSG_OP::B_MINUS_A);
             break;
         case CSGOp::SymmetricDifference:
-            res = csg.compute(meshA, meshB, carve::csg::CSG::SYMMETRIC_DIFFERENCE);
+            res = csg.compute(meshA, meshB, carve::csg::CSG::CSG_OP::SYMMETRIC_DIFFERENCE);
             break;
         }
 

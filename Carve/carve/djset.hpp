@@ -33,7 +33,7 @@ namespace djset {
     struct elem {
       size_t parent, rank;
       elem(size_t p, size_t r) : parent(p), rank(r) {}
-      elem() {}
+      elem() : parent(0), rank(0) {}
     };
 
     std::vector<elem> set;

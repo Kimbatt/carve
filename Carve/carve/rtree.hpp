@@ -49,7 +49,7 @@ namespace carve {
         aabb_t bbox;
         data_t data;
 
-        data_aabb_t() { }
+        data_aabb_t() : bbox(), data() { }
         data_aabb_t(const data_t &_data) : bbox(aabb_calc_t()(_data)), data(_data) {
         }
 
@@ -173,8 +173,8 @@ namespace carve {
 
       // functor for ordering nodes by increasing aabb midpoint, along a specified axis.
       struct aabb_cmp_mid {
-        size_t dim;
-        aabb_cmp_mid(size_t _dim) : dim(_dim) { }
+        unsigned dim;
+        aabb_cmp_mid(unsigned _dim) : dim(_dim) { }
 
         bool operator()(const node_t *a, const node_t *b) {
           return a->bbox.mid(dim) < b->bbox.mid(dim);
@@ -186,8 +186,8 @@ namespace carve {
 
       // functor for ordering nodes by increasing aabb minimum, along a specified axis.
       struct aabb_cmp_min {
-        size_t dim;
-        aabb_cmp_min(size_t _dim) : dim(_dim) { }
+        unsigned dim;
+        aabb_cmp_min(unsigned _dim) : dim(_dim) { }
 
         bool operator()(const node_t *a, const node_t *b) {
           return a->bbox.min(dim) < b->bbox.min(dim);
@@ -199,8 +199,8 @@ namespace carve {
 
       // functor for ordering nodes by increasing aabb maximum, along a specified axis.
       struct aabb_cmp_max {
-        size_t dim;
-        aabb_cmp_max(size_t _dim) : dim(_dim) { }
+        unsigned dim;
+        aabb_cmp_max(unsigned _dim) : dim(_dim) { }
 
         bool operator()(const node_t *a, const node_t *b) {
           return a->bbox.max(dim) < b->bbox.max(dim);
@@ -212,8 +212,8 @@ namespace carve {
 
       // facade for projecting node bounding box onto an axis.
       struct aabb_extent {
-        size_t dim;
-        aabb_extent(size_t _dim) : dim(_dim) { }
+        unsigned dim;
+        aabb_extent(unsigned _dim) : dim(_dim) { }
 
         double min(const node_t *a) { return a->bbox.pos.v[dim] - a->bbox.extent.v[dim]; }
         double max(const node_t *a) { return a->bbox.pos.v[dim] + a->bbox.extent.v[dim]; }
@@ -232,11 +232,11 @@ namespace carve {
                             std::vector<node_t *> &out) {
         const size_t N = std::distance(begin, end);
 
-        size_t dim = ndim;
-        double r_best = N+1;
+        unsigned dim = ndim;
+        double r_best = (double)(N+1);
 
         // find the sparsest remaining dimension to partition by.
-        for (size_t i = 0; i < ndim; ++i) {
+        for (unsigned i = 0; i < ndim; ++i) {
           if (dim_mask & (1U << i)) continue;
           aabb_extent extent(i);
           double dmin, dmax, dsum;

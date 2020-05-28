@@ -45,7 +45,7 @@ namespace carve {
       polyline_vertex_iter &operator-=(int v) { idx -= v; return *this; }
 
       Vertex *operator*() const {
-        CARVE_ASSERT(idx >= 0 && idx < base->vertexCount());
+        CARVE_ASSERT(idx >= 0 && (size_t)idx < base->vertexCount());
         return base->vertex((size_t)idx);
       }
     };
@@ -82,7 +82,7 @@ namespace carve {
       polyline_vertex_const_iter &operator-=(int v) { idx -= v; return *this; }
 
       const Vertex *operator*() const {
-        CARVE_ASSERT(idx >= 0 && idx < base->vertexCount());
+        CARVE_ASSERT(idx >= 0 && (size_t)idx < base->vertexCount());
         return base->vertex((size_t)idx);
       }
     };
@@ -132,7 +132,7 @@ namespace carve {
       polyline_edge_iter &operator-=(int v) { idx -= v; return *this; }
 
       PolylineEdge *operator*() const {
-        CARVE_ASSERT(idx >= 0 && idx < base->edgeCount());
+        CARVE_ASSERT(idx >= 0 && (size_t)idx < base->edgeCount());
         return base->edge((size_t)idx);
       }
     };
@@ -169,7 +169,7 @@ namespace carve {
       polyline_edge_const_iter &operator-=(int v) { idx -= v; return *this; }
 
       const PolylineEdge *operator*() const {
-        CARVE_ASSERT(idx >= 0 && idx < base->edgeCount());
+        CARVE_ASSERT(idx >= 0 && (size_t)idx < base->edgeCount());
         return base->edge((size_t)idx);
       }
     };

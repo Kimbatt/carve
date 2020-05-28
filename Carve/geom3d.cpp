@@ -85,15 +85,15 @@ not_rev:
 
       if (carve::math::ZERO(Vd)) {
         if (carve::math::ZERO(V0)) {
-          return INTERSECT_BAD;
+          return IntersectionClass::INTERSECT_BAD;
         } else {
-          return INTERSECT_NONE;
+          return IntersectionClass::INTERSECT_NONE;
         }
       }
 
       t = -V0 / Vd;
       v = v1 + t * Rd;
-      return INTERSECT_PLANE;
+      return IntersectionClass::INTERSECT_PLANE;
     }
 
     IntersectionClass lineSegmentPlaneIntersection(const Plane &p,
@@ -102,12 +102,12 @@ not_rev:
       double t;
       IntersectionClass r = rayPlaneIntersection(p, line.v1, line.v2, v, t);
 
-      if (r <= 0) return r;
+      if ((int)r <= 0) return r;
 
       if ((t < 0.0 && !equal(v, line.v1)) || (t > 1.0 && !equal(v, line.v2)))
-        return INTERSECT_NONE;
+        return IntersectionClass::INTERSECT_NONE;
 
-      return INTERSECT_PLANE;
+      return IntersectionClass::INTERSECT_PLANE;
     }
 
     RayIntersectionClass rayRayIntersection(const Ray &r1,
@@ -116,7 +116,7 @@ not_rev:
                                             Vector &v2,
                                             double &mu1,
                                             double &mu2) {
-      if (!r1.OK() || !r2.OK()) return RR_DEGENERATE;
+      if (!r1.OK() || !r2.OK()) return RayIntersectionClass::RR_DEGENERATE;
 
       Vector v_13 = r1.v - r2.v;
 
@@ -146,7 +146,7 @@ not_rev:
       // a/c - c/b
 
       if (fabs(denom) * double(1<<10) <= fabs(numer)) {
-        return RR_PARALLEL;
+        return RayIntersectionClass::RR_PARALLEL;
       }
 
       mu1 = numer / denom;
@@ -155,7 +155,7 @@ not_rev:
       v1 = r1.v + mu1 * r1.D;
       v2 = r2.v + mu2 * r2.D;
 
-      return (equal(v1, v2)) ? RR_INTERSECTION : RR_NO_INTERSECTION;
+      return (equal(v1, v2)) ? RayIntersectionClass::RR_INTERSECTION : RayIntersectionClass::RR_NO_INTERSECTION;
     }
 
   }

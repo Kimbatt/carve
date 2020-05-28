@@ -204,7 +204,7 @@ namespace carve {
         vertex_info(const carve::geom2d::P2 &_p, size_t _idx) :
           prev(NULL), next(NULL),
           p(_p), idx(_idx),
-          score(0.0), convex(false) {
+          score(0.0), convex(false), failed(false) {
         }
 
         static double triScore(const vertex_info *p, const vertex_info *v, const vertex_info *n);
@@ -293,7 +293,7 @@ namespace carve {
         double score;
         size_t idx;
 
-        tri_pair_t() : a(NULL), b(NULL), score(0.0) {
+        tri_pair_t() : a(NULL), b(NULL), score(0.0), idx(0) {
         }
 
         static inline unsigned N(unsigned i) { return (i+1)%3; }

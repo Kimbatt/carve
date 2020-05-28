@@ -515,7 +515,7 @@ namespace shewchuk {
   {
     double result;
     double expo;
-    long a, b, c;
+    int64_t a, b, c;
     long i;
 
     std::random_device rd;
@@ -545,7 +545,7 @@ namespace shewchuk {
   {
     double result;
     double expo;
-    long a, b, c;
+    int64_t a, b, c;
     long i;
 
     std::random_device rd;
@@ -573,7 +573,7 @@ namespace shewchuk {
   double uniformdoublerand()
   {
     double result;
-    long a, b;
+    int64_t a, b;
 
     std::random_device rd;
     std::mt19937_64 mt(rd());

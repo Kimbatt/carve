@@ -50,8 +50,8 @@ namespace {
          j != result.end();
          ++j) {
       if ((*j).first == m_id) continue;
-      if ((*j).second == carve::POINT_IN) inside.insert((*j).first);
-      else if ((*j).second == carve::POINT_ON) {
+      if ((*j).second == carve::PointClass::POINT_IN) inside.insert((*j).first);
+      else if ((*j).second == carve::PointClass::POINT_ON) {
 #if defined(CARVE_DEBUG)
         std::cerr << " FAIL" << std::endl;
 #endif
@@ -245,7 +245,7 @@ namespace carve {
           for (size_t f = 0; f < mesh->faces.size(); ++f) {
             mesh::Face<3> *src = mesh->faces[f];
             mesh::Edge<3> *e = src->edge;
-            faces[face_map[src]].manifold_id = m;
+            faces[face_map[src]].manifold_id = (int)m;
             do {
               edge_map[std::make_pair(e->v1() - Vbase, e->v2() - Vbase)].push_back(e);
               e = e->next;
@@ -342,7 +342,7 @@ namespace carve {
 
       carve::TimingBlock block(FUNC_NAME);
 
-      const unsigned MCOUNT = manifoldCount();
+      size_t MCOUNT = manifoldCount();
       if (MCOUNT < 2) return true;
 
       std::set<int> vertex_manifolds;
@@ -687,7 +687,7 @@ namespace carve {
       for (size_t i = 0; i < faces.size(); i++) {
         if (!manifold_is_closed[faces[i].manifold_id]) continue; // skip open manifolds
         if (faces[i].containsPoint(v)) {
-          result[faces[i].manifold_id] = POINT_ON;
+          result[faces[i].manifold_id] = PointClass::POINT_ON;
         }
       }
 
@@ -715,11 +715,11 @@ namespace carve {
           if (result.find(possible_faces[i]->manifold_id) != result.end()) continue; // already ON
 
           switch (possible_faces[i]->lineSegmentIntersection(line, intersection)) {
-          case INTERSECT_FACE: {
+          case IntersectionClass::INTERSECT_FACE: {
             manifold_intersections.push_back(std::make_pair(possible_faces[i], intersection));
             break;
           }
-          case INTERSECT_NONE: {
+          case IntersectionClass::INTERSECT_NONE: {
             break;
           }
           default: {
@@ -739,14 +739,14 @@ namespace carve {
         crossings[f->manifold_id]++;
       }
 
-      for (size_t i = 0; i < crossings.size(); ++i) {
+      for (int i = 0; i < crossings.size(); ++i) {
 #if defined(CARVE_DEBUG)
         std::cerr << "crossing: " << i << " = " << crossings[i] << " is_negative = " << manifold_is_negative[i] << std::endl;
 #endif
         if (!manifold_is_closed[i]) continue;
         if (result.find(i) != result.end()) continue;
-        PointClass pc = (crossings[i] & 1) ? POINT_IN : POINT_OUT;
-        if (!ignore_orientation && manifold_is_negative[i]) pc = (PointClass)-pc;
+        PointClass pc = (crossings[i] & 1) ? PointClass::POINT_IN : PointClass::POINT_OUT;
+        if (!ignore_orientation && manifold_is_negative[i]) pc = (PointClass)(-(int)pc);
         result[i] = pc;
       }
     }
@@ -769,8 +769,8 @@ namespace carve {
 #endif
         // XXX: if the top level manifolds are negative, this should be POINT_IN.
         // for the moment, this only works for a single manifold.
-        if (manifold_is_negative.size() == 1 && manifold_is_negative[0]) return POINT_IN;
-        return POINT_OUT;
+        if (manifold_is_negative.size() == 1 && manifold_is_negative[0]) return PointClass::POINT_IN;
+        return PointClass::POINT_OUT;
       }
 
       for (size_t i = 0; i < faces.size(); i++) {
@@ -788,7 +788,7 @@ namespace carve {
           std::cerr << "{final:ON(hits face " << &faces[i] << ")}" << std::endl;
 #endif
           if (hit_face) *hit_face = &faces[i];
-          return POINT_ON;
+          return PointClass::POINT_ON;
         }
       }
 
@@ -829,7 +829,7 @@ namespace carve {
           if (!manifold_is_closed[possible_faces[i]->manifold_id]) continue;
 
           switch (possible_faces[i]->lineSegmentIntersection(line, intersection)) {
-          case INTERSECT_FACE: {
+          case IntersectionClass::INTERSECT_FACE: {
 
 #if defined(DEBUG_CONTAINS_VERTEX)
             std::cerr << "{intersects face: " << possible_faces[i]
@@ -848,7 +848,7 @@ namespace carve {
             manifold_intersections.push_back(std::make_pair(possible_faces[i], intersection));
             break;
           }
-          case INTERSECT_NONE: {
+          case IntersectionClass::INTERSECT_NONE: {
             break;
           }
           default: {
@@ -864,7 +864,7 @@ namespace carve {
 
         if (!failed) {
           if (even_odd) {
-            return (manifold_intersections.size() & 1) ? POINT_IN : POINT_OUT;
+            return (manifold_intersections.size() & 1) ? PointClass::POINT_IN : PointClass::POINT_OUT;
           }
 
 #if defined(DEBUG_CONTAINS_VERTEX)
@@ -917,7 +917,7 @@ namespace carve {
               std::cerr << "{final:IN}" << std::endl;
 #endif
 
-              return POINT_IN;
+              return PointClass::POINT_IN;
             } else if (crossings[f->manifold_id] > 0) {
               // outside this manifold, but it's an infinite manifold. (for instance, an inverted cube)
 
@@ -925,7 +925,7 @@ namespace carve {
               std::cerr << "{final:OUT}" << std::endl;
 #endif
 
-              return POINT_OUT;
+              return PointClass::POINT_OUT;
             }
           }
 
@@ -933,7 +933,7 @@ namespace carve {
           std::cerr << "{final:OUT(default)}" << std::endl;
 #endif
 
-          return POINT_OUT;
+          return PointClass::POINT_OUT;
         }
       }
     }

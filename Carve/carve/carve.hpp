@@ -109,14 +109,14 @@ namespace carve {
   }
 
 
-  enum RayIntersectionClass {
+  enum class RayIntersectionClass : int {
     RR_DEGENERATE = -2,
     RR_PARALLEL = -1,
     RR_NO_INTERSECTION = 0,
     RR_INTERSECTION = 1
   };
 
-  enum LineIntersectionClass {
+  enum class LineIntersectionClass : int {
     COLINEAR        = -1,
     NO_INTERSECTION = 0,
     INTERSECTION_LL = 1,
@@ -125,7 +125,7 @@ namespace carve {
     INTERSECTION_PP = 4
   };
 
-  enum PointClass {
+  enum class PointClass : int {
     POINT_UNK = -2,
     POINT_OUT = -1,
     POINT_ON = 0,
@@ -134,7 +134,7 @@ namespace carve {
     POINT_EDGE = 3
   };
 
-  enum IntersectionClass {
+  enum class IntersectionClass : int {
     INTERSECT_BAD = -1,
     INTERSECT_NONE = 0,
     INTERSECT_FACE = 1,

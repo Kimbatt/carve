@@ -434,7 +434,7 @@ namespace carve {
        * \enum OP
        * \brief Enumeration of the supported CSG operations.
        */
-      enum OP {
+      enum class CSG_OP {
         UNION,                  /**< in a or b. */
         INTERSECTION,           /**< in a and b. */
         A_MINUS_B,              /**< in a, but not b. */
@@ -447,7 +447,7 @@ namespace carve {
        * \enum CLASSIFY_TYPE
        * \brief The type of classification algorithm to use.
        */
-      enum CLASSIFY_TYPE {
+      enum class CLASSIFY_TYPE {
         CLASSIFY_NORMAL,        /**< Normal (group) classifier. */
         CLASSIFY_EDGE           /**< Edge classifier. */
       };
@@ -473,7 +473,7 @@ namespace carve {
         meshset_t *b,
         CSG::Collector &collector,
         V2Set *shared_edges = NULL,
-        CLASSIFY_TYPE classify_type = CLASSIFY_NORMAL);
+        CLASSIFY_TYPE classify_type = CLASSIFY_TYPE::CLASSIFY_NORMAL);
 
       /** 
        * \brief Compute a CSG operation between two closed polyhedra, \a a and \a b.
@@ -489,9 +489,9 @@ namespace carve {
       meshset_t *compute(
         meshset_t *a,
         meshset_t *b,
-        OP op,
+        CSG_OP op,
         V2Set *shared_edges = NULL,
-        CLASSIFY_TYPE classify_type = CLASSIFY_NORMAL);
+        CLASSIFY_TYPE classify_type = CLASSIFY_TYPE::CLASSIFY_NORMAL);
 
       void slice(
         meshset_t *a,

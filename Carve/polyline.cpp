@@ -41,7 +41,7 @@ namespace carve {
       }
       std::sort(temp.begin(), temp.end());
       std::vector<Vertex> vnew;
-      std::vector<int> revmap;
+      std::vector<size_t> revmap;
       vnew.reserve(vertices.size());
       revmap.resize(vertices.size());
 

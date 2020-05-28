@@ -48,7 +48,7 @@ Mesh* StlReader::loadFromFile(std::string path)
 
 Mesh* StlReader::loadBinary(std::vector<unsigned char>& data)
 {
-    uint32_t numFacets = ((uint32_t)(data[83]) << 24) | ((uint32_t)(data[82]) << 16) | ((uint32_t)(data[81]) << 8) | (uint32_t)(data[80]);
+    size_t numFacets = ((uint32_t)(data[83]) << 24) | ((uint32_t)(data[82]) << 16) | ((uint32_t)(data[81]) << 8) | (uint32_t)(data[80]);
 
     Mesh* mesh = new Mesh();
     mesh->vertices.resize(numFacets * 3);
@@ -63,18 +63,18 @@ Mesh* StlReader::loadBinary(std::vector<unsigned char>& data)
 
     unsigned char* dataPtr = data.data();
 
-    for (int i = 0; i < numFacets; ++i)
+    for (size_t i = 0; i < numFacets; ++i)
     {
-        int arrayIndex = 84 + 50 * i;
+        size_t arrayIndex = 84 + 50 * i;
 
-        int meshIndex = i * 3;
+        size_t meshIndex = i * 3;
         mesh->vertices[meshIndex] = float3(readFloat(dataPtr + arrayIndex + 12), readFloat(dataPtr + arrayIndex + 16), readFloat(dataPtr + arrayIndex + 20));
         mesh->vertices[meshIndex + 1] = float3(readFloat(dataPtr + arrayIndex + 24), readFloat(dataPtr + arrayIndex + 28), readFloat(dataPtr + arrayIndex + 32));
         mesh->vertices[meshIndex + 2] = float3(readFloat(dataPtr + arrayIndex + 36), readFloat(dataPtr + arrayIndex + 40), readFloat(dataPtr + arrayIndex + 44));
 
-        mesh->indices[meshIndex] = meshIndex;
-        mesh->indices[meshIndex + 1] = meshIndex + 1;
-        mesh->indices[meshIndex + 2] = meshIndex + 2;
+        mesh->indices[meshIndex] = (int)meshIndex;
+        mesh->indices[meshIndex + 1] = (int)meshIndex + 1;
+        mesh->indices[meshIndex + 2] = (int)meshIndex + 2;
     }
 
     return mesh;
@@ -114,7 +114,7 @@ Mesh* StlReader::loadAscii(std::vector<unsigned char>& data)
             mesh->vertices.push_back(float3(v1x, v1y, v1z));
             mesh->vertices.push_back(float3(v2x, v2y, v2z));
 
-            int index = mesh->indices.size();
+            int index = (int)mesh->indices.size();
             mesh->indices.push_back(index);
             mesh->indices.push_back(index + 1);
             mesh->indices.push_back(index + 2);
@@ -144,16 +144,16 @@ CSGMesh* Mesh::makeNewCSGMesh() const
         floatVertices.push_back(vertex.z);
     }
 
-    leoCSGMeshSetVertices(csgMesh, vertices.size(), floatVertices.data());
-    leoCSGMeshSetTriangles(csgMesh, indices.size() / 3, indices.data());
+    leoCSGMeshSetVertices(csgMesh, (int)vertices.size(), floatVertices.data());
+    leoCSGMeshSetTriangles(csgMesh, (int)(indices.size() / 3), indices.data());
 
     return csgMesh;
 }
 
 Mesh* Mesh::fromCSGMesh(CSGMesh* csgMesh)
 {
-    int numVertices = leoCSGMeshGetVertexCount(csgMesh);
-    int numIndices = leoCSGMeshGetTriangleCount(csgMesh) * 3;
+    size_t numVertices = leoCSGMeshGetVertexCount(csgMesh);
+    size_t numIndices = (size_t)leoCSGMeshGetTriangleCount(csgMesh) * 3;
 
     std::vector<float> floatVertices;
     floatVertices.resize(numVertices * 3);
@@ -162,7 +162,7 @@ Mesh* Mesh::fromCSGMesh(CSGMesh* csgMesh)
     Mesh* mesh = new Mesh();
     mesh->vertices.resize(numVertices);
 
-    for (int i = 0; i < numVertices; ++i)
+    for (size_t i = 0; i < numVertices; ++i)
     {
         mesh->vertices[i] = float3(
             floatVertices[i * 3],
@@ -218,14 +218,14 @@ void Mesh::weldVertices()
         return a == b;
     };
 
-    std::unordered_map<float3, int, decltype(hasher), decltype(eq)> vertexMap(vertices.size(), hasher, eq);     // maps vertices to index in unique vertex list
-    std::unordered_map<int, int> vertexIndexMap;                                                                // maps new vertex list indices to original vertex indices
+    std::unordered_map<float3, size_t, decltype(hasher), decltype(eq)> vertexMap(vertices.size(), hasher, eq);     // maps vertices to index in unique vertex list
+    std::unordered_map<size_t, size_t> vertexIndexMap;                                                                // maps new vertex list indices to original vertex indices
 
     for (int i = 0; i < vertices.size(); ++i)
     {
         float3 v = vertices[i];
 
-        int mappedIndex;
+        size_t mappedIndex;
         auto it = vertexMap.find(v);
         if (it == vertexMap.end())
         {
@@ -254,7 +254,7 @@ void Mesh::weldVertices()
         auto it = vertexIndexMap.find(indices[i]);
         if (it != vertexIndexMap.end())
         {
-            indices[i] = it->second;
+            indices[i] = (int)it->second;
         }
     }
 }
@@ -267,7 +267,7 @@ void StlWriter::writeToFile(const Mesh* mesh, std::string fileName)
         return;
     }
 
-    uint32_t numTriangles = mesh->indices.size() / 3;
+    size_t numTriangles = mesh->indices.size() / 3;
     std::vector<unsigned char> fileData;
     fileData.resize(numTriangles * 50 + 84);
 
@@ -283,11 +283,11 @@ void StlWriter::writeToFile(const Mesh* mesh, std::string fileName)
 
     unsigned char* dataPtr = fileData.data();
 
-    for (uint32_t i = 0; i < numTriangles; ++i)
+    for (size_t i = 0; i < numTriangles; ++i)
     {
-        int arrayIndex = 84 + 50 * i;
+        size_t arrayIndex = 84 + 50 * i;
 
-        int meshIndex = i * 3;
+        size_t meshIndex = i * 3;
 
         float3 v0 = mesh->vertices[meshIndex];
         float3 v1 = mesh->vertices[meshIndex + 1];

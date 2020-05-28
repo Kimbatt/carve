@@ -244,7 +244,7 @@ namespace carve {
       }
 
       std::copy(em.begin(), em.end(), result);
-      return em.size();
+      return (int)em.size();
     }
 
 

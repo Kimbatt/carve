@@ -120,10 +120,10 @@ namespace carve {
         for (super::data_type::const_iterator j = i->second.begin(); j != i->second.end(); ++j) {
           const IObj &obj = j->first;
           switch (obj.obtype) {
-          case IObj::OBTYPE_VERTEX:
+          case IObj::ObjectType::OBTYPE_VERTEX:
             if (obj.vertex == e->v1() || obj.vertex == e->v2()) return true;
             break;
-          case IObj::OBTYPE_EDGE:
+          case IObj::ObjectType::OBTYPE_EDGE:
             if (obj.edge == e) return true;
             break;
           default:

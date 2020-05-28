@@ -485,7 +485,7 @@ namespace {
       face_loops_sorted[m].reserve(f_loop.size());
       for (size_t n = 0; n < f_loop.size(); ++n) {
         face_loops_projected[m].push_back(face->project(f_loop[n]->v));
-        face_loops_sorted[m].push_back(n);
+        face_loops_sorted[m].push_back((unsigned)n);
       }
       face_loop_areas.push_back(carve::geom2d::signedArea(face_loops_projected[m]));
 
@@ -502,7 +502,7 @@ namespace {
       hole_loops_projected[m].reserve(h_loop.size());
       for (size_t n = 0; n < h_loop.size(); ++n) {
         hole_loops_projected[m].push_back(face->project(h_loop[n]->v));
-        hole_loops_sorted[m].push_back(n);
+        hole_loops_sorted[m].push_back((unsigned)n);
       }
       hole_loop_areas.push_back(carve::geom2d::signedArea(hole_loops_projected[m]));
 
@@ -1203,7 +1203,7 @@ namespace {
         }
 
         if (proj_aabb[i].intersects(test) &&
-            carve::geom2d::pointInPoly(proj[i], test).iclass != carve::POINT_OUT) {
+            carve::geom2d::pointInPoly(proj[i], test).iclass != carve::PointClass::POINT_OUT) {
           inc.push_back(noncross[j].path);
         }
       }
@@ -1458,7 +1458,8 @@ namespace {
     std::vector<carve::mesh::MeshSet<3>::vertex_t *> base_loop;
     std::list<std::vector<carve::mesh::MeshSet<3>::vertex_t *> > hole_loops;
 
-    bool face_edge_intersected = assembleBaseLoop(face, data, base_loop, hooks);
+    /*bool face_edge_intersected = */
+    assembleBaseLoop(face, data, base_loop, hooks);
 
     detail::FV2SMap::const_iterator fse_iter = data.face_split_edges.find(face);
 

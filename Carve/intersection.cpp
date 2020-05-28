@@ -35,13 +35,13 @@ void carve::csg::Intersections::collect(const IObj &obj,
     Intersections::mapped_type::const_iterator a, b;
     for (a = (*i).second.begin(), b = (*i).second.end(); a != b; ++a) {
       switch ((*a).first.obtype) {
-      case carve::csg::IObj::OBTYPE_VERTEX:
+      case carve::csg::IObj::ObjectType::OBTYPE_VERTEX:
         if (collect_v) collect_v->push_back((*a).first.vertex);
         break;
-      case carve::csg::IObj::OBTYPE_EDGE:
+      case carve::csg::IObj::ObjectType::OBTYPE_EDGE:
         if (collect_e) collect_e->push_back((*a).first.edge);
         break;
-      case carve::csg::IObj::OBTYPE_FACE:
+      case carve::csg::IObj::ObjectType::OBTYPE_FACE:
         if (collect_f) collect_f->push_back((*a).first.face);
         break;
       default:
@@ -61,7 +61,7 @@ bool carve::csg::Intersections::intersectsFace(carve::mesh::MeshSet<3>::vertex_t
 
     for (a = (*i).second.begin(), b = (*i).second.end(); a != b; ++a) {
       switch ((*a).first.obtype) {
-      case IObj::OBTYPE_VERTEX: {
+      case carve::csg::IObj::ObjectType::OBTYPE_VERTEX: {
         const carve::mesh::MeshSet<3>::edge_t *edge = f->edge;
         do {
           if (edge->vert == (*a).first.vertex) return true;
@@ -69,7 +69,7 @@ bool carve::csg::Intersections::intersectsFace(carve::mesh::MeshSet<3>::vertex_t
         } while (edge != f->edge);
         break;
       }
-      case carve::csg::IObj::OBTYPE_EDGE: {
+      case carve::csg::IObj::ObjectType::OBTYPE_EDGE: {
         const carve::mesh::MeshSet<3>::edge_t *edge = f->edge;
         do {
           if (edge == (*a).first.edge) return true;
@@ -77,7 +77,7 @@ bool carve::csg::Intersections::intersectsFace(carve::mesh::MeshSet<3>::vertex_t
         } while (edge != f->edge);
         break;
       }
-      case carve::csg::IObj::OBTYPE_FACE: {
+      case carve::csg::IObj::ObjectType::OBTYPE_FACE: {
         if ((*a).first.face == f) return true;
         break;
       }

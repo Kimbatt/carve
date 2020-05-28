@@ -410,7 +410,7 @@ namespace carve {
         v += e->vert->v;
         e = e->next;
       } while(e != edge);
-      v /= n_edges;
+      v /= (double)n_edges;
       return v;
     }
 

@@ -74,7 +74,7 @@ namespace carve {
       public:
  
         bool pointOn(VertexClassification &vclass, FaceLoop *f, size_t index) const {
-          return vclass[f->vertices[index]].cls[0] == POINT_ON;
+          return vclass[f->vertices[index]].cls[0] == PointClass::POINT_ON;
         }
 
         void explain(FaceLoop *f, size_t index, PointClass pc) const {

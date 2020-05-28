@@ -197,12 +197,12 @@ namespace carve {
     bool Face<ndim>::containsPoint(const vector_t &p) const {
       if (!carve::math::ZERO(carve::geom::distance(plane_eqn, p))) return false;
       // return pointInPolySimple(vertices, projector(), (this->*project)(p));
-      return carve::geom2d::pointInPoly(vertices, projector(), face::project(this, p)).iclass != POINT_OUT;
+      return carve::geom2d::pointInPoly(vertices, projector(), face::project(this, p)).iclass != PointClass::POINT_OUT;
     }
 
     template<unsigned ndim>
     bool Face<ndim>::containsPointInProjection(const vector_t &p) const {
-      return carve::geom2d::pointInPoly(vertices, projector(), face::project(this, p)).iclass != POINT_OUT;
+      return carve::geom2d::pointInPoly(vertices, projector(), face::project(this, p)).iclass != PointClass::POINT_OUT;
     }
 
     template<unsigned ndim>
@@ -214,7 +214,7 @@ namespace carve {
       IntersectionClass intersects = carve::geom3d::lineSegmentPlaneIntersection(plane_eqn,
                                                                   line,
                                                                   p);
-      if (intersects == INTERSECT_NONE || intersects == INTERSECT_BAD) {
+      if (intersects == IntersectionClass::INTERSECT_NONE || intersects == IntersectionClass::INTERSECT_BAD) {
         return false;
       }
 
@@ -232,14 +232,14 @@ namespace carve {
     template<unsigned ndim>
     IntersectionClass Face<ndim>::lineSegmentIntersection(const carve::geom::linesegment<ndim> &line,
                                                           vector_t &intersection) const {
-      if (!line.OK()) return INTERSECT_NONE;
+      if (!line.OK()) return IntersectionClass::INTERSECT_NONE;
 
   
       carve::geom3d::Vector p;
       IntersectionClass intersects = carve::geom3d::lineSegmentPlaneIntersection(plane_eqn,
                                                                   line,
                                                                   p);
-      if (intersects == INTERSECT_NONE || intersects == INTERSECT_BAD) {
+      if (intersects == IntersectionClass::INTERSECT_NONE || intersects == IntersectionClass::INTERSECT_BAD) {
         return intersects;
       }
 
@@ -247,25 +247,25 @@ namespace carve {
 
       carve::geom2d::PolyInclusionInfo pi = carve::geom2d::pointInPoly(vertices, projector(), proj_p);
       switch (pi.iclass) {
-      case POINT_VERTEX:
+      case PointClass::POINT_VERTEX:
         intersection = p;
-        return INTERSECT_VERTEX;
+        return IntersectionClass::INTERSECT_VERTEX;
 
-      case POINT_EDGE:
+      case PointClass::POINT_EDGE:
         intersection = p;
-        return INTERSECT_EDGE;
+        return IntersectionClass::INTERSECT_EDGE;
 
-      case POINT_IN:
+      case PointClass::POINT_IN:
         intersection = p;
-        return INTERSECT_FACE;
+        return IntersectionClass::INTERSECT_FACE;
       
-      case POINT_OUT:
-        return INTERSECT_NONE;
+      case PointClass::POINT_OUT:
+        return IntersectionClass::INTERSECT_NONE;
 
       default:
         break;
       }
-      return INTERSECT_NONE;
+      return IntersectionClass::INTERSECT_NONE;
     }
 
 

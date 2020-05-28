@@ -117,7 +117,7 @@ namespace carve {
             return;
           }
           
-          FaceClass fc = FACE_UNCLASSIFIED;
+          FaceClass fc = FaceClass::FACE_UNCLASSIFIED;
 
           unsigned fc_closed_bits = 0;
           unsigned fc_open_bits = 0;
@@ -131,7 +131,7 @@ namespace carve {
               break;
             }
 
-            if ((*i).classification == FACE_UNCLASSIFIED) continue;
+            if ((*i).classification == FaceClass::FACE_UNCLASSIFIED) continue;
             if ((*i).intersectedMeshIsClosed()) {
               fc_closed_bits |= class_to_class_bit((*i).classification);
             } else {
@@ -148,15 +148,15 @@ namespace carve {
           fc = class_bit_to_class(fc_bits);
 
           // handle the complex cases where a group is classified differently with respect to two or more closed manifolds.
-          if (fc == FACE_UNCLASSIFIED) {
-            unsigned inout_bits = fc_bits & FACE_NOT_ON_BIT;
-            unsigned on_bits = fc_bits & FACE_ON_BIT;
+          if (fc == FaceClass::FACE_UNCLASSIFIED) {
+            unsigned inout_bits = fc_bits & (unsigned)FaceClassBit::FACE_NOT_ON_BIT;
+            unsigned on_bits = fc_bits & (unsigned)FaceClassBit::FACE_ON_BIT;
 
             // both in and out. indicates an invalid manifold embedding.
-            if (inout_bits == (FACE_IN_BIT | FACE_OUT_BIT)) goto out;
+            if (inout_bits == ((unsigned)FaceClassBit::FACE_IN_BIT | (unsigned)FaceClassBit::FACE_OUT_BIT)) goto out;
 
             // on, both orientations. could be caused by two manifolds touching at a face.
-            if (on_bits == (FACE_ON_ORIENT_IN_BIT | FACE_ON_ORIENT_OUT_BIT)) goto out;
+            if (on_bits == ((unsigned)FaceClassBit::FACE_ON_ORIENT_IN_BIT | (unsigned)FaceClassBit::FACE_ON_ORIENT_OUT_BIT)) goto out;
 
             // in or out, but also on (with orientation). the on classification takes precedence.
             fc = class_bit_to_class(on_bits);
@@ -164,7 +164,7 @@ namespace carve {
 
         out:
 
-          if (fc == FACE_UNCLASSIFIED) {
+          if (fc == FaceClass::FACE_UNCLASSIFIED) {
             std::cerr << "group " << grp << " is unclassified!" << std::endl;
 
 #if defined(CARVE_DEBUG_WRITE_PLY_DATA)
@@ -227,7 +227,7 @@ namespace carve {
         }
         virtual void collect(FaceLoopGroup *grp, CSG::Hooks &hooks) {
           for (FaceLoop *f = grp->face_loops.head; f; f = f->next) {
-            FWD(f->orig_face, f->vertices, f->orig_face->plane.N, f->orig_face->mesh->meshset == src_a, FACE_OUT, hooks);
+            FWD(f->orig_face, f->vertices, f->orig_face->plane.N, f->orig_face->mesh->meshset == src_a, FaceClass::FACE_OUT, hooks);
           }
         }
         virtual void collect(const carve::mesh::MeshSet<3>::face_t *orig_face,
@@ -255,7 +255,7 @@ namespace carve {
                              bool poly_a,
                              FaceClass face_class,
                              CSG::Hooks &hooks) {
-          if (face_class == FACE_OUT || (poly_a && face_class == FACE_ON_ORIENT_OUT)) {
+          if (face_class == FaceClass::FACE_OUT || (poly_a && face_class == FaceClass::FACE_ON_ORIENT_OUT)) {
             FWD(orig_face, vertices, normal, poly_a, face_class, hooks);
           }
         }
@@ -276,7 +276,7 @@ namespace carve {
                              bool poly_a,
                              FaceClass face_class,
                              CSG::Hooks &hooks) {
-          if (face_class == FACE_IN || (poly_a && face_class == FACE_ON_ORIENT_OUT)) {
+          if (face_class == FaceClass::FACE_IN || (poly_a && face_class == FaceClass::FACE_ON_ORIENT_OUT)) {
             FWD(orig_face, vertices, normal, poly_a, face_class, hooks);
           }
         }
@@ -297,9 +297,9 @@ namespace carve {
                              bool poly_a,
                              FaceClass face_class,
                              CSG::Hooks &hooks) {
-          if (face_class == FACE_OUT) {
+          if (face_class == FaceClass::FACE_OUT) {
             FWD(orig_face, vertices, normal, poly_a, face_class, hooks);
-          } else if (face_class == FACE_IN) {
+          } else if (face_class == FaceClass::FACE_IN) {
             REV(orig_face, vertices, normal, poly_a, face_class, hooks);
           }
         }
@@ -320,9 +320,9 @@ namespace carve {
                              bool poly_a,
                              FaceClass face_class,
                              CSG::Hooks &hooks) {
-          if ((face_class == FACE_OUT || face_class == FACE_ON_ORIENT_IN) && poly_a) {
+          if ((face_class == FaceClass::FACE_OUT || face_class == FaceClass::FACE_ON_ORIENT_IN) && poly_a) {
             FWD(orig_face, vertices, normal, poly_a, face_class, hooks);
-          } else if (face_class == FACE_IN && !poly_a) {
+          } else if (face_class == FaceClass::FACE_IN && !poly_a) {
             REV(orig_face, vertices, normal, poly_a, face_class, hooks);
           }
         }
@@ -343,9 +343,9 @@ namespace carve {
                              bool poly_a,
                              FaceClass face_class,
                              CSG::Hooks &hooks) {
-          if ((face_class == FACE_OUT || face_class == FACE_ON_ORIENT_IN) && !poly_a) {
+          if ((face_class == FaceClass::FACE_OUT || face_class == FaceClass::FACE_ON_ORIENT_IN) && !poly_a) {
             FWD(orig_face, vertices, normal, poly_a, face_class, hooks);
-          } else if (face_class == FACE_IN && poly_a) {
+          } else if (face_class == FaceClass::FACE_IN && poly_a) {
             REV(orig_face, vertices, normal, poly_a, face_class, hooks);
           }
         }
@@ -353,16 +353,16 @@ namespace carve {
 
     }
 
-    CSG::Collector *makeCollector(CSG::OP op,
+    CSG::Collector *makeCollector(CSG::CSG_OP op,
                                   const carve::mesh::MeshSet<3> *poly_a,
                                   const carve::mesh::MeshSet<3> *poly_b) {
       switch (op) {
-      case CSG::UNION:                return new UnionCollector(poly_a, poly_b);
-      case CSG::INTERSECTION:         return new IntersectionCollector(poly_a, poly_b);
-      case CSG::A_MINUS_B:            return new AMinusBCollector(poly_a, poly_b);
-      case CSG::B_MINUS_A:            return new BMinusACollector(poly_a, poly_b);
-      case CSG::SYMMETRIC_DIFFERENCE: return new SymmetricDifferenceCollector(poly_a, poly_b);
-      case CSG::ALL:                  return new AllCollector(poly_a, poly_b);
+      case CSG::CSG_OP::UNION:                return new UnionCollector(poly_a, poly_b);
+      case CSG::CSG_OP::INTERSECTION:         return new IntersectionCollector(poly_a, poly_b);
+      case CSG::CSG_OP::A_MINUS_B:            return new AMinusBCollector(poly_a, poly_b);
+      case CSG::CSG_OP::B_MINUS_A:            return new BMinusACollector(poly_a, poly_b);
+      case CSG::CSG_OP::SYMMETRIC_DIFFERENCE: return new SymmetricDifferenceCollector(poly_a, poly_b);
+      case CSG::CSG_OP::ALL:                  return new AllCollector(poly_a, poly_b);
       }
       return NULL;
     }

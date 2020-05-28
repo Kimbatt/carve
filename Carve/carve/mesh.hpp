@@ -311,10 +311,10 @@ namespace carve {
       typedef detail::list_iter_t<const Edge<ndim> > const_edge_iter_t;
 
       edge_iter_t begin() { return edge_iter_t(edge, 0); }
-      edge_iter_t end() { return edge_iter_t(edge, n_edges); }
+      edge_iter_t end() { return edge_iter_t(edge, (int)n_edges); }
 
       const_edge_iter_t begin() const { return const_edge_iter_t(edge, 0); }
-      const_edge_iter_t end() const { return const_edge_iter_t(edge, n_edges); }
+      const_edge_iter_t end() const { return const_edge_iter_t(edge, (int)n_edges); }
 
       bool containsPoint(const vector_t &p) const;
       bool containsPointInProjection(const vector_t &p) const;

@@ -22,12 +22,14 @@
 namespace carve {
   namespace csg {
     struct IObj {
-      enum {
+      enum class ObjectType : unsigned {
         OBTYPE_NONE   = 0,
         OBTYPE_VERTEX = 1,
         OBTYPE_EDGE   = 2,
         OBTYPE_FACE   = 4
-      } obtype;
+      };
+
+      IObj::ObjectType obtype;
 
       union {
         carve::mesh::MeshSet<3>::vertex_t *vertex;
@@ -36,11 +38,11 @@ namespace carve {
         intptr_t val;
       };
 
-      IObj() : obtype(OBTYPE_NONE), val(0) { }
-      IObj(carve::mesh::MeshSet<3>::vertex_t *v) : obtype(OBTYPE_VERTEX), vertex(v) { }
-      IObj(carve::mesh::MeshSet<3>::edge_t *e) : obtype(OBTYPE_EDGE), edge(e) { }
-      IObj(carve::mesh::MeshSet<3>::face_t *f) : obtype(OBTYPE_FACE), face(f) { }
-      char typeChar() const { return "NVExF"[obtype]; }
+      IObj() : obtype(ObjectType::OBTYPE_NONE), val(0) { }
+      IObj(carve::mesh::MeshSet<3>::vertex_t *v) : obtype(ObjectType::OBTYPE_VERTEX), vertex(v) { }
+      IObj(carve::mesh::MeshSet<3>::edge_t *e) : obtype(ObjectType::OBTYPE_EDGE), edge(e) { }
+      IObj(carve::mesh::MeshSet<3>::face_t *f) : obtype(ObjectType::OBTYPE_FACE), face(f) { }
+      char typeChar() const { return "NVExF"[(unsigned)obtype]; }
     };
 
 
@@ -93,10 +95,10 @@ namespace carve {
 
     static inline std::ostream &operator<<(std::ostream &o, const carve::csg::IObj &a) {
       switch (a.obtype) {
-        case carve::csg::IObj::OBTYPE_NONE:   o << "NONE{}"; break;
-        case carve::csg::IObj::OBTYPE_VERTEX: o << "VERT{" << a.vertex << "}"; break;
-        case carve::csg::IObj::OBTYPE_EDGE:   o << "EDGE{" << a.edge << "}"; break;
-        case carve::csg::IObj::OBTYPE_FACE:   o << "FACE{" << a.face << "}"; break;
+        case carve::csg::IObj::ObjectType::OBTYPE_NONE:   o << "NONE{}"; break;
+        case carve::csg::IObj::ObjectType::OBTYPE_VERTEX: o << "VERT{" << a.vertex << "}"; break;
+        case carve::csg::IObj::ObjectType::OBTYPE_EDGE:   o << "EDGE{" << a.edge << "}"; break;
+        case carve::csg::IObj::ObjectType::OBTYPE_FACE:   o << "FACE{" << a.face << "}"; break;
       }
       return o;
     }

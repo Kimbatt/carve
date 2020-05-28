@@ -23,7 +23,7 @@
 namespace carve {
   namespace csg {
 
-    enum FaceClass {
+    enum class FaceClass : int {
       FACE_UNCLASSIFIED = -3,
       FACE_ON_ORIENT_OUT = -2,
       FACE_OUT = -1,
@@ -32,7 +32,7 @@ namespace carve {
       FACE_ON_ORIENT_IN = +2
     };
 
-    enum FaceClassBit {
+    enum class FaceClassBit : unsigned {
       FACE_ON_ORIENT_OUT_BIT = 0x01,
       FACE_OUT_BIT           = 0x02,
       FACE_IN_BIT            = 0x04,
@@ -44,26 +44,26 @@ namespace carve {
     };
 
     static inline FaceClass class_bit_to_class(unsigned i) {
-      if (i & FACE_ON_ORIENT_OUT_BIT) return FACE_ON_ORIENT_OUT;
-      if (i & FACE_OUT_BIT) return FACE_OUT;
-      if (i & FACE_IN_BIT) return FACE_IN;
-      if (i & FACE_ON_ORIENT_IN_BIT) return FACE_ON_ORIENT_IN;
-      return FACE_UNCLASSIFIED;
+      if (i & (unsigned)FaceClassBit::FACE_ON_ORIENT_OUT_BIT) return FaceClass::FACE_ON_ORIENT_OUT;
+      if (i & (unsigned)FaceClassBit::FACE_OUT_BIT) return FaceClass::FACE_OUT;
+      if (i & (unsigned)FaceClassBit::FACE_IN_BIT) return FaceClass::FACE_IN;
+      if (i & (unsigned)FaceClassBit::FACE_ON_ORIENT_IN_BIT) return FaceClass::FACE_ON_ORIENT_IN;
+      return FaceClass::FACE_UNCLASSIFIED;
     }
 
     static inline unsigned class_to_class_bit(FaceClass f) {
       switch (f) {
-      case FACE_ON_ORIENT_OUT: return FACE_ON_ORIENT_OUT_BIT;
-      case FACE_OUT: return FACE_OUT_BIT;
-      case FACE_ON: return FACE_ON_BIT;
-      case FACE_IN: return FACE_IN_BIT;
-      case FACE_ON_ORIENT_IN: return FACE_ON_ORIENT_IN_BIT;
-      case FACE_UNCLASSIFIED: return FACE_ANY_BIT;
+      case FaceClass::FACE_ON_ORIENT_OUT: return (unsigned)FaceClassBit::FACE_ON_ORIENT_OUT_BIT;
+      case FaceClass::FACE_OUT: return (unsigned)FaceClassBit::FACE_OUT_BIT;
+      case FaceClass::FACE_ON: return (unsigned)FaceClassBit::FACE_ON_BIT;
+      case FaceClass::FACE_IN: return (unsigned)FaceClassBit::FACE_IN_BIT;
+      case FaceClass::FACE_ON_ORIENT_IN: return (unsigned)FaceClassBit::FACE_ON_ORIENT_IN_BIT;
+      case FaceClass::FACE_UNCLASSIFIED: return (unsigned)FaceClassBit::FACE_ANY_BIT;
       default: return 0;
       }
     }
 
-    enum EdgeClass {
+    enum class EdgeClass : int {
       EDGE_UNK = -2,
       EDGE_OUT = -1,
       EDGE_ON = 0,
@@ -81,7 +81,7 @@ namespace carve {
       const carve::mesh::Mesh<3> *intersected_mesh;
       FaceClass classification;
 
-      ClassificationInfo() : intersected_mesh(NULL), classification(FACE_UNCLASSIFIED) { }
+      ClassificationInfo() : intersected_mesh(NULL), classification(FaceClass::FACE_UNCLASSIFIED) { }
       ClassificationInfo(const carve::mesh::Mesh<3> *_intersected_mesh,
                          FaceClass _classification) :
           intersected_mesh(_intersected_mesh),
@@ -96,13 +96,13 @@ namespace carve {
 
     struct EC2 {
       EdgeClass cls[2];
-      EC2() { cls[0] = cls[1] = EDGE_UNK; }
+      EC2() { cls[0] = cls[1] = EdgeClass::EDGE_UNK; }
       EC2(EdgeClass a, EdgeClass b) { cls[0] = a; cls[1] = b; }
     };
 
     struct PC2 {
       PointClass cls[2];
-      PC2() { cls[0] = cls[1] = POINT_UNK; }
+      PC2() { cls[0] = cls[1] = PointClass::POINT_UNK; }
       PC2(PointClass a, PointClass b) { cls[0] = a; cls[1] = b; }
     };
 
@@ -113,3 +113,4 @@ namespace carve {
 
   }
 }
+

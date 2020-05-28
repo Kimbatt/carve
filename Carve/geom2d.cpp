@@ -62,7 +62,7 @@ namespace carve {
       l2_aabb.fit(l2v1, l2v2);
 
       if (l1_aabb.maxAxisSeparation(l2_aabb) > EPSILON) {
-        return LineIntersectionInfo(NO_INTERSECTION);
+        return LineIntersectionInfo(LineIntersectionClass::NO_INTERSECTION);
       }
 
       if (carve::geom::equal(l1v1, l1v2) || carve::geom::equal(l2v1, l2v2)) {
@@ -82,16 +82,16 @@ namespace carve {
       if (carve::math::ZERO(u_d)) {
         if (carve::math::ZERO(ua_n)) {
           if (carve::geom::equal(l1v2, l2v1)) {
-            return LineIntersectionInfo(INTERSECTION_PP, l1v2, 1, 2);
+            return LineIntersectionInfo(LineIntersectionClass::INTERSECTION_PP, l1v2, 1, 2);
           }
           if (carve::geom::equal(l1v1, l2v2)) {
-            return LineIntersectionInfo(INTERSECTION_PP, l1v1, 0, 4);
+            return LineIntersectionInfo(LineIntersectionClass::INTERSECTION_PP, l1v1, 0, 4);
           }
           if (l1v2.x > l2v1.x && l1v1.x < l2v2.x) {
-            return LineIntersectionInfo(COLINEAR);
+            return LineIntersectionInfo(LineIntersectionClass::COLINEAR);
           }
         }
-        return LineIntersectionInfo(NO_INTERSECTION);
+        return LineIntersectionInfo(LineIntersectionClass::NO_INTERSECTION);
       }
 
       double ua = ua_n / u_d;
@@ -118,24 +118,24 @@ namespace carve {
           }
           if (std::min(d3, d4) < EPSILON2) {
             if (d3 < d4) {
-              return LineIntersectionInfo(INTERSECTION_PP, p, n, 2);
+              return LineIntersectionInfo(LineIntersectionClass::INTERSECTION_PP, p, n, 2);
             } else {
-              return LineIntersectionInfo(INTERSECTION_PP, p, n, 3);
+              return LineIntersectionInfo(LineIntersectionClass::INTERSECTION_PP, p, n, 3);
             }
           } else {
-            return LineIntersectionInfo(INTERSECTION_PL, p, n, -1);
+            return LineIntersectionInfo(LineIntersectionClass::INTERSECTION_PL, p, n, -1);
           }
         } else if (std::min(d3, d4) < EPSILON2) {
           if (d3 < d4) {
-            return LineIntersectionInfo(INTERSECTION_LP, l2v1, -1, 2);
+            return LineIntersectionInfo(LineIntersectionClass::INTERSECTION_LP, l2v1, -1, 2);
           } else {
-            return LineIntersectionInfo(INTERSECTION_LP, l2v2, -1, 3);
+            return LineIntersectionInfo(LineIntersectionClass::INTERSECTION_LP, l2v2, -1, 3);
           }
         } else {
-          return LineIntersectionInfo(INTERSECTION_LL, p, -1, -1);
+          return LineIntersectionInfo(LineIntersectionClass::INTERSECTION_LL, p, -1, -1);
         }
       }
-      return LineIntersectionInfo(NO_INTERSECTION);
+      return LineIntersectionInfo(LineIntersectionClass::NO_INTERSECTION);
     }
 
     LineIntersectionInfo lineSegmentIntersection(const LineSegment2 &l1,
@@ -169,27 +169,27 @@ namespace carve {
           lineSegmentIntersection(LineSegment2(points[i], points[j]), line);
     
         switch (e.iclass) {
-        case INTERSECTION_PL: {
-          out.push_back(PolyIntersectionInfo(INTERSECT_EDGE, e.ipoint, i));
+        case LineIntersectionClass::INTERSECTION_PL: {
+          out.push_back(PolyIntersectionInfo(IntersectionClass::INTERSECT_EDGE, e.ipoint, i));
           count++;
           break;
         }
-        case INTERSECTION_PP: {
-          out.push_back(PolyIntersectionInfo(INTERSECT_VERTEX, e.ipoint, i + (size_t)e.p2 - 2));
+        case LineIntersectionClass::INTERSECTION_PP: {
+          out.push_back(PolyIntersectionInfo(IntersectionClass::INTERSECT_VERTEX, e.ipoint, i + (size_t)e.p2 - 2));
           count++;
           break;
         }
-        case INTERSECTION_LP: {
-          out.push_back(PolyIntersectionInfo(INTERSECT_VERTEX, e.ipoint, i + (size_t)e.p2 - 2));
+        case LineIntersectionClass::INTERSECTION_LP: {
+          out.push_back(PolyIntersectionInfo(IntersectionClass::INTERSECT_VERTEX, e.ipoint, i + (size_t)e.p2 - 2));
           count++;
           break;
         }
-        case INTERSECTION_LL: {
-          out.push_back(PolyIntersectionInfo(INTERSECT_EDGE, e.ipoint, i));
+        case LineIntersectionClass::INTERSECTION_LL: {
+          out.push_back(PolyIntersectionInfo(IntersectionClass::INTERSECT_EDGE, e.ipoint, i));
           count++;
           break;
         }
-        case COLINEAR: {
+        case LineIntersectionClass::COLINEAR: {
           size_t n1 = i;
           size_t n2 = j;
 
@@ -198,18 +198,18 @@ namespace carve {
           if (q2 < q1) { std::swap(q1, q2); std::swap(n1, n2); }
 
           if (equal(q1, line.v1)) {
-            out.push_back(PolyIntersectionInfo(INTERSECT_VERTEX, q1, n1));
+            out.push_back(PolyIntersectionInfo(IntersectionClass::INTERSECT_VERTEX, q1, n1));
           } else if (q1.x < line.v1.x) {
-            out.push_back(PolyIntersectionInfo(INTERSECT_EDGE, line.v1, i));
+            out.push_back(PolyIntersectionInfo(IntersectionClass::INTERSECT_EDGE, line.v1, i));
           } else {
-            out.push_back(PolyIntersectionInfo(INTERSECT_VERTEX, q1, n1));
+            out.push_back(PolyIntersectionInfo(IntersectionClass::INTERSECT_VERTEX, q1, n1));
           }
           if (equal(q2, line.v2)) {
-            out.push_back(PolyIntersectionInfo(INTERSECT_VERTEX, q2, n2));
+            out.push_back(PolyIntersectionInfo(IntersectionClass::INTERSECT_VERTEX, q2, n2));
           } else if (line.v2.x < q2.x) {
-            out.push_back(PolyIntersectionInfo(INTERSECT_EDGE, line.v2, i));
+            out.push_back(PolyIntersectionInfo(IntersectionClass::INTERSECT_EDGE, line.v2, i));
           } else {
-            out.push_back(PolyIntersectionInfo(INTERSECT_VERTEX, q2, n2));
+            out.push_back(PolyIntersectionInfo(IntersectionClass::INTERSECT_VERTEX, q2, n2));
           }
 
           count += 2;

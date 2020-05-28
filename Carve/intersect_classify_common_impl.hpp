@@ -93,7 +93,7 @@ namespace carve {
 
             // if they are ordered in the same direction, then they are
             // oriented out, otherwise oriented in.
-            FaceClass fc = s == +1 ? FACE_ON_ORIENT_OUT : FACE_ON_ORIENT_IN;
+            FaceClass fc = s == +1 ? FaceClass::FACE_ON_ORIENT_OUT : FaceClass::FACE_ON_ORIENT_IN;
 
             (*a).classification.push_back(ClassificationInfo(NULL, fc));
             (*b).classification.push_back(ClassificationInfo(NULL, fc));
@@ -136,11 +136,11 @@ namespace carve {
           for (size_t j = 0; j < f->vertices.size(); ++j) {
             if (!classifier.pointOn(vclass, f, j)) {
               PointClass pc = carve::mesh::classifyPoint(poly_a, poly_a_rtree, f->vertices[j]->v);
-              if (pc == POINT_IN || pc == POINT_OUT) {
+              if (pc == PointClass::POINT_IN || pc == PointClass::POINT_OUT) {
                 classifier.explain(f, j, pc);
               }
-              if (pc == POINT_IN) { fc = FACE_IN; goto accept; }
-              if (pc == POINT_OUT) { fc = FACE_OUT; goto accept; }
+              if (pc == PointClass::POINT_IN) { fc = FaceClass::FACE_IN; goto accept; }
+              if (pc == PointClass::POINT_OUT) { fc = FaceClass::FACE_OUT; goto accept; }
             }
           }
         }
@@ -168,7 +168,7 @@ namespace carve {
         FaceLoopGroup &grp = (*i);
         FaceLoopList &curr = (grp.face_loops);
         V2Set &perim = ((*i).perimeter);
-        FaceClass fc =FACE_UNCLASSIFIED;
+        FaceClass fc = FaceClass::FACE_UNCLASSIFIED;
 
         for (FaceLoop *f = curr.head; f; f = f->next) {
           carve::mesh::MeshSet<3>::vertex_t *v1, *v2;
@@ -181,9 +181,9 @@ namespace carve {
               PointClass pc = carve::mesh::classifyPoint(poly_a, poly_a_rtree, c);
 
               switch (pc) {
-              case POINT_IN: n_in++; break;
-              case POINT_OUT: n_out++; break;
-              case POINT_ON: n_on++; break;
+              case PointClass::POINT_IN: n_in++; break;
+              case PointClass::POINT_OUT: n_out++; break;
+              case PointClass::POINT_ON: n_on++; break;
               default: break; // does not happen.
               }
             }
@@ -200,8 +200,8 @@ namespace carve {
           continue;
         }
 
-        if (n_in) fc = FACE_IN;
-        if (n_out) fc = FACE_OUT;
+        if (n_in) fc = FaceClass::FACE_IN;
+        if (n_out) fc = FaceClass::FACE_OUT;
 
         grp.classification.push_back(ClassificationInfo(NULL, fc));
         collector.collect(&grp, hooks);
@@ -244,14 +244,14 @@ namespace carve {
         const carve::mesh::MeshSet<3>::face_t *hit_face;
         PointClass pc = carve::mesh::classifyPoint(poly_a, poly_a_rtree, v, false, NULL, &hit_face);
         switch (pc) {
-        case POINT_IN: fc = FACE_IN; break;
-        case POINT_OUT: fc = FACE_OUT; break;
-        case POINT_ON: {
+        case PointClass::POINT_IN: fc = FaceClass::FACE_IN; break;
+        case PointClass::POINT_OUT: fc = FaceClass::FACE_OUT; break;
+        case PointClass::POINT_ON: {
           double d = carve::geom::distance(hit_face->plane, v);
 #if defined(CARVE_DEBUG)
           std::cerr << "d = " << d << std::endl;
 #endif
-          fc = d < 0 ? FACE_IN : FACE_OUT;
+          fc = d < 0 ? FaceClass::FACE_IN : FaceClass::FACE_OUT;
           break;
         }
 	default:
@@ -316,13 +316,13 @@ namespace carve {
 #if defined(CARVE_DEBUG)
               std::cerr << "SAME FWD PAIR" << std::endl;
 #endif
-              fc = FACE_ON_ORIENT_OUT;
+              fc = FaceClass::FACE_ON_ORIENT_OUT;
               goto face_pair;
             } else if (isSameRev((*i).perimeter, (*j).perimeter)) {
 #if defined(CARVE_DEBUG)
               std::cerr << "SAME REV PAIR" << std::endl;
 #endif
-              fc = FACE_ON_ORIENT_IN;
+              fc = FaceClass::FACE_ON_ORIENT_IN;
               goto face_pair;
             }
           }

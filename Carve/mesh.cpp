@@ -128,7 +128,7 @@ namespace carve {
       // return pointInPolySimple(vertices, projector(), (this->*project)(p));
       std::vector<carve::geom::vector<2> > verts;
       getProjectedVertices(verts);
-      return carve::geom2d::pointInPoly(verts, project(p)).iclass != carve::POINT_OUT;
+      return carve::geom2d::pointInPoly(verts, project(p)).iclass != carve::PointClass::POINT_OUT;
     }
 
 
@@ -137,7 +137,7 @@ namespace carve {
     bool Face<ndim>::containsPointInProjection(const vector_t &p) const {
       std::vector<carve::geom::vector<2> > verts;
       getProjectedVertices(verts);
-      return carve::geom2d::pointInPoly(verts, project(p)).iclass != carve::POINT_OUT;
+      return carve::geom2d::pointInPoly(verts, project(p)).iclass != carve::PointClass::POINT_OUT;
     }
 
 
@@ -151,7 +151,7 @@ namespace carve {
       carve::mesh::MeshSet<3>::vertex_t::vector_t p;
       carve::IntersectionClass intersects =
         carve::geom3d::lineSegmentPlaneIntersection(plane, line, p);
-      if (intersects == carve::INTERSECT_NONE || intersects == carve::INTERSECT_BAD) {
+      if (intersects == carve::IntersectionClass::INTERSECT_NONE || intersects == carve::IntersectionClass::INTERSECT_BAD) {
         return false;
       }
 
@@ -169,12 +169,12 @@ namespace carve {
     template<unsigned ndim>
     IntersectionClass Face<ndim>::lineSegmentIntersection(const carve::geom::linesegment<ndim> &line,
                                                           vector_t &intersection) const {
-      if (!line.OK()) return INTERSECT_NONE;
+      if (!line.OK()) return IntersectionClass::INTERSECT_NONE;
 
   
       vector_t p;
       IntersectionClass intersects = carve::geom3d::lineSegmentPlaneIntersection(plane, line, p);
-      if (intersects == INTERSECT_NONE || intersects == INTERSECT_BAD) {
+      if (intersects == IntersectionClass::INTERSECT_NONE || intersects == IntersectionClass::INTERSECT_BAD) {
         return intersects;
       }
 
@@ -182,25 +182,25 @@ namespace carve {
       getProjectedVertices(verts);
       carve::geom2d::PolyInclusionInfo pi = carve::geom2d::pointInPoly(verts, project(p));
       switch (pi.iclass) {
-      case POINT_VERTEX:
+      case PointClass::POINT_VERTEX:
         intersection = p;
-        return INTERSECT_VERTEX;
+        return IntersectionClass::INTERSECT_VERTEX;
 
-      case POINT_EDGE:
+      case PointClass::POINT_EDGE:
         intersection = p;
-        return INTERSECT_EDGE;
+        return IntersectionClass::INTERSECT_EDGE;
 
-      case POINT_IN:
+      case PointClass::POINT_IN:
         intersection = p;
-        return INTERSECT_FACE;
+        return IntersectionClass::INTERSECT_FACE;
       
-      case POINT_OUT:
-        return INTERSECT_NONE;
+      case PointClass::POINT_OUT:
+        return IntersectionClass::INTERSECT_NONE;
 
       default:
         break;
       }
-      return INTERSECT_NONE;
+      return IntersectionClass::INTERSECT_NONE;
     }
 
 
@@ -874,7 +874,7 @@ namespace carve {
       face_map[src] = poly->faces.size();;
       
       poly->faces.push_back(poly::Polyhedron::face_t(vert_ptr));
-      poly->faces.back().manifold_id = manifold_id;
+      poly->faces.back().manifold_id = (int)manifold_id;
       poly->faces.back().owner = poly;
     }
   }
@@ -1045,9 +1045,9 @@ carve::PointClass carve::mesh::classifyPoint(
     // XXX: if the top level manifolds are negative, this should be POINT_IN.
     // for the moment, this only works for a single manifold.
     if (meshset->meshes.size() == 1 && meshset->meshes[0]->isNegative()) {
-      return POINT_IN;
+      return PointClass::POINT_IN;
     }
-    return POINT_OUT;
+    return PointClass::POINT_OUT;
   }
 
   std::vector<carve::mesh::Face<3> *> near_faces;
@@ -1068,7 +1068,7 @@ carve::PointClass carve::mesh::classifyPoint(
       std::cerr << "{final:ON(hits face " << near_faces[i] << ")}" << std::endl;
 #endif
       if (hit_face) *hit_face = near_faces[i];
-      return POINT_ON;
+      return PointClass::POINT_ON;
     }
   }
 
@@ -1108,7 +1108,7 @@ carve::PointClass carve::mesh::classifyPoint(
       if (!near_faces[i]->mesh->isClosed()) continue;
 
       switch (near_faces[i]->lineSegmentIntersection(line, intersection)) {
-      case INTERSECT_FACE: {
+      case IntersectionClass::INTERSECT_FACE: {
 
 #if defined(DEBUG_CONTAINS_VERTEX)
         std::cerr << "{intersects face: " << near_faces[i]
@@ -1127,7 +1127,7 @@ carve::PointClass carve::mesh::classifyPoint(
         manifold_intersections.push_back(std::make_pair(near_faces[i], intersection));
         break;
       }
-      case INTERSECT_NONE: {
+      case IntersectionClass::INTERSECT_NONE: {
         break;
       }
       default: {
@@ -1143,7 +1143,7 @@ carve::PointClass carve::mesh::classifyPoint(
 
     if (!failed) {
       if (even_odd) {
-        return (manifold_intersections.size() & 1) ? POINT_IN : POINT_OUT;
+        return (manifold_intersections.size() & 1) ? PointClass::POINT_IN : PointClass::POINT_OUT;
       }
 
 #if defined(DEBUG_CONTAINS_VERTEX)
@@ -1196,7 +1196,7 @@ carve::PointClass carve::mesh::classifyPoint(
           std::cerr << "{final:IN}" << std::endl;
 #endif
 
-          return POINT_IN;
+          return PointClass::POINT_IN;
         } else if (crossings[f->mesh] > 0) {
           // outside this manifold, but it's an infinite manifold. (for instance, an inverted cube)
 
@@ -1204,7 +1204,7 @@ carve::PointClass carve::mesh::classifyPoint(
           std::cerr << "{final:OUT}" << std::endl;
 #endif
 
-          return POINT_OUT;
+          return PointClass::POINT_OUT;
         }
       }
 
@@ -1212,7 +1212,7 @@ carve::PointClass carve::mesh::classifyPoint(
       std::cerr << "{final:OUT(default)}" << std::endl;
 #endif
 
-      return POINT_OUT;
+      return PointClass::POINT_OUT;
     }
   }
 }

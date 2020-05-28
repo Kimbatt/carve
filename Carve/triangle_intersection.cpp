@@ -395,10 +395,10 @@ namespace carve {
       }
       case 1: {
         // shared vertex (ia, ib) [but not shared edge]
-        if (sat_edge(tri_a, tri_b, (ia+2)%3, ib) < 0) return TR_INT_VERT;
-        if (sat_edge(tri_a, tri_b, ia, ib)       < 0) return TR_INT_VERT;
-        if (sat_edge(tri_b, tri_a, (ib+2)%3, ia) < 0) return TR_INT_VERT;
-        if (sat_edge(tri_b, tri_a, ib, ia)       < 0) return TR_INT_VERT;
+        if (sat_edge(tri_a, tri_b, (unsigned)((ia+2)%3), (unsigned)ib) < 0) return TR_INT_VERT;
+        if (sat_edge(tri_a, tri_b, (unsigned)ia, (unsigned)ib)         < 0) return TR_INT_VERT;
+        if (sat_edge(tri_b, tri_a, (unsigned)((ib+2)%3), (unsigned)ia) < 0) return TR_INT_VERT;
+        if (sat_edge(tri_b, tri_a, (unsigned)ib, (unsigned)ia)         < 0) return TR_INT_VERT;
 
         return TR_INT_INT;
       }
@@ -450,8 +450,8 @@ namespace carve {
         // no shared vertices.
         for (size_t i = 0; i < 3; ++i) {
           for (size_t j = 0; j < 3; ++j) {
-            if (sat_plane(tri_a, tri_b, i, j)) return TR_INT_NONE;
-            if (sat_plane(tri_b, tri_a, i, j)) return TR_INT_NONE;
+            if (sat_plane(tri_a, tri_b, (unsigned)i, (unsigned)j)) return TR_INT_NONE;
+            if (sat_plane(tri_b, tri_a, (unsigned)i, (unsigned)j)) return TR_INT_NONE;
           }
         }
 
@@ -462,14 +462,14 @@ namespace carve {
         size_t ia0 = ia, ia1 = (ia+1)%3, ia2 = (ia+2)%3;
         size_t ib0 = ib, ib1 = (ib+1)%3, ib2 = (ib+2)%3;
 
-        if (sat_plane(tri_a, tri_b, ia2, ib1, ib2)) return TR_INT_VERT;
-        if (sat_plane(tri_a, tri_b, ia2, ib2, ib1)) return TR_INT_VERT;
-        if (sat_plane(tri_a, tri_b, ia0, ib1, ib2)) return TR_INT_VERT;
-        if (sat_plane(tri_a, tri_b, ia0, ib2, ib1)) return TR_INT_VERT;
-        if (sat_plane(tri_b, tri_b, ib2, ia1, ia2)) return TR_INT_VERT;
-        if (sat_plane(tri_b, tri_b, ib2, ia2, ia1)) return TR_INT_VERT;
-        if (sat_plane(tri_b, tri_b, ib0, ia1, ia2)) return TR_INT_VERT;
-        if (sat_plane(tri_b, tri_b, ib0, ia2, ia1)) return TR_INT_VERT;
+        if (sat_plane(tri_a, tri_b, (unsigned)ia2, (unsigned)ib1, (unsigned)ib2)) return TR_INT_VERT;
+        if (sat_plane(tri_a, tri_b, (unsigned)ia2, (unsigned)ib2, (unsigned)ib1)) return TR_INT_VERT;
+        if (sat_plane(tri_a, tri_b, (unsigned)ia0, (unsigned)ib1, (unsigned)ib2)) return TR_INT_VERT;
+        if (sat_plane(tri_a, tri_b, (unsigned)ia0, (unsigned)ib2, (unsigned)ib1)) return TR_INT_VERT;
+        if (sat_plane(tri_b, tri_b, (unsigned)ib2, (unsigned)ia1, (unsigned)ia2)) return TR_INT_VERT;
+        if (sat_plane(tri_b, tri_b, (unsigned)ib2, (unsigned)ia2, (unsigned)ia1)) return TR_INT_VERT;
+        if (sat_plane(tri_b, tri_b, (unsigned)ib0, (unsigned)ia1, (unsigned)ia2)) return TR_INT_VERT;
+        if (sat_plane(tri_b, tri_b, (unsigned)ib0, (unsigned)ia2, (unsigned)ia1)) return TR_INT_VERT;
 
         return TR_INT_INT;
       }
@@ -494,10 +494,10 @@ namespace carve {
       CARVE_ASSERT(orient2d_exact(tri_b[0], tri_b[1], tri_b[2]) >= 0.0);
 
       for (size_t i = 0; i < 3; ++i) {
-        if (sat_edge(tri_a, tri_b, i) < 0) return false;
+        if (sat_edge(tri_a, tri_b, (unsigned)i) < 0) return false;
       }
       for (size_t i = 0; i < 3; ++i) {
-        if (sat_edge(tri_b, tri_a, i) < 0) return false;
+        if (sat_edge(tri_b, tri_a, (unsigned)i) < 0) return false;
       }
       return true;
     }
@@ -518,8 +518,8 @@ namespace carve {
 
       for (size_t i = 0; i < 3; ++i) {
         for (size_t j = 0; j < 3; ++j) {
-          if (sat_plane(tri_a, tri_b, i, j)) return false;
-          if (sat_plane(tri_b, tri_a, i, j)) return false;
+          if (sat_plane(tri_a, tri_b, (unsigned)i, (unsigned)j)) return false;
+          if (sat_plane(tri_b, tri_a, (unsigned)i, (unsigned)j)) return false;
         }
       }
       return true;
@@ -576,10 +576,10 @@ namespace carve {
 
       int curr = +1;
       for (size_t i = 0; curr != -1 && i < 3; ++i) {
-        curr = std::min(curr, sat_edge(tri_a, tri_b, i));
+        curr = std::min(curr, sat_edge(tri_a, tri_b, (unsigned)i));
       }
       for (size_t i = 0; curr != -1 && i < 3; ++i) {
-        curr = std::min(curr, sat_edge(tri_b, tri_a, i));
+        curr = std::min(curr, sat_edge(tri_b, tri_a, (unsigned)i));
       }
       switch (curr) {
       case -1: return TR_TYPE_NONE;

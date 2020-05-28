@@ -69,7 +69,7 @@ namespace carve {
         int c[5];
 
         ClassificationData() {
-          class_bits = FACE_ANY_BIT;
+          class_bits = (unsigned)FaceClassBit::FACE_ANY_BIT;
           class_decided = 0;
           memset(c, 0, sizeof(c));
         }
@@ -255,27 +255,27 @@ namespace carve {
                 FaceClass fc;
 
                 if (fabs((*ib).second.fwd_ang - (*ia).second.fwd_ang) < ANGLE_EPSILON) {
-                  fc = FACE_ON_ORIENT_OUT;
+                  fc = FaceClass::FACE_ON_ORIENT_OUT;
                 } else if (fabs((*ib).second.fwd_ang - (*ia).second.rev_ang) < ANGLE_EPSILON) {
-                  fc = FACE_ON_ORIENT_IN;
+                  fc = FaceClass::FACE_ON_ORIENT_IN;
                 } else {
                   double a1 = (*ia).second.fwd_ang;
                   double a2 = (*ia).second.rev_ang;
                   if (a1 < a2) {
                     if (a1 < (*ib).second.fwd_ang && (*ib).second.fwd_ang < a2) {
-                      fc = FACE_IN;
+                      fc = FaceClass::FACE_IN;
                     } else {
-                      fc = FACE_OUT;
+                      fc = FaceClass::FACE_OUT;
                     }
                   } else {
                     if (a2 < (*ib).second.fwd_ang && (*ib).second.fwd_ang < a1) {
-                      fc = FACE_OUT;
+                      fc = FaceClass::FACE_OUT;
                     } else {
-                      fc = FACE_IN;
+                      fc = FaceClass::FACE_IN;
                     }
                   }
                 }
-                data.c[fc + 2]++;
+                data.c[(int)fc + 2]++;
               }
             }
           }
@@ -295,27 +295,27 @@ namespace carve {
                 FaceClass fc;
 
                 if (fabs((*ib).second.rev_ang - (*ia).second.fwd_ang) < ANGLE_EPSILON) {
-                  fc = FACE_ON_ORIENT_IN;
+                  fc = FaceClass::FACE_ON_ORIENT_IN;
                 } else if (fabs((*ib).second.rev_ang - (*ia).second.rev_ang) < ANGLE_EPSILON) {
-                  fc = FACE_ON_ORIENT_OUT;
+                  fc = FaceClass::FACE_ON_ORIENT_OUT;
                 } else {
                   double a1 = (*ia).second.fwd_ang;
                   double a2 = (*ia).second.rev_ang;
                   if (a1 < a2) {
                     if (a1 < (*ib).second.rev_ang && (*ib).second.rev_ang < a2) {
-                      fc = FACE_IN;
+                      fc = FaceClass::FACE_IN;
                     } else {
-                      fc = FACE_OUT;
+                      fc = FaceClass::FACE_OUT;
                     }
                   } else {
                     if (a2 < (*ib).second.rev_ang && (*ib).second.rev_ang < a1) {
-                      fc = FACE_OUT;
+                      fc = FaceClass::FACE_OUT;
                     } else {
-                      fc = FACE_IN;
+                      fc = FaceClass::FACE_IN;
                     }
                   }
                 }
-                data.c[fc + 2]++;
+                data.c[(int)fc + 2]++;
               }
             }
           }
@@ -475,7 +475,7 @@ namespace carve {
               if (!x) continue;
               candidate_on_map[(*a)].insert(std::make_pair(x, (*b)));
               if ((*a)->face_loops.count == 1 && (*b)->face_loops.count == 1) {
-                uint32_t fcb = x == +1 ? FACE_ON_ORIENT_OUT_BIT : FACE_ON_ORIENT_IN_BIT;
+                uint32_t fcb = (unsigned)(x == +1 ? FaceClassBit::FACE_ON_ORIENT_OUT_BIT : FaceClassBit::FACE_ON_ORIENT_IN_BIT);
 
 #if defined(CARVE_DEBUG)
                 std::cerr << "paired groups: " << (*a) << ", " << (*b) << std::endl;
@@ -501,7 +501,7 @@ namespace carve {
         return "?";
       }
 
-      FaceClass fc = FACE_UNCLASSIFIED;
+      FaceClass fc = FaceClass::FACE_UNCLASSIFIED;
 
       for (std::list<ClassificationInfo>::const_iterator i = grp->classification.begin(), e = grp->classification.end(); i != e; ++i) {
         if ((*i).intersected_mesh == NULL) {
@@ -511,18 +511,18 @@ namespace carve {
         }
 
         if ((*i).intersectedMeshIsClosed()) {
-          if ((*i).classification == FACE_UNCLASSIFIED) continue;
-          if (fc == FACE_UNCLASSIFIED) {
+          if ((*i).classification == FaceClass::FACE_UNCLASSIFIED) continue;
+          if (fc == FaceClass::FACE_UNCLASSIFIED) {
             fc = (*i).classification;
           } else if (fc != (*i).classification) {
             return "X";
           }
         }
       }
-      if (fc == FACE_IN) return "I";
-      if (fc == FACE_ON_ORIENT_IN) return "<";
-      if (fc == FACE_ON_ORIENT_OUT) return ">";
-      if (fc == FACE_OUT) return "O";
+      if (fc == FaceClass::FACE_IN) return "I";
+      if (fc == FaceClass::FACE_ON_ORIENT_IN) return "<";
+      if (fc == FaceClass::FACE_ON_ORIENT_OUT) return ">";
+      if (fc == FaceClass::FACE_OUT) return "O";
       return "*";
     }
 
@@ -607,17 +607,17 @@ namespace carve {
 
       for (Classification::iterator i = a_classification.begin(), e = a_classification.end(); i != e; ++i) {
         if (!(*i).second.class_decided) {
-          if ((*i).second.c[FACE_IN            + 2] == 0) (*i).second.class_bits &= ~ FACE_IN_BIT;
-          if ((*i).second.c[FACE_ON_ORIENT_IN  + 2] == 0) (*i).second.class_bits &= ~ FACE_ON_ORIENT_IN_BIT;
-          if ((*i).second.c[FACE_ON_ORIENT_OUT + 2] == 0) (*i).second.class_bits &= ~ FACE_ON_ORIENT_OUT_BIT;
-          if ((*i).second.c[FACE_OUT           + 2] == 0) (*i).second.class_bits &= ~ FACE_OUT_BIT;
+          if ((*i).second.c[(int)FaceClass::FACE_IN            + 2] == 0) (*i).second.class_bits &= ~ (unsigned)FaceClassBit::FACE_IN_BIT;
+          if ((*i).second.c[(int)FaceClass::FACE_ON_ORIENT_IN  + 2] == 0) (*i).second.class_bits &= ~ (unsigned)FaceClassBit::FACE_ON_ORIENT_IN_BIT;
+          if ((*i).second.c[(int)FaceClass::FACE_ON_ORIENT_OUT + 2] == 0) (*i).second.class_bits &= ~ (unsigned)FaceClassBit::FACE_ON_ORIENT_OUT_BIT;
+          if ((*i).second.c[(int)FaceClass::FACE_OUT           + 2] == 0) (*i).second.class_bits &= ~ (unsigned)FaceClassBit::FACE_OUT_BIT;
 
           // XXX: this is the wrong thing to do. It's intended just as a test.
-          if ((*i).second.class_bits == (FACE_IN_BIT | FACE_OUT_BIT)) {
-            if ((*i).second.c[FACE_OUT + 2] > (*i).second.c[FACE_IN + 2]) {
-              (*i).second.class_bits = FACE_OUT_BIT;
+          if ((*i).second.class_bits == ((unsigned)FaceClassBit::FACE_IN_BIT | (unsigned)FaceClassBit::FACE_OUT_BIT)) {
+            if ((*i).second.c[(int)FaceClass::FACE_OUT + 2] > (*i).second.c[(int)FaceClass::FACE_IN + 2]) {
+              (*i).second.class_bits = (unsigned)FaceClassBit::FACE_OUT_BIT;
             } else {
-              (*i).second.class_bits = FACE_IN_BIT;
+              (*i).second.class_bits = (unsigned)FaceClassBit::FACE_IN_BIT;
             }
           }
 
@@ -627,17 +627,17 @@ namespace carve {
 
       for (Classification::iterator i = b_classification.begin(), e = b_classification.end(); i != e; ++i) {
         if (!(*i).second.class_decided) {
-          if ((*i).second.c[FACE_IN            + 2] == 0) (*i).second.class_bits &= ~ FACE_IN_BIT;
-          if ((*i).second.c[FACE_ON_ORIENT_IN  + 2] == 0) (*i).second.class_bits &= ~ FACE_ON_ORIENT_IN_BIT;
-          if ((*i).second.c[FACE_ON_ORIENT_OUT + 2] == 0) (*i).second.class_bits &= ~ FACE_ON_ORIENT_OUT_BIT;
-          if ((*i).second.c[FACE_OUT           + 2] == 0) (*i).second.class_bits &= ~ FACE_OUT_BIT;
+          if ((*i).second.c[(int)FaceClass::FACE_IN            + 2] == 0) (*i).second.class_bits &= ~ (unsigned)FaceClassBit::FACE_IN_BIT;
+          if ((*i).second.c[(int)FaceClass::FACE_ON_ORIENT_IN  + 2] == 0) (*i).second.class_bits &= ~ (unsigned)FaceClassBit::FACE_ON_ORIENT_IN_BIT;
+          if ((*i).second.c[(int)FaceClass::FACE_ON_ORIENT_OUT + 2] == 0) (*i).second.class_bits &= ~ (unsigned)FaceClassBit::FACE_ON_ORIENT_OUT_BIT;
+          if ((*i).second.c[(int)FaceClass::FACE_OUT           + 2] == 0) (*i).second.class_bits &= ~ (unsigned)FaceClassBit::FACE_OUT_BIT;
 
           // XXX: this is the wrong thing to do. It's intended just as a test.
-          if ((*i).second.class_bits == (FACE_IN_BIT | FACE_OUT_BIT)) {
-            if ((*i).second.c[FACE_OUT + 2] > (*i).second.c[FACE_IN + 2]) {
-              (*i).second.class_bits = FACE_OUT_BIT;
+          if ((*i).second.class_bits == ((unsigned)FaceClassBit::FACE_IN_BIT | (unsigned)FaceClassBit::FACE_OUT_BIT)) {
+            if ((*i).second.c[(int)FaceClass::FACE_OUT + 2] > (*i).second.c[(int)FaceClass::FACE_IN + 2]) {
+              (*i).second.class_bits = (unsigned)FaceClassBit::FACE_OUT_BIT;
             } else {
-              (*i).second.class_bits = FACE_IN_BIT;
+              (*i).second.class_bits = (unsigned)FaceClassBit::FACE_IN_BIT;
             }
           }
 
@@ -699,7 +699,7 @@ namespace carve {
         if ((*i).second.class_decided) {
           info.classification = class_bit_to_class((*i).second.class_bits);
         } else {
-          info.classification = FACE_UNCLASSIFIED;
+          info.classification = FaceClass::FACE_UNCLASSIFIED;
         }
       }
 
@@ -714,7 +714,7 @@ namespace carve {
         if ((*i).second.class_decided) {
           info.classification = class_bit_to_class((*i).second.class_bits);
         } else {
-          info.classification = FACE_UNCLASSIFIED;
+          info.classification = FaceClass::FACE_UNCLASSIFIED;
         }
       }
 
@@ -726,16 +726,16 @@ namespace carve {
           bool classified = false;
           for (FaceLoop *fl = (*i).face_loops.head; !classified && fl != NULL; fl = fl->next) {
             for (size_t fli = 0; !classified && fli < fl->vertices.size(); ++fli) {
-              if (vclass[fl->vertices[fli]].cls[1] == POINT_UNK) { 
+              if (vclass[fl->vertices[fli]].cls[1] == PointClass::POINT_UNK) { 
                 vclass[fl->vertices[fli]].cls[1] = carve::mesh::classifyPoint(poly_b, poly_b_rtree, fl->vertices[fli]->v);
               }
               switch (vclass[fl->vertices[fli]].cls[1]) {
-                case POINT_IN:
-                  (*i).classification.push_back(ClassificationInfo(NULL, FACE_IN));
+                case PointClass::POINT_IN:
+                  (*i).classification.push_back(ClassificationInfo(NULL, FaceClass::FACE_IN));
                   classified = true;
                   break;
-                case POINT_OUT:
-                  (*i).classification.push_back(ClassificationInfo(NULL, FACE_OUT));
+                case PointClass::POINT_OUT:
+                  (*i).classification.push_back(ClassificationInfo(NULL, FaceClass::FACE_OUT));
                   classified = true;
                   break;
                 default:
@@ -757,16 +757,16 @@ namespace carve {
           bool classified = false;
           for (FaceLoop *fl = (*i).face_loops.head; !classified && fl != NULL; fl = fl->next) {
             for (size_t fli = 0; !classified && fli < fl->vertices.size(); ++fli) {
-              if (vclass[fl->vertices[fli]].cls[0] == POINT_UNK) { 
+              if (vclass[fl->vertices[fli]].cls[0] == PointClass::POINT_UNK) {
                 vclass[fl->vertices[fli]].cls[0] = carve::mesh::classifyPoint(poly_a, poly_a_rtree, fl->vertices[fli]->v);
               }
               switch (vclass[fl->vertices[fli]].cls[0]) {
-                case POINT_IN:
-                  (*i).classification.push_back(ClassificationInfo(NULL, FACE_IN));
+                case PointClass::POINT_IN:
+                  (*i).classification.push_back(ClassificationInfo(NULL, FaceClass::FACE_IN));
                   classified = true;
                   break;
-                case POINT_OUT:
-                  (*i).classification.push_back(ClassificationInfo(NULL, FACE_OUT));
+                case PointClass::POINT_OUT:
+                  (*i).classification.push_back(ClassificationInfo(NULL, FaceClass::FACE_OUT));
                   classified = true;
                   break;
                 default:

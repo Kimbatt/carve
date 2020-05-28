@@ -55,7 +55,7 @@ namespace carve {
 
 
 
-    inline Polyline::Polyline() : edges() {
+    inline Polyline::Polyline() : closed(false), edges() {
     }
 
     inline size_t Polyline::vertexCount() const {

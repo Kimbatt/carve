@@ -136,7 +136,7 @@ namespace carve {
               } else {
                 v = (*j).second;
               }
-              tri.v[i.idx()] = v;
+              tri.v[i.idx()] = (int)v;
             }
             result.push_back(tri);
             delete face;
