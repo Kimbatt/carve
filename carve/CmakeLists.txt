@@ -1,0 +1,15 @@
+cmake_minimum_required (VERSION 3.0)
+
+set(FILES_SRC
+    carve.h
+    carve.cpp
+)
+
+include_directories(
+    ${CMAKE_SOURCE_DIR}/libcarve
+    ${CMAKE_CURRENT_SOURCE_DIR}/libcarve
+)
+
+add_library(carve SHARED ${FILES_SRC})
+
+target_link_libraries(carve libcarve)

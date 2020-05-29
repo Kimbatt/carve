@@ -54,7 +54,7 @@ namespace carve {
       ~Vertex() {
       }
 
-      Vertex(const vector_t &_v) : tagable(), v(_v) {
+      Vertex(const vector_t &_v) : tagable(), v(_v), owner(nullptr) {
       }
     };
 

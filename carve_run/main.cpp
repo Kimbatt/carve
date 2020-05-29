@@ -1,5 +1,5 @@
 
-#include "../carve_dll/carve_dll.h"
+#include "../carve/carve.h"
 #include "3DFileReader.h"
 
 #include <iostream>
