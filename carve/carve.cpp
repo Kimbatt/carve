@@ -113,12 +113,12 @@ EXPORT void STDCALL leoCSGMeshGetTriangles(const CSGMesh* mesh, int* dstBuffer)
     memcpy(dstBuffer, mesh->getTriangles(), (size_t)mesh->getTriangleCount() * 3 * sizeof(int));
 }
 
-const float* STDCALL leoCSGMeshGetVertexPointer(const CSGMesh* mesh)
+EXPORT const float* STDCALL leoCSGMeshGetVertexPointer(const CSGMesh* mesh)
 {
     return mesh->getVertices();
 }
 
-const int* STDCALL leoCSGMeshGetTrianglePointer(const CSGMesh* mesh)
+EXPORT const int* STDCALL leoCSGMeshGetTrianglePointer(const CSGMesh* mesh)
 {
     return mesh->getTriangles();
 }
@@ -128,51 +128,69 @@ typedef carve::poly::Polyhedron Poly;
 
 EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB, CSGOp op, char* errorMessage, int errorMessageLength)
 {
+    auto setErrorMessage = [=](const char* errorMsg)
+    {
+        if (errorMessage != nullptr)
+        {
+            strncpy_s(errorMessage, strlen(errorMsg) + 1, errorMsg, errorMessageLength);
+        }
+    };
+
     try
     {
-        Poly* models[2];
+        Poly* models[2] = { nullptr, nullptr };
         carve::csg::CSG csg;
 
-        for (int i = 0; i < 2; ++i)
+        try
         {
-            const CSGMesh* mesh = i == 0 ? meshA : meshB;
-            Poly*& model = models[i];
-
-            std::vector<Poly::vertex_t> vertices;
-            int numVerts = mesh->getVertexCount();
-            int numComps = numVerts * 3;
-            const float* meshVerts = mesh->getVertices();
-
-            vertices.reserve(numVerts);
-
-            for (int vi = 0; vi < numComps; vi += 3)
+            for (int i = 0; i < 2; ++i)
             {
-                float x = meshVerts[vi];
-                float y = meshVerts[vi + 1];
-                float z = meshVerts[vi + 2];
-                vertices.push_back(Poly::vertex_t(carve::geom::VECTOR(x, y, z)));
+                const CSGMesh* mesh = i == 0 ? meshA : meshB;
+                Poly*& model = models[i];
+
+                std::vector<Poly::vertex_t> vertices;
+                int numVerts = mesh->getVertexCount();
+                int numComps = numVerts * 3;
+                const float* meshVerts = mesh->getVertices();
+
+                vertices.reserve(numVerts);
+
+                for (int vi = 0; vi < numComps; vi += 3)
+                {
+                    float x = meshVerts[vi];
+                    float y = meshVerts[vi + 1];
+                    float z = meshVerts[vi + 2];
+                    vertices.push_back(Poly::vertex_t(carve::geom::VECTOR(x, y, z)));
+                }
+
+                std::vector<Poly::face_t> faces;
+                int numTris = mesh->getTriangleCount();
+                numComps = numTris * 3;
+                const int* meshTris = mesh->getTriangles();
+
+                faces.reserve(numTris);
+
+                for (int ti = 0; ti < numComps; ti += 3)
+                {
+                    int tri1 = meshTris[ti];
+                    int tri2 = meshTris[ti + 1];
+                    int tri3 = meshTris[ti + 2];
+
+                    faces.push_back(Poly::face_t(
+                        &vertices[tri1],
+                        &vertices[tri2],
+                        &vertices[tri3]));
+                }
+
+                model = new Poly(faces);
             }
-
-            std::vector<Poly::face_t> faces;
-            int numTris = mesh->getTriangleCount();
-            numComps = numTris * 3;
-            const int* meshTris = mesh->getTriangles();
-
-            faces.reserve(numTris);
-
-            for (int ti = 0; ti < numComps; ti += 3)
-            {
-                int tri1 = meshTris[ti];
-                int tri2 = meshTris[ti + 1];
-                int tri3 = meshTris[ti + 2];
-
-                faces.push_back(Poly::face_t(
-                    &vertices[tri1],
-                    &vertices[tri2],
-                    &vertices[tri3]));
-            }
-
-            model = new Poly(faces);
+        }
+        catch (...)
+        {
+            delete models[0];
+            delete models[1];
+            setErrorMessage("Cannot construct polyhedron");
+            return nullptr;
         }
 
         csg.hooks.registerHook(new carve::csg::CarveTriangulatorWithImprovement(), carve::csg::CSG::Hooks::PROCESS_OUTPUT_FACE_BIT);
@@ -207,11 +225,7 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
 
         if (res == nullptr)
         {
-            if (errorMessage != nullptr)
-            {
-                const char* errorMsg = "Cannot perform CSG operation";
-                strncpy_s(errorMessage, strlen(errorMsg) + 1, errorMsg, errorMessageLength);
-            }
+            setErrorMessage("Cannot perform CSG operation");
             return nullptr;
         }
 
@@ -252,12 +266,7 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
     }
     catch (carve::exception& ex)
     {
-        if (errorMessage != nullptr)
-        {
-            const char* errorMsg = ex.str().c_str();
-            strncpy_s(errorMessage, strlen(errorMsg) + 1, errorMsg, errorMessageLength);
-        }
-
+        setErrorMessage(ex.str().c_str());
         return nullptr;
     }
 }
