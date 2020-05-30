@@ -99,8 +99,6 @@ set(CARVE_SRC
     carve/vector.hpp
     carve/vertex_decl.hpp
     carve/win32.h
-
-    carve/collection/unordered.hpp
 )
 
 add_library(libcarve STATIC ${CARVE_SRC})

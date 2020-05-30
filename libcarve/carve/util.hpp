@@ -41,11 +41,11 @@ namespace carve {
       uint64_t state;
 
       uint32_t rand_internal() {
-          uint64_t oldstate = state;
-          state = oldstate * 6364136223846793005ULL + seed;
-          uint32_t xorshifted = (uint32_t)(((oldstate >> 18u) ^ oldstate) >> 27u);
-          uint32_t rot = (uint32_t)(oldstate >> 59u);
-          return (xorshifted >> rot) | (xorshifted << (32 - rot));
+        uint64_t oldstate = state;
+        state = oldstate * 6364136223846793005ULL + seed;
+        uint32_t xorshifted = (uint32_t)(((oldstate >> 18u) ^ oldstate) >> 27u);
+        uint32_t rot = (uint32_t)(oldstate >> 59u);
+        return (xorshifted >> rot) | (xorshifted << (32 - rot));
       }
     public:
       pcg_random(uint64_t seed, uint64_t state = 0) : seed((seed << 1) | 1), state(state) {
@@ -63,6 +63,17 @@ namespace carve {
       }
       double f64(double min, double max) {
         return min + (max - min) * f64_01();
+      }
+      double normal_distribution(double mean = 0.0, double variance = 0.5) {
+        constexpr double epsilon = 1e-14;
+        constexpr double twoPI = 3.1415926535897932384626 * 2.0;
+        double u1, u2;
+        do {
+          u1 = f64_01();
+          u2 = f64_01();
+        } while (u1 < epsilon || u2 < epsilon);
+
+        return sqrt(-2.0 * log(u1)) * cos(u2 * twoPI);
       }
     };
   }

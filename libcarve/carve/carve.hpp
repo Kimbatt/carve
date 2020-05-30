@@ -35,6 +35,8 @@
 #include <math.h>
 
 #include <string>
+#include <unordered_set>
+#include <unordered_map>
 #include <set>
 #include <map>
 #include <vector>
@@ -158,6 +160,15 @@ namespace carve {
 
   static inline void setEpsilon(double ep) { EPSILON = ep; EPSILON2 = ep * ep; }
 
+
+  struct hash_pair {
+    template<typename pair_t>
+    size_t operator()(const pair_t& pair) const {
+      size_t r = std::hash<typename pair_t::first_type>{}(pair.first);
+      size_t s = std::hash<typename pair_t::second_type>()(pair.second);
+      return r ^ ((s >> 16) | (s << 16));
+    }
+  };
 
 
   template<typename T>
