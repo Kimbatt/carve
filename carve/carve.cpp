@@ -209,7 +209,8 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
         {
             if (errorMessage != nullptr)
             {
-                strncpy(errorMessage, "Cannot perform CSG operation", errorMessageLength);
+                const char* errorMsg = "Cannot perform CSG operation";
+                strncpy_s(errorMessage, strlen(errorMsg) + 1, errorMsg, errorMessageLength);
             }
             return nullptr;
         }
@@ -253,7 +254,8 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
     {
         if (errorMessage != nullptr)
         {
-            strncpy(errorMessage, ex.str().c_str(), errorMessageLength);
+            const char* errorMsg = ex.str().c_str();
+            strncpy_s(errorMessage, strlen(errorMsg) + 1, errorMsg, errorMessageLength);
         }
 
         return nullptr;
