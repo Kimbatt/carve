@@ -1,8 +1,6 @@
 cmake_minimum_required (VERSION 3.0.0)
 
 set(CARVE_SRC
-    main.cpp
-
     carve.cpp
     convex_hull.cpp
     csg.cpp
@@ -40,11 +38,9 @@ set(CARVE_SRC
     carve/aabb.hpp
     carve/aabb_impl.hpp
     carve/carve.hpp
-    carve/cbrt.h
     carve/classification.hpp
     carve/collection.hpp
     carve/collection_types.hpp
-    carve/colour.hpp
     carve/config.h
     carve/convex_hull.hpp
     carve/csg.hpp
@@ -61,7 +57,6 @@ set(CARVE_SRC
     carve/geom2d.hpp
     carve/geom3d.hpp
     carve/geom_impl.hpp
-    carve/gnu_cxx.h
     carve/heap.hpp
     carve/input.hpp
     carve/interpolator.hpp
@@ -80,7 +75,6 @@ set(CARVE_SRC
     carve/pointset.hpp
     carve/pointset_decl.hpp
     carve/pointset_impl.hpp
-    carve/pointset_iter.hpp
     carve/poly.hpp
     carve/polyhedron_base.hpp
     carve/polyhedron_decl.hpp
@@ -102,20 +96,11 @@ set(CARVE_SRC
     carve/triangulator.hpp
     carve/triangulator_impl.hpp
     carve/util.hpp
-    carve/vcpp_config.h
     carve/vector.hpp
     carve/vertex_decl.hpp
-    carve/vertex_impl.hpp
     carve/win32.h
-    carve/xcode_config.h
 
     carve/collection/unordered.hpp
-    carve/collection/unordered/boost_impl.hpp
-    carve/collection/unordered/fallback_impl.hpp
-    carve/collection/unordered/libstdcpp_impl.hpp
-    carve/collection/unordered/std_impl.hpp
-    carve/collection/unordered/tr1_impl.hpp
-    carve/collection/unordered/vcpp_impl.hpp
 )
 
 add_library(libcarve STATIC ${CARVE_SRC})

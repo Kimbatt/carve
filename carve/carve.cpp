@@ -175,8 +175,7 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
             model = new Poly(faces);
         }
 
-        auto* triangulator = new carve::csg::CarveTriangulatorWithImprovement();
-        csg.hooks.registerHook(triangulator, carve::csg::CSG::Hooks::PROCESS_OUTPUT_FACE_BIT);
+        csg.hooks.registerHook(new carve::csg::CarveTriangulatorWithImprovement(), carve::csg::CSG::Hooks::PROCESS_OUTPUT_FACE_BIT);
 
         carve::csg::CSG::meshset_t* res = nullptr;
         carve::csg::CSG::meshset_t* meshA = carve::meshFromPolyhedron(models[0], -1);
@@ -201,7 +200,6 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
             break;
         }
 
-        delete triangulator;
         delete meshA;
         delete meshB;
         delete models[0];

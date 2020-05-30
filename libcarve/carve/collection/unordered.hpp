@@ -16,5 +16,27 @@
 
 #pragma once
 
-#include <carve/collection/unordered/fallback_impl.hpp>
+// fallback implementation
+
+#include <set>
+#include <map>
+
+namespace std {
+
+    template<typename K, typename T, typename H = int>
+    class unordered_map : public std::map<K, T> {
+        typedef std::map<K, T> super;
+    public:
+        typedef T data_type;
+    };
+
+    template<typename K, typename H = int>
+    class unordered_set : public std::set<K> {
+        typedef std::set<K> super;
+    public:
+    };
+
+}
+
+#undef UNORDERED_COLLECTIONS_SUPPORT_RESIZE
 

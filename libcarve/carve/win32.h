@@ -21,7 +21,6 @@ inline long random() {
 }
 
 #if defined(_MSC_VER)
-#  include <carve/cbrt.h>
 
 #if _MSC_VER < 1300
 // intptr_t is an integer type that is big enough to hold a pointer
