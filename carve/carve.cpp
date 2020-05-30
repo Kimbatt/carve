@@ -124,8 +124,6 @@ EXPORT const int* STDCALL leoCSGMeshGetTrianglePointer(const CSGMesh* mesh)
 }
 
 
-typedef carve::poly::Polyhedron Poly;
-
 EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB, CSGOp op, char* errorMessage, int errorMessageLength)
 {
     auto setErrorMessage = [=](const char* errorMsg)
@@ -138,7 +136,11 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
 
     try
     {
-        Poly* models[2] = { nullptr, nullptr };
+        using Meshset = carve::mesh::MeshSet<3>;
+        using Vertex_t = Meshset::vertex_t;
+        using Face_t = Meshset::face_t;
+
+        Meshset* models[2] = { nullptr, nullptr };
         carve::csg::CSG csg;
 
         try
@@ -146,9 +148,9 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
             for (int i = 0; i < 2; ++i)
             {
                 const CSGMesh* mesh = i == 0 ? meshA : meshB;
-                Poly*& model = models[i];
+                Meshset*& model = models[i];
 
-                std::vector<Poly::vertex_t> vertices;
+                std::vector<Vertex_t> vertices;
                 int numVerts = mesh->getVertexCount();
                 int numComps = numVerts * 3;
                 const float* meshVerts = mesh->getVertices();
@@ -160,10 +162,10 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
                     float x = meshVerts[vi];
                     float y = meshVerts[vi + 1];
                     float z = meshVerts[vi + 2];
-                    vertices.push_back(Poly::vertex_t(carve::geom::VECTOR(x, y, z)));
+                    vertices.push_back(Vertex_t(carve::geom::VECTOR(x, y, z)));
                 }
 
-                std::vector<Poly::face_t> faces;
+                std::vector<Face_t*> faces;
                 int numTris = mesh->getTriangleCount();
                 numComps = numTris * 3;
                 const int* meshTris = mesh->getTriangles();
@@ -176,13 +178,13 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
                     int tri2 = meshTris[ti + 1];
                     int tri3 = meshTris[ti + 2];
 
-                    faces.push_back(Poly::face_t(
+                    faces.push_back(new Face_t(
                         &vertices[tri1],
                         &vertices[tri2],
                         &vertices[tri3]));
                 }
 
-                model = new Poly(faces);
+                model = new Meshset(faces);
             }
         }
         catch (...)
@@ -196,8 +198,8 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
         csg.hooks.registerHook(new carve::csg::CarveTriangulatorWithImprovement(), carve::csg::CSG::Hooks::PROCESS_OUTPUT_FACE_BIT);
 
         carve::csg::CSG::meshset_t* res = nullptr;
-        carve::csg::CSG::meshset_t* meshA = carve::meshFromPolyhedron(models[0], -1);
-        carve::csg::CSG::meshset_t* meshB = carve::meshFromPolyhedron(models[1], -1);
+        carve::csg::CSG::meshset_t* meshA = models[0];
+        carve::csg::CSG::meshset_t* meshB = models[1];
 
         switch (op)
         {
@@ -220,8 +222,6 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
 
         delete meshA;
         delete meshB;
-        delete models[0];
-        delete models[1];
 
         if (res == nullptr)
         {
@@ -232,22 +232,23 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
         std::vector<float> verts;
         std::vector<int> tris;
 
-        Poly* resultMesh = carve::polyhedronFromMesh(res, -1);
-        verts.reserve(resultMesh->faces.size() * 9);
-        tris.reserve(resultMesh->faces.size() * 3);
+        size_t resultNumFaces = res->numFaces();
+        verts.reserve(resultNumFaces * 9);
+        tris.reserve(resultNumFaces * 3);
+
+        std::vector<Vertex_t*> resultVertices;
+        resultVertices.reserve(3);
 
         int ti = 0;
-        for (size_t i = 0; i < resultMesh->faces.size(); ++i)
+        for (auto it = res->faceBegin(), end = res->faceEnd(); it != end; ++it)
         {
-            const Poly::face_t* face = &(resultMesh->faces[i]);
+            const Face_t* face = *it;
 
-            size_t n = face->nVertices();
-            assert(n == 3);
+            face->getVertices(resultVertices);
+            assert(resultVertices.size() == 3);
 
-            for (int j = 0; j < 3; ++j)
+            for (Vertex_t* vertex : resultVertices)
             {
-                const Poly::vertex_t* vertex = face->vertex(j);
-
                 verts.push_back((float)vertex->v.x);
                 verts.push_back((float)vertex->v.y);
                 verts.push_back((float)vertex->v.z);
@@ -257,7 +258,6 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
         }
 
         delete res;
-        delete resultMesh;
 
         CSGMesh* mesh = new CSGMesh();
         mesh->setVertices((int)(verts.size() / 3), verts.data());
