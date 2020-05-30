@@ -57,13 +57,13 @@ namespace carve {
     // lib/intersect_classify_simple.cpp
     // lib/intersect_face_division.cpp lib/intersect_group.cpp
     // lib/intersect_half_classify_group.cpp
-    typedef std::unordered_set<V2, hash_pair> V2Set;
+    typedef carve::unordered_set<V2, hash_pair> V2Set;
 
     // include/carve/csg.hpp include/carve/polyhedron_decl.hpp
     // lib/csg_collector.cpp lib/intersect.cpp
     // lib/intersect_common.hpp lib/intersect_face_division.cpp
     // lib/polyhedron.cpp
-    typedef std::unordered_map<
+    typedef carve::unordered_map<
       carve::mesh::MeshSet<3>::vertex_t *,
       carve::mesh::MeshSet<3>::vertex_t *> VVMap;
   }

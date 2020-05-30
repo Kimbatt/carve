@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+  <Type Name="robin_hood::detail::Table&lt;*,*,*,*,*,*,*,*&gt;">
+    <DisplayString>{{size={mNumElements}}}</DisplayString>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple">mNumElements</Item>
+      <Item Name="[capacity]" ExcludeView="simple">mMaxNumElementsAllowed</Item>
+      <CustomListItems>
+        <Variable Name="_mInfo" InitialValue="mInfo"/>
+        <Variable Name="_mKeyVals" InitialValue="mKeyVals"/>
+        <Variable Name="inc" InitialValue="0"/>
+        <Variable Name="n" InitialValue="0ULL"/>
+        <Variable Name="c" InitialValue="64"/>
+        <Variable Name="numElements" InitialValue="mNumElements"/>
+        <Variable Name="currentIndex" InitialValue="0"/>
+        <Variable Name="sizeof_size_t" InitialValue="8"/>
+        <Exec>sizeof_size_t = sizeof(size_t)</Exec>
+        <Loop>
+          <Break Condition="currentIndex &gt;= numElements"/>
+          <Exec>++currentIndex</Exec>
+
+          <!-- fastForward -->
+          <Loop>
+            <Exec>n = *((size_t*)_mInfo)</Exec>
+            <Exec>c = 64</Exec>
+            <!-- trailing zeros count -->
+            <If Condition="n != 0">
+              <Exec>n &amp;= -(long long)n</Exec>
+              <If Condition="n != 0">
+                <Exec>c -= 1</Exec>
+              </If>
+              <If Condition="(n &amp; 0x00000000FFFFFFFF) != 0">
+                <Exec>c -= 32</Exec>
+              </If>
+              <If Condition="(n &amp; 0x0000FFFF0000FFFF) != 0">
+                <Exec>c -= 16</Exec>
+              </If>
+              <If Condition="(n &amp; 0x00FF00FF00FF00FF) != 0">
+                <Exec>c -= 8</Exec>
+              </If>
+              <If Condition="(n &amp; 0x0F0F0F0F0F0F0F0F) != 0">
+                <Exec>c -= 4</Exec>
+              </If>
+              <If Condition="(n &amp; 0x3333333333333333) != 0">
+                <Exec>c -= 2</Exec>
+              </If>
+              <If Condition="(n &amp; 0x5555555555555555) != 0">
+                <Exec>c -= 1</Exec>
+              </If>
+            </If>
+
+            <Exec>inc = c / 8</Exec>
+            <Exec>_mInfo += inc</Exec>
+            <Exec>_mKeyVals += inc</Exec>
+            <Break Condition="inc != sizeof_size_t"/>
+          </Loop>
+          <Item>_mKeyVals-&gt;mData</Item>
+          <Exec>_mInfo++</Exec>
+          <Exec>_mKeyVals++</Exec>
+        </Loop>
+      </CustomListItems>
+    </Expand>
+  </Type>
+
+  <Type Name="robin_hood::pair&lt;*,*&gt;">
+    <DisplayString>{{{first,na}, {second,na}}}</DisplayString>
+  </Type>
+
+</AutoVisualizer>

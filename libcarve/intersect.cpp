@@ -1228,7 +1228,7 @@ static void checkFaceLoopIntegrity(carve::csg::FaceLoopList &fll) {
   static carve::TimingName FUNC_NAME("CSG::checkFaceLoopIntegrity()");
   carve::TimingBlock block(FUNC_NAME);
 
-  std::unordered_map<carve::csg::V2, int, carve::hash_pair> counts;
+  carve::unordered_map<carve::csg::V2, int, carve::hash_pair> counts;
   for (carve::csg::FaceLoop *fl = fll.head; fl; fl = fl->next) {
     std::vector<carve::mesh::MeshSet<3>::vertex_t *> &loop = (fl->vertices);
     carve::mesh::MeshSet<3>::vertex_t *v1, *v2;
@@ -1398,10 +1398,9 @@ void returnSharedEdges(carve::csg::V2Set &shared_edges,
       }
     }
   }
-  for (carve::csg::V2Set::iterator it = shared_edges.begin(); 
-       it != shared_edges.end(); it++) {
-    remap_type::iterator first_it = remap.find(((*it).first)->v);
-    remap_type::iterator second_it = remap.find(((*it).second)->v);
+  for (const auto& it : shared_edges) {
+    remap_type::iterator first_it = remap.find((it.first)->v);
+    remap_type::iterator second_it = remap.find((it.second)->v);
     CARVE_ASSERT(first_it != remap.end() && second_it != remap.end());
     shared_edge_ptr->insert(std::make_pair(first_it->second, second_it->second));
   }

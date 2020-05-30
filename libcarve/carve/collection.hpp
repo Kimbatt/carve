@@ -53,5 +53,4 @@ namespace carve {
   set_inserter(set_t &s) {
     return set_insert_iterator<set_t>(s);
   }
-
 }

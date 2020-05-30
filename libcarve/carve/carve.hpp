@@ -33,8 +33,6 @@
 #include <math.h>
 
 #include <string>
-#include <unordered_set>
-#include <unordered_map>
 #include <set>
 #include <map>
 #include <vector>
@@ -47,6 +45,10 @@
 #include <carve/util.hpp>
 
 #include <stdarg.h>
+
+#include <carve/robin_hood.hpp>
+#include <unordered_map>
+#include <unordered_set>
 
 #define STR(x) #x
 #define XSTR(x) STR(x)
@@ -221,6 +223,37 @@ namespace carve {
       return 0.0;
     }
   }
+
+
+  template <typename Key, typename Hash = robin_hood::hash<Key>,
+    typename KeyEqual = std::equal_to<Key>, size_t MaxLoadFactor100 = 80,
+    uint32_t AllocatorMin = 4, uint32_t AllocatorMax = 16384>
+  using unordered_node_set = robin_hood::unordered_node_set<Key, Hash, KeyEqual, MaxLoadFactor100, AllocatorMin, AllocatorMax>;
+
+
+  template <class _Kty, class _Hasher = std::hash<_Kty>, class _Keyeq = std::equal_to<_Kty>, class _Alloc = std::allocator<_Kty>>
+  using unordered_set = std::unordered_set<_Kty, _Hasher, _Keyeq, _Alloc>;
+
+
+  template <typename Key, typename T, typename Hash = robin_hood::hash<Key>,
+    typename KeyEqual = std::equal_to<Key>, size_t MaxLoadFactor100 = 80,
+    uint32_t AllocatorMin = 4, uint32_t AllocatorMax = 16384>
+  using unordered_node_map = robin_hood::unordered_node_map<Key, T, Hash, KeyEqual, MaxLoadFactor100, AllocatorMin, AllocatorMax>;
+
+
+  template <class _Kty, class _Ty, class _Hasher = std::hash<_Kty>, class _Keyeq = std::equal_to<_Kty>,
+    class _Alloc = std::allocator<std::pair<const _Kty, _Ty>>>
+  using unordered_map = std::unordered_map<_Kty, _Ty, _Hasher, _Keyeq, _Alloc>;
+
+
+  template <typename Key, typename T, typename Hash = robin_hood::hash<Key>,
+    typename KeyEqual = std::equal_to<Key>, size_t MaxLoadFactor100 = 80>
+  using unordered_flat_map = robin_hood::unordered_flat_map<Key, T, Hash, KeyEqual, MaxLoadFactor100>;
+  
+
+  template <typename Key, typename Hash = robin_hood::hash<Key>,
+    typename KeyEqual = std::equal_to<Key>, size_t MaxLoadFactor100 = 80>
+  using unordered_flat_set = robin_hood::unordered_flat_set<Key, Hash, KeyEqual, MaxLoadFactor100>;
 }
 
 

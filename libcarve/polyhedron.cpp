@@ -219,7 +219,7 @@ namespace carve {
       }
 
       std::vector<mesh::Face<3> *> mesh_faces;
-      std::unordered_map<const mesh::Face<3> *, size_t> face_map;
+      carve::unordered_map<const mesh::Face<3> *, size_t> face_map;
       {
         std::vector<mesh::Vertex<3> *> vert_ptrs;
         for (size_t i = 0; i < faces.size(); ++i) {
@@ -237,13 +237,13 @@ namespace carve {
       }
 
       std::vector<mesh::Mesh<3> *> meshes;
-      mesh::Mesh<3>::create(mesh_faces.begin(), mesh_faces.end(), meshes, mesh::MeshOptions());
+      mesh::Mesh<3>::create(mesh_faces.begin(), mesh_faces.end(), mesh_faces.size(), meshes, mesh::MeshOptions());
       mesh::MeshSet<3> *meshset = new mesh::MeshSet<3>(vertex_storage, meshes);
 
       manifold_is_closed.resize(meshset->meshes.size());
       manifold_is_negative.resize(meshset->meshes.size());
 
-      std::unordered_map<std::pair<size_t, size_t>, std::list<mesh::Edge<3> *>, carve::hash_pair> edge_map;
+      carve::unordered_map<std::pair<size_t, size_t>, std::list<mesh::Edge<3> *>, carve::hash_pair> edge_map;
 
       if (meshset->vertex_storage.size()) {
         mesh::Vertex<3> *Vbase = &meshset->vertex_storage[0];
@@ -618,7 +618,7 @@ namespace carve {
 
     void Polyhedron::collectFaceVertices(std::vector<face_t> &faces,
                                          std::vector<vertex_t> &vertices,
-                                         std::unordered_map<const vertex_t *, const vertex_t *> &vmap) {
+                                         carve::unordered_map<const vertex_t *, const vertex_t *> &vmap) {
       // Given a set of faces, copy all referenced vertices into a
       // single vertex array and update the faces to point into that
       // array. On exit, vmap contains a mapping from old pointer to
@@ -637,10 +637,7 @@ namespace carve {
 
       vertices.reserve(vmap.size());
 
-      for (std::unordered_map<const vertex_t *, const vertex_t *>::iterator i = vmap.begin(),
-             e = vmap.end();
-           i != e;
-           ++i) {
+      for (auto i = vmap.begin(), e = vmap.end(); i != e; ++i) {
         vertices.push_back(*(*i).first);
         (*i).second = &vertices.back();
       }
@@ -658,7 +655,7 @@ namespace carve {
 
     void Polyhedron::collectFaceVertices(std::vector<face_t> &faces,
                                          std::vector<vertex_t> &vertices) {
-      std::unordered_map<const vertex_t *, const vertex_t *> vmap;
+      carve::unordered_map<const vertex_t *, const vertex_t *> vmap;
       collectFaceVertices(faces, vertices, vmap);
     }
 

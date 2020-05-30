@@ -27,7 +27,7 @@
 
 namespace carve {
   namespace csg {
-    typedef std::unordered_map<
+    typedef carve::unordered_map<
       carve::mesh::MeshSet<3>::vertex_t *,
       std::list<FLGroupList::iterator> > GroupLookup;
 

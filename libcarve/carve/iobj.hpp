@@ -66,13 +66,13 @@ namespace carve {
 
 
 
-    typedef std::unordered_set<std::pair<const IObj, const IObj>, IObj_hash> IObjPairSet;
+    typedef carve::unordered_set<std::pair<const IObj, const IObj>, IObj_hash> IObjPairSet;
 
-    typedef std::unordered_map<IObj, carve::mesh::MeshSet<3>::vertex_t *, IObj_hash> IObjVMap;
+    typedef carve::unordered_map<IObj, carve::mesh::MeshSet<3>::vertex_t *, IObj_hash> IObjVMap;
     typedef std::map<IObj, carve::mesh::MeshSet<3>::vertex_t *> IObjVMapSmall;
 
     class VertexIntersections :
-      public std::unordered_map<carve::mesh::MeshSet<3>::vertex_t *, IObjPairSet> {
+      public carve::unordered_map<carve::mesh::MeshSet<3>::vertex_t *, IObjPairSet> {
     };
 
 

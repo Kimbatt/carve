@@ -417,7 +417,7 @@ namespace carve {
       template<typename iter_t>
       Face *create(iter_t beg, iter_t end, bool reversed) const;
 
-      Face *clone(const vertex_t *old_base, vertex_t *new_base, std::unordered_map<const edge_t *, edge_t *> &edge_map) const;
+      Face *clone(const vertex_t *old_base, vertex_t *new_base, carve::unordered_map<const edge_t *, edge_t *> &edge_map) const;
 
       void remove() {
         edge_t *e = edge;
@@ -499,8 +499,8 @@ namespace carve {
 
         typedef std::pair<const vertex_t *, const vertex_t *> vpair_t;
         typedef std::list<edge_t *> edgelist_t;
-        typedef std::unordered_map<vpair_t, edgelist_t, carve::mesh::hash_vertex_pair> edge_map_t;
-        typedef std::unordered_map<const vertex_t *, std::set<const vertex_t *> > edge_graph_t;
+        typedef carve::unordered_node_map<vpair_t, edgelist_t, carve::mesh::hash_vertex_pair, std::equal_to<vpair_t>, 80, 1024, 16384> edge_map_t;
+        typedef carve::unordered_node_map<const vertex_t *, std::set<const vertex_t *> > edge_graph_t;
 
         MeshOptions opts;
 
@@ -593,16 +593,16 @@ namespace carve {
         void construct();
 
         template<typename iter_t>
-        void initEdges(iter_t begin, iter_t end);
+        void initEdges(iter_t begin, iter_t end, size_t count);
 
         template<typename iter_t>
-        void build(iter_t begin, iter_t end, std::vector<Mesh<3> *> &meshes);
+        void build(iter_t begin, iter_t end, size_t count, std::vector<Mesh<3> *> &meshes);
 
       public:
         FaceStitcher(const MeshOptions &_opts);
 
         template<typename iter_t>
-        void create(iter_t begin, iter_t end, std::vector<Mesh<3> *> &meshes);
+        void create(iter_t begin, iter_t end, size_t count, std::vector<Mesh<3> *> &meshes);
       };
     }
 
@@ -654,7 +654,7 @@ namespace carve {
       ~Mesh();
 
       template<typename iter_t>
-      static void create(iter_t begin, iter_t end, std::vector<Mesh<ndim> *> &meshes, const MeshOptions &opts);
+      static void create(iter_t begin, iter_t end, size_t count, std::vector<Mesh<ndim> *> &meshes, const MeshOptions &opts);
 
       aabb_t getAABB() const {
         return aabb_t(faces.begin(), faces.end());
@@ -724,7 +724,7 @@ namespace carve {
       MeshSet &operator=(const MeshSet &);
 
       template<typename iter_t>
-      void _init_from_faces(iter_t begin, iter_t end,  const MeshOptions &opts);
+      void _init_from_faces(iter_t begin, iter_t end, size_t count, const MeshOptions &opts);
 
     public:
       typedef Vertex<ndim> vertex_t;

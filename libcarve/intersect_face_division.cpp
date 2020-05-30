@@ -163,7 +163,7 @@ namespace {
 
 
   struct Graph {
-    typedef std::unordered_map<carve::mesh::MeshSet<3>::vertex_t *, GraphEdges> graph_t;
+    typedef carve::unordered_map<carve::mesh::MeshSet<3>::vertex_t *, GraphEdges> graph_t;
 
     graph_t graph;
 
@@ -1331,6 +1331,18 @@ namespace {
 
         carve::mesh::MeshSet<3>::vertex_t *n = *((*p).second.begin());
         detail::VVSMap::iterator q = vertex_graph.find(n);
+        if (q == vertex_graph.end())
+        {
+            CARVE_ASSERT(false);
+        }
+
+        if (v == n)
+        {
+            if (true)
+            {
+
+            }
+        }
 
         // remove the link.
         (*p).second.erase(n);
@@ -1340,7 +1352,10 @@ namespace {
         v = n;
         path.push_back(v);
 
-        if ((*p).second.size() == 0) vertex_graph.erase(p);
+        if ((*p).second.size() == 0) {
+          vertex_graph.erase(p);
+        }
+
         if ((*q).second.size() == 0) {
           vertex_graph.erase(q);
           q = vertex_graph.end();
@@ -1391,8 +1406,13 @@ namespace {
         v = n;
         path.push_back(v);
 
-        if ((*p).second.size() == 0) vertex_graph.erase(p);
-        if ((*q).second.size() == 0) vertex_graph.erase(q);
+        if ((*p).second.size() == 0) {
+          vertex_graph.erase(p);
+        }
+
+        if ((*q).second.size() == 0) {
+          vertex_graph.erase(q);
+        }
 
         p = q;
 
@@ -1466,6 +1486,8 @@ namespace {
     std::vector<carve::mesh::MeshSet<3>::vertex_t *> base_loop;
     std::list<std::vector<carve::mesh::MeshSet<3>::vertex_t *> > hole_loops;
 
+    base_loop.reserve(4);
+
     /*bool face_edge_intersected = */
     assembleBaseLoop(face, data, base_loop, hooks);
 
@@ -1482,6 +1504,7 @@ namespace {
 
     // complex case: input face is split into multiple output faces.
     V2Set face_edges;
+    face_edges.reserve(base_loop.size());
 
     for (size_t j = 0, je = base_loop.size() - 1; j < je; ++j) {
       face_edges.insert(std::make_pair(base_loop[j], base_loop[j + 1]));

@@ -114,10 +114,10 @@ namespace carve {
       PC2(PointClass a, PointClass b) { cls[0] = a; cls[1] = b; }
     };
 
-    typedef std::unordered_map<std::pair<const carve::mesh::MeshSet<3>::vertex_t *, const carve::mesh::MeshSet<3>::vertex_t *>,
+    typedef carve::unordered_map<std::pair<const carve::mesh::MeshSet<3>::vertex_t *, const carve::mesh::MeshSet<3>::vertex_t *>,
                                EC2, hash_pair> EdgeClassification;
 
-    typedef std::unordered_map<const carve::mesh::Vertex<3> *, PC2> VertexClassification;
+    typedef carve::unordered_map<const carve::mesh::Vertex<3> *, PC2> VertexClassification;
 
   }
 }

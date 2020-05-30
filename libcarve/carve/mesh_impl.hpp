@@ -465,7 +465,7 @@ namespace carve {
     template<unsigned ndim>
     Face<ndim> *Face<ndim>::clone(const vertex_t *old_base,
                                   vertex_t *new_base,
-                                  std::unordered_map<const edge_t *, edge_t *> &edge_map) const {
+                                  carve::unordered_map<const edge_t *, edge_t *> &edge_map) const {
       Face *r = new Face(*this);
 
       edge_t *e = edge;
@@ -483,7 +483,7 @@ namespace carve {
         r_p = r_e;
 
         if (e->rev) {
-          typename std::unordered_map<const edge_t *, edge_t *>::iterator rev_i = edge_map.find(e->rev);
+          auto rev_i = edge_map.find(e->rev);
           if (rev_i != edge_map.end()) {
             r_e->rev = (*rev_i).second;
             (*rev_i).second->rev = r_e;
@@ -520,7 +520,9 @@ namespace carve {
     namespace detail {
       template<typename iter_t>
       void FaceStitcher::initEdges(iter_t begin,
-                                   iter_t end) {
+                                   iter_t end,
+                                   size_t count) {
+        edges.reserve(count * 3);
         size_t c = 0;
         for (iter_t i = begin; i != end; ++i) {
           face_t *face = *i;
@@ -542,6 +544,7 @@ namespace carve {
       template<typename iter_t>
       void FaceStitcher::build(iter_t begin,
                                iter_t end,
+                               size_t count,
                                std::vector<Mesh<3> *> &meshes) {
         // work out what set each face belongs to, and then construct
         // mesh instances for each set of faces.
@@ -570,10 +573,11 @@ namespace carve {
       template<typename iter_t>
       void FaceStitcher::create(iter_t begin,
                                 iter_t end,
+                                size_t count,
                                 std::vector<Mesh<3> *> &meshes) {
-        initEdges(begin, end);
+        initEdges(begin, end, count);
         construct();
-        build(begin, end, meshes);
+        build(begin, end, count, meshes);
       }
     }
 
@@ -695,7 +699,7 @@ namespace carve {
       std::vector<face_t *> r_faces;
       std::vector<edge_t *> r_open_edges;
       std::vector<edge_t *> r_closed_edges;
-      std::unordered_map<const edge_t *, edge_t *> edge_map;
+      carve::unordered_map<const edge_t *, edge_t *> edge_map;
 
       r_faces.reserve(faces.size());
       r_open_edges.reserve(r_open_edges.size());
@@ -728,7 +732,7 @@ namespace carve {
 
     template<unsigned ndim>
     template<typename iter_t>
-    void Mesh<ndim>::create(iter_t begin, iter_t end, std::vector<Mesh<ndim> *> &meshes, const MeshOptions &opts) {
+    void Mesh<ndim>::create(iter_t begin, iter_t end, size_t count, std::vector<Mesh<ndim> *> &meshes, const MeshOptions &opts) {
       meshes.clear();
     }
 
@@ -736,23 +740,23 @@ namespace carve {
 
     template<>
     template<typename iter_t>
-    void Mesh<3>::create(iter_t begin, iter_t end, std::vector<Mesh<3> *> &meshes, const MeshOptions &opts) {
-      detail::FaceStitcher(opts).create(begin, end, meshes);
+    void Mesh<3>::create(iter_t begin, iter_t end, size_t count, std::vector<Mesh<3> *> &meshes, const MeshOptions &opts) {
+      detail::FaceStitcher(opts).create(begin, end, count, meshes);
     }
 
 
 
     template<unsigned ndim>
     template<typename iter_t>
-    void MeshSet<ndim>::_init_from_faces(iter_t begin, iter_t end, const MeshOptions &opts) {
-      typedef std::unordered_map<const vertex_t *, size_t> map_t;
+    void MeshSet<ndim>::_init_from_faces(iter_t begin, iter_t end, size_t count, const MeshOptions &opts) {
+      typedef carve::unordered_flat_map<const vertex_t *, size_t> map_t;
       map_t vmap;
 
       for (iter_t i = begin; i != end; ++i) {
         face_t *f = *i;
         edge_t *e = f->edge;
         do {
-          typename map_t::const_iterator j = vmap.find(e->vert);
+          auto j = vmap.find(e->vert);
           if (j == vmap.end()) {
             size_t idx = vmap.size();
             vmap[e->vert] = idx;
@@ -775,7 +779,7 @@ namespace carve {
         } while (e != f->edge);
       }
 
-      mesh_t::create(begin, end, meshes, opts);
+      mesh_t::create(begin, end, count, meshes, opts);
 
       for (size_t i = 0; i < meshes.size(); ++i) {
         meshes[i]->meshset = this;
@@ -810,7 +814,7 @@ namespace carve {
         faces.push_back(new face_t(v.begin(), v.end()));
       }
       CARVE_ASSERT(p == face_indices.size());
-      mesh_t::create(faces.begin(), faces.end(), meshes, opts);
+      mesh_t::create(faces.begin(), faces.end(), faces.size(), meshes, opts);
 
       for (size_t i = 0; i < meshes.size(); ++i) {
         meshes[i]->meshset = this;
@@ -821,14 +825,14 @@ namespace carve {
 
     template<unsigned ndim>
     MeshSet<ndim>::MeshSet(std::vector<face_t *> &faces, const MeshOptions &opts) {
-      _init_from_faces(faces.begin(), faces.end(), opts);
+      _init_from_faces(faces.begin(), faces.end(), faces.size(), opts);
     }
 
 
 
     template<unsigned ndim>
     MeshSet<ndim>::MeshSet(std::list<face_t *> &faces, const MeshOptions &opts) {
-      _init_from_faces(faces.begin(), faces.end(), opts);
+      _init_from_faces(faces.begin(), faces.end(), faces.size(), opts);
     }
 
 
@@ -849,7 +853,7 @@ namespace carve {
     template<unsigned ndim>
     MeshSet<ndim>::MeshSet(std::vector<typename MeshSet<ndim>::mesh_t *> &_meshes) {
       meshes.swap(_meshes);
-      std::unordered_map<vertex_t *, size_t> vert_idx;
+      carve::unordered_map<vertex_t *, size_t> vert_idx;
 
       for (size_t m = 0; m < meshes.size(); ++m) {
         mesh_t *mesh = meshes[m];
@@ -866,7 +870,7 @@ namespace carve {
       }
 
       vertex_storage.reserve(vert_idx.size());
-      for (typename std::unordered_map<vertex_t *, size_t>::iterator i = vert_idx.begin(); i != vert_idx.end(); ++i) {
+      for (auto i = vert_idx.begin(); i != vert_idx.end(); ++i) {
         (*i).second = vertex_storage.size();
         vertex_storage.push_back(*(*i).first);
       }
@@ -993,7 +997,7 @@ namespace carve {
 
     template<unsigned ndim>
     void MeshSet<ndim>::collectVertices() {
-      std::unordered_map<vertex_t *, size_t> vert_idx;
+      carve::unordered_map<vertex_t *, size_t> vert_idx;
 
       for (size_t m = 0; m < meshes.size(); ++m) {
         mesh_t *mesh = meshes[m];
@@ -1010,8 +1014,7 @@ namespace carve {
 
       std::vector<vertex_t> new_vertex_storage;
       new_vertex_storage.reserve(vert_idx.size());
-      for (typename std::unordered_map<vertex_t *, size_t>::iterator
-             i = vert_idx.begin(); i != vert_idx.end(); ++i) {
+      for (auto i = vert_idx.begin(); i != vert_idx.end(); ++i) {
         (*i).second = new_vertex_storage.size();
         new_vertex_storage.push_back(*(*i).first);
       }
@@ -1070,7 +1073,7 @@ namespace carve {
     template<unsigned ndim>
     void MeshSet<ndim>::separateMeshes() {
       size_t n;
-      typedef std::unordered_map<std::pair<mesh_t *, vertex_t *>, vertex_t *, carve::hash_pair> vmap_t;
+      typedef carve::unordered_map<std::pair<mesh_t *, vertex_t *>, vertex_t *, carve::hash_pair> vmap_t;
       vmap_t vmap;
       typename vmap_t::iterator vmap_iter;
 

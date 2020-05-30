@@ -3,6 +3,7 @@
 #include <regex>
 #include "3DFileReader.h"
 #include <unordered_map>
+#include <../libcarve/carve/robin_hood.hpp>
 
 Mesh* StlReader::loadFromFile(std::string path)
 {
@@ -218,8 +219,11 @@ void Mesh::weldVertices()
         return a == b;
     };
 
-    std::unordered_map<float3, size_t, decltype(hasher), decltype(eq)> vertexMap(vertices.size(), hasher, eq);     // maps vertices to index in unique vertex list
-    std::unordered_map<size_t, size_t> vertexIndexMap;                                                                // maps new vertex list indices to original vertex indices
+    // maps vertices to index in unique vertex list
+    robin_hood::unordered_flat_map<float3, size_t, decltype(hasher), decltype(eq)> vertexMap(vertices.size(), hasher, eq);
+
+    // maps new vertex list indices to original vertex indices
+    robin_hood::unordered_flat_map<size_t, size_t> vertexIndexMap(vertices.size());
 
     for (int i = 0; i < vertices.size(); ++i)
     {
@@ -242,19 +246,15 @@ void Mesh::weldVertices()
     }
 
     // change vertices to new unique list
-    vertices.clear();
-    for (int i = 0; i < uniqueVerts.size(); ++i)
-    {
-        vertices.push_back(uniqueVerts[i]);
-    }
+    vertices.swap(uniqueVerts);
 
     // change indices
-    for (int i = 0; i < indices.size(); ++i)
+    for (int& index : indices)
     {
-        auto it = vertexIndexMap.find(indices[i]);
+        auto it = vertexIndexMap.find(index);
         if (it != vertexIndexMap.end())
         {
-            indices[i] = (int)it->second;
+            index = (int)it->second;
         }
     }
 }

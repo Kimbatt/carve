@@ -378,7 +378,7 @@ namespace carve {
 
 
       struct tri_pairs_t {
-        typedef std::unordered_map<vert_edge_t, tri_pair_t *, hash_vert_edge_t> storage_t;
+        typedef carve::unordered_map<vert_edge_t, tri_pair_t *, hash_vert_edge_t> storage_t;
         storage_t storage;
 
         tri_pairs_t() : storage() {
@@ -486,7 +486,7 @@ namespace carve {
                                 std::vector<tri_pair_t *> &edges) {
           size_t count = 0;
 
-          for (storage_t::iterator i = storage.begin(); i != storage.end();) {
+          for (auto i = storage.begin(); i != storage.end();) {
             tri_pair_t *tp = (*i).second;
             if (tp->a && tp->b) {
               tp->calc(project, poly, dist);
@@ -497,7 +497,9 @@ namespace carve {
               ++i;
             } else {
               delete (*i).second;
-              storage.erase(i++);
+              auto current = i;
+              ++i;
+              storage.erase(current);
             }
           }
 
