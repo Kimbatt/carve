@@ -148,43 +148,36 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
             for (int i = 0; i < 2; ++i)
             {
                 const CSGMesh* mesh = i == 0 ? meshA : meshB;
-                Meshset*& model = models[i];
 
-                std::vector<Vertex_t> vertices;
-                int numVerts = mesh->getVertexCount();
-                int numComps = numVerts * 3;
+                carve::input::PolyhedronData data;
+                data.reserveVertices(mesh->getVertexCount());
+                data.reserveFaces(mesh->getTriangleCount(), 3);
+
+                carve::input::Options options;
+                //options.insert({ "avoid_cavities", "true" });
+
+                int numVertexValues = mesh->getVertexCount() * 3;
                 const float* meshVerts = mesh->getVertices();
-
-                vertices.reserve(numVerts);
-
-                for (int vi = 0; vi < numComps; vi += 3)
+                for (int vi = 0; vi < numVertexValues; vi += 3)
                 {
                     float x = meshVerts[vi];
                     float y = meshVerts[vi + 1];
                     float z = meshVerts[vi + 2];
-                    vertices.push_back(Vertex_t(carve::geom::VECTOR(x, y, z)));
+                    data.addVertex(carve::geom::VECTOR(x, y, z));
                 }
 
-                std::vector<Face_t*> faces;
-                int numTris = mesh->getTriangleCount();
-                numComps = numTris * 3;
+                int numIndices = mesh->getTriangleCount() * 3;
                 const int* meshTris = mesh->getTriangles();
-
-                faces.reserve(numTris);
-
-                for (int ti = 0; ti < numComps; ti += 3)
+                for (int ti = 0; ti < numIndices; ti += 3)
                 {
                     int tri1 = meshTris[ti];
                     int tri2 = meshTris[ti + 1];
                     int tri3 = meshTris[ti + 2];
 
-                    faces.push_back(new Face_t(
-                        &vertices[tri1],
-                        &vertices[tri2],
-                        &vertices[tri3]));
+                    data.addFace(tri1, tri2, tri3);
                 }
 
-                model = new Meshset(faces);
+                models[i] = data.createMesh(options);
             }
         }
         catch (...)
@@ -239,7 +232,10 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
         std::vector<Vertex_t*> resultVertices;
         resultVertices.reserve(3);
 
-        int ti = 0;
+        int vertexIndex = 0;
+        robin_hood::unordered_flat_map<size_t, int> vertexIndexMap;
+        vertexIndexMap.reserve(res->vertex_storage.size());
+
         for (auto it = res->faceBegin(), end = res->faceEnd(); it != end; ++it)
         {
             const Face_t* face = *it;
@@ -252,8 +248,15 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
                 verts.push_back((float)vertex->v.x);
                 verts.push_back((float)vertex->v.y);
                 verts.push_back((float)vertex->v.z);
-                tris.push_back(ti);
-                ++ti;
+
+                auto vertexIndexIt = vertexIndexMap.insert({ (size_t)vertex, vertexIndex });
+                if (vertexIndexIt.second)
+                {
+                    ++vertexIndex;
+                }
+
+                int index = vertexIndexIt.first->second;
+                tris.push_back(index);
             }
         }
 

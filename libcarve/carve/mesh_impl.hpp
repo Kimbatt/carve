@@ -588,6 +588,9 @@ namespace carve {
       closed_edges.clear();
       open_edges.clear();
 
+      closed_edges.reserve(faces.size() * 2);
+      open_edges.reserve(faces.size() * 2);
+
       for (size_t i = 0; i < faces.size(); ++i) {
         face_t *face = faces[i];
         edge_t *e = face->edge;
@@ -599,6 +602,13 @@ namespace carve {
           }
           e = e->next;
         } while (e != face->edge);
+      }
+
+      if (closed_edges.size() * 3 < closed_edges.capacity()) {
+        closed_edges.shrink_to_fit();
+      }
+      if (open_edges.size() * 3 < open_edges.capacity()) {
+        open_edges.shrink_to_fit();
       }
     }
 
