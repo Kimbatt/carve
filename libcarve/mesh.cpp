@@ -781,7 +781,7 @@ namespace carve {
   // connectivity information in the Polyhedron.
   mesh::MeshSet<3> *meshFromPolyhedron(const poly::Polyhedron *poly, int manifold_id) {
     typedef mesh::Vertex<3> vertex_t;
-    typedef mesh::Vertex<3>::vector_t vector_t;
+    //typedef mesh::Vertex<3>::vector_t vector_t;
     typedef mesh::Edge<3> edge_t;
     typedef mesh::Face<3> face_t;
     typedef mesh::Mesh<3> mesh_t;
@@ -839,8 +839,8 @@ namespace carve {
         if (manifold_id != -1 && fa->manifold_id != manifold_id) continue;
 
         std::list<edge_t *>::iterator efwdi, erevi;
-        for (efwdi = efwd.begin(); efwdi != efwd.end() && (*efwdi)->face->id != (size_t)fa->manifold_id; ++efwdi);
-        for (erevi = erev.begin(); erevi != erev.end() && (*erevi)->face->id != (size_t)fa->manifold_id; ++erevi);
+        for (efwdi = efwd.begin(); efwdi != efwd.end() && (*efwdi)->face->id != (size_t)fa->manifold_id; ++efwdi) { }
+        for (erevi = erev.begin(); erevi != erev.end() && (*erevi)->face->id != (size_t)fa->manifold_id; ++erevi) { }
         CARVE_ASSERT(efwdi != efwd.end() && erevi != erev.end());
 
         (*efwdi)->rev = (*erevi);
@@ -891,7 +891,7 @@ namespace carve {
 
   // construct a Polyhedron from a MeshSet
   poly::Polyhedron *polyhedronFromMesh(const mesh::MeshSet<3> *mesh, int manifold_id) {
-    typedef poly::Polyhedron poly_t;
+    //typedef poly::Polyhedron poly_t;
     typedef poly::Polyhedron::vertex_t vertex_t;
     typedef poly::Polyhedron::edge_t edge_t;
     typedef poly::Polyhedron::face_t face_t;

@@ -53,7 +53,7 @@ namespace carve {
 
     template<typename iter_t, typename adapt_t>
     bool fitPlane(iter_t begin, iter_t end, adapt_t adapt, Plane &plane) {
-      std::vector<Vector> p;
+      carve::small_vector_on_stack<Vector> p;
       for (; begin != end; ++begin) {
         p.push_back(adapt(*begin));
       }
