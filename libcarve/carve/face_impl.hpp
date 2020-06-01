@@ -52,13 +52,13 @@ namespace carve {
     Face<ndim> *Face<ndim>::init(const Face<ndim> *base, iter_t vbegin, iter_t vend, bool flipped) {
       CARVE_ASSERT(vbegin < vend);
 
-      vertices.reserve((size_t)std::distance(vbegin, vend));
+      //vertices.reserve((size_t)std::distance(vbegin, vend));
 
+      vertices.insert(vbegin, vend);
       if (flipped) {
-        std::reverse_copy(vbegin, vend, std::back_inserter(vertices));
+        vertices.reverse();
         plane_eqn = -base->plane_eqn;
       } else {
-        std::copy(vbegin, vend, std::back_inserter(vertices));
         plane_eqn = base->plane_eqn;
       }
 
@@ -90,12 +90,6 @@ namespace carve {
     template<unsigned ndim>
     Face<ndim> *Face<ndim>::clone(bool flipped) const {
       return (new Face)->init(this, vertices, flipped);
-    }
-
-    template<unsigned ndim>
-    void Face<ndim>::getVertexLoop(std::vector<const vertex_t *> &loop) const {
-      loop.resize(nVertices(), NULL);
-      std::copy(vbegin(), vend(), loop.begin());
     }
 
     template<unsigned ndim>

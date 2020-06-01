@@ -27,6 +27,7 @@
 
 #include <vector>
 #include <array>
+#include <algorithm>
 
 namespace carve {
 
@@ -76,6 +77,11 @@ namespace carve {
         return *this;
       }
 
+      iter operator+(size_t inc) {
+        idx += inc;
+        return *this;
+      }
+
       bool operator==(const iter& other) const {
         return idx == other.idx;
       }
@@ -84,8 +90,20 @@ namespace carve {
         return idx != other.idx;
       }
 
+      bool operator<(const iter& other) const {
+        return idx < other.idx;
+      }
+
+      bool operator>(const iter& other) const {
+        return idx > other.idx;
+      }
+
       T& operator*() {
         return vec->operator[](idx);
+      }
+
+      static size_t distance(const iter& a, const iter& b) {
+        return b.idx - a.idx;
       }
     };
 
@@ -101,6 +119,11 @@ namespace carve {
         ++idx;
         return *this;
       }
+
+      const_iter operator+(size_t inc) {
+        idx += inc;
+        return *this;
+      }
     
       bool operator==(const const_iter& other) const {
         return idx == other.idx;
@@ -109,15 +132,28 @@ namespace carve {
       bool operator!=(const const_iter& other) const {
         return idx != other.idx;
       }
+
+      bool operator<(const const_iter& other) const {
+        return idx < other.idx;
+      }
+
+      bool operator>(const const_iter& other) const {
+        return idx > other.idx;
+      }
     
       const T& operator*() {
         return vec->operator[](idx);
+      }
+
+      static size_t distance(const iter& a, const iter& b) {
+        return b.idx - a.idx;
       }
     };
 
   public:
     using iterator = iter;
     using const_iterator = const_iter;
+    using value_type = T;
 
     small_vector_on_stack() : stackStorage(), heapStorage(nullptr), _size(0) { }
     ~small_vector_on_stack() {
@@ -154,6 +190,60 @@ namespace carve {
       return heapStorage == nullptr ? stackStorage[idx] : heapStorage->operator[](idx);
     }
 
+    void resize(size_t newSize, T fillValue = T()) {
+      if (heapStorage == nullptr) {
+        if (newSize > SizeOnStack) {
+          // move to heap
+          heapStorage = new std::vector<T>();
+          heapStorage->reserve(newSize);
+
+          size_t oldSize = _size;
+          size_t i = 0;
+          for (; i < oldSize; ++i) {
+            heapStorage->push_back(stackStorage[i]);
+          }
+
+          heapStorage->resize(newSize, fillValue);
+          _size = 0;
+        }
+        else {
+          // stay on stack, set size and values
+          size_t oldSize = _size;
+          for (size_t i = oldSize; i < newSize; ++i) {
+            stackStorage[i] = fillValue;
+          }
+          _size = newSize;
+        }
+      }
+      else {
+        // just resize the vector
+        heapStorage->resize(newSize, fillValue);
+      }
+    }
+
+    template <typename _Iter>
+    void insert(_Iter begin, _Iter end) {
+      for (_Iter it = begin; it != end; ++it) {
+        push_back(*it);
+      }
+    }
+
+    void reverse() {
+      if (heapStorage == nullptr) {
+        size_t start = 0;
+        size_t end = _size;
+      
+        while (start < end) {
+          std::swap(stackStorage[start], stackStorage[end]);
+          ++start;
+          --end;
+        }
+      }
+      else {
+        std::reverse(heapStorage->begin(), heapStorage->end());
+      }
+    }
+
     size_t size() const {
       return heapStorage == nullptr ? _size : heapStorage->size();
     }
@@ -171,24 +261,32 @@ namespace carve {
       }
     }
 
-    T& front() {
+    T& front() const {
       return stackStorage[0];
     }
 
     iter begin() {
-      return iterator(0, this);
+      return iter(0, this);
     }
 
     iter end() {
-      return iterator(size(), this);
+      return iter(size(), this);
     }
 
-    iter cbegin() {
-      return const_iterator(0, this);
+    const_iter begin() const {
+      return const_iter(0, this);
     }
 
-    iter cend() {
-      return const_iterator(size(), this);
+    const_iter end() const {
+      return const_iter(size(), this);
+    }
+
+    const_iter cbegin() const {
+      return const_iter(0, this);
+    }
+
+    const_iter cend() const {
+      return const_iter(size(), this);
     }
   };
 }

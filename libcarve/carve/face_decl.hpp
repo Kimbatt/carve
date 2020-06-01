@@ -76,18 +76,18 @@ namespace carve {
       typedef vector_t (*unproject_t)(const carve::geom2d::P2 &, const plane_t &);
 
     protected:
-      std::vector<const vertex_t *> vertices; // pointer into polyhedron.vertices
-      std::vector<const edge_t *> edges; // pointer into polyhedron.edges
+      carve::small_vector_on_stack<const vertex_t *> vertices; // pointer into polyhedron.vertices
+      carve::small_vector_on_stack<const edge_t *> edges; // pointer into polyhedron.edges
 
       project_t getProjector(bool positive_facing, int axis);
       unproject_t getUnprojector(bool positive_facing, int axis);
 
     public:
-      typedef typename std::vector<const vertex_t *>::iterator vertex_iter_t;
-      typedef typename std::vector<const vertex_t *>::const_iterator const_vertex_iter_t;
+      typedef typename carve::small_vector_on_stack<const vertex_t *>::iterator vertex_iter_t;
+      typedef typename carve::small_vector_on_stack<const vertex_t *>::const_iterator const_vertex_iter_t;
 
-      typedef typename std::vector<const edge_t *>::iterator edge_iter_t;
-      typedef typename std::vector<const edge_t *>::const_iterator const_edge_iter_t;
+      typedef typename carve::small_vector_on_stack<const edge_t *>::iterator edge_iter_t;
+      typedef typename carve::small_vector_on_stack<const edge_t *>::const_iterator const_edge_iter_t;
 
       obj_t *owner;
 
@@ -120,6 +120,7 @@ namespace carve {
       template<typename iter_t>
       Face *init(const Face *base, iter_t vbegin, iter_t vend, bool flipped);
       Face *init(const Face *base, const std::vector<const vertex_t *> &_vertices, bool flipped);
+      Face *init(const Face *base, const carve::small_vector_on_stack<const vertex_t *> &_vertices, bool flipped);
 
       template<typename iter_t>
       Face *create(iter_t vbegin, iter_t vend, bool flipped) const;
@@ -127,8 +128,6 @@ namespace carve {
 
       Face *clone(bool flipped = false) const;
       void invert();
-
-      void getVertexLoop(std::vector<const vertex_t *> &loop) const;
 
       const vertex_t *&vertex(size_t idx);
       const vertex_t *vertex(size_t idx) const;

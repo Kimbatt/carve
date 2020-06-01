@@ -1069,39 +1069,57 @@ namespace carve {
 
     void Polyhedron::canonicalize() {
       orderVertices();
+      std::vector<const vertex_t*> vtemp;
+      std::vector<const edge_t*> etemp;
+
       for (size_t i = 0; i < faces.size(); i++) {
         face_t &f = faces[i];
-        size_t j = std::distance(f.vbegin(),
-                                 std::min_element(f.vbegin(),
-                                                  f.vend()));
+
+        face_t::vertex_iter_t min = std::min_element(f.vbegin(), f.vend());
+        size_t j = face_t::vertex_iter_t::distance(f.vbegin(), min);
+
         if (j) {
-          {
-            std::vector<const vertex_t *> temp;
-            temp.reserve(f.nVertices());
-            std::copy(f.vbegin() + j, f.vend(),       std::back_inserter(temp));
-            std::copy(f.vbegin(),     f.vbegin() + j, std::back_inserter(temp));
-            std::copy(temp.begin(),   temp.end(),     f.vbegin());
+          vtemp.clear();
+          vtemp.reserve(f.nVertices());
+          for (auto it = f.vbegin() + j; it != f.vend(); ++it) {
+              vtemp.push_back(*it);
           }
-          {
-            std::vector<const edge_t *> temp;
-            temp.reserve(f.nEdges());
-            std::copy(f.ebegin() + j, f.eend(),       std::back_inserter(temp));
-            std::copy(f.ebegin(),     f.ebegin() + j, std::back_inserter(temp));
-            std::copy(temp.begin(),   temp.end(),     f.ebegin());
+          for (auto it = f.vbegin(); it != f.vbegin() + j; ++it) {
+              vtemp.push_back(*it);
           }
+          //std::copy(f.vbegin() + j, f.vend(),       std::back_inserter(vtemp));
+          //std::copy(f.vbegin(),     f.vbegin() + j, std::back_inserter(vtemp));
+          std::copy(vtemp.begin(),   vtemp.end(),     f.vbegin());
+
+          etemp.clear();
+          etemp.reserve(f.nEdges());
+          for (auto it = f.ebegin() + j; it != f.eend(); ++it) {
+              etemp.push_back(*it);
+          }
+          for (auto it = f.ebegin(); it != f.ebegin() + j; ++it) {
+              etemp.push_back(*it);
+          }
+          //std::copy(f.ebegin() + j, f.eend(),       std::back_inserter(etemp));
+          //std::copy(f.ebegin(),     f.ebegin() + j, std::back_inserter(etemp));
+          std::copy(etemp.begin(),   etemp.end(),     f.ebegin());
         }
       }
 
       std::vector<face_t *> face_ptrs;
       face_ptrs.reserve(faces.size());
-      for (size_t i = 0; i < faces.size(); ++i) face_ptrs.push_back(&faces[i]);
+      for (size_t i = 0; i < faces.size(); ++i) {
+          face_ptrs.push_back(&faces[i]);
+      }
+
       std::sort(face_ptrs.begin(), face_ptrs.end(), order_faces());
       std::vector<face_t> sorted_faces;
       sorted_faces.reserve(faces.size());
-      for (size_t i = 0; i < faces.size(); ++i) sorted_faces.push_back(*face_ptrs[i]);
+      for (size_t i = 0; i < faces.size(); ++i) {
+          sorted_faces.push_back(*face_ptrs[i]);
+      }
+
       std::swap(faces, sorted_faces);
     }
-
   }
 }
 

@@ -1331,18 +1331,7 @@ namespace {
 
         carve::mesh::MeshSet<3>::vertex_t *n = *((*p).second.begin());
         detail::VVSMap::iterator q = vertex_graph.find(n);
-        if (q == vertex_graph.end())
-        {
-            CARVE_ASSERT(false);
-        }
-
-        if (v == n)
-        {
-            if (true)
-            {
-
-            }
-        }
+        CARVE_ASSERT(q != vertex_graph.end());
 
         // remove the link.
         (*p).second.erase(n);

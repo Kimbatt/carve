@@ -119,7 +119,7 @@ namespace carve {
     template<unsigned ndim>
     Face<ndim>::Face(const std::vector<const vertex_t *> &_vertices,
                      bool delay_recalc) : tagable() {
-      vertices = _vertices;
+      vertices.insert(_vertices.begin(), _vertices.end());
       edges.resize(nVertices(), NULL);
       if (!delay_recalc && !recalc()) { }
     }
@@ -129,7 +129,6 @@ namespace carve {
                      const vertex_t *b,
                      const vertex_t *c,
                      bool delay_recalc) : tagable() {
-      vertices.reserve(3);
       vertices.push_back(a);
       vertices.push_back(b);
       vertices.push_back(c);
@@ -143,7 +142,6 @@ namespace carve {
                      const vertex_t *c,
                      const vertex_t *d,
                      bool delay_recalc) : tagable() {
-      vertices.reserve(4);
       vertices.push_back(a);
       vertices.push_back(b);
       vertices.push_back(c);
@@ -155,7 +153,7 @@ namespace carve {
     template<unsigned ndim>
     void Face<ndim>::invert() {
       size_t n_verts = vertices.size();
-      std::reverse(vertices.begin(), vertices.end());
+      vertices.reverse();
 
       if (project != NULL) {
         plane_eqn.negate();
@@ -166,7 +164,16 @@ namespace carve {
         unproject = getUnprojector(plane_eqn.N.v[da] > 0, da);
       }
 
-      std::reverse(edges.begin(), edges.end() - 1);
+      CARVE_ASSERT(!edges.empty());
+
+      size_t start = 0;
+      size_t end = edges.size() - 1;
+      while (start < end) {
+        std::swap(edges[start], edges[end]);
+        ++start;
+        --end;
+      }
+
       for (size_t i = 0; i < n_verts; i++) {
         const vertex_t *v1 = vertices[i];
         const vertex_t *v2 = vertices[(i+1) % n_verts];
@@ -185,7 +192,7 @@ namespace carve {
       int da = carve::geom::largestAxis(plane_eqn.N);
       project = getProjector(false, da);
 
-      double A = carve::geom2d::signedArea(vertices, projector());
+      double A = carve::geom2d::signedArea(vertices.begin(), vertices.end(), projector());
       if ((A < 0.0) ^ (plane_eqn.N.v[da] < 0.0)) {
         plane_eqn.negate();
       }
@@ -198,6 +205,11 @@ namespace carve {
 
     template<unsigned ndim>
     Face<ndim> *Face<ndim>::init(const Face *base, const std::vector<const vertex_t *> &_vertices, bool flipped) {
+      return init(base, _vertices.begin(), _vertices.end(), flipped);
+    }
+
+    template<unsigned ndim>
+    Face<ndim> *Face<ndim>::init(const Face *base, const carve::small_vector_on_stack<const vertex_t *> &_vertices, bool flipped) {
       return init(base, _vertices.begin(), _vertices.end(), flipped);
     }
 

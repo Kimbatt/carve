@@ -320,8 +320,8 @@ namespace carve {
 
     bool pointInPolySimple(const std::vector<P2> &points, const P2 &p);
 
-    template<typename T, typename adapt_t>
-    bool pointInPolySimple(const std::vector<T> &points, adapt_t adapt, const P2 &p) {
+    template<typename Points, typename adapt_t>
+    bool pointInPolySimple(const Points &points, adapt_t adapt, const P2 &p) {
       CARVE_ASSERT(points.size() > 0);
       P2Vector::size_type l = points.size();
       double s = 0.0;
@@ -350,8 +350,8 @@ namespace carve {
 
     PolyInclusionInfo pointInPoly(const std::vector<P2> &points, const P2 &p);
 
-    template<typename T, typename adapt_t>
-    PolyInclusionInfo pointInPoly(const std::vector<T> &points, adapt_t adapt, const P2 &p) {
+    template<typename Points, typename adapt_t>
+    PolyInclusionInfo pointInPoly(const Points &points, adapt_t adapt, const P2 &p) {
       P2Vector::size_type l = points.size();
       for (unsigned i = 0; i < l; i++) {
         if (equal(adapt(points[i]), p)) return PolyInclusionInfo(PointClass::POINT_VERTEX, (int)i);
