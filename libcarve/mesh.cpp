@@ -414,10 +414,16 @@ namespace carve {
 
         edge_map_t::iterator edgeiter;
         edgeiter = complex_edges.find(vpair_t(vert, next));
-        std::copy((*edgeiter).second.begin(), (*edgeiter).second.end(), std::back_inserter(efwd));
+        for (edge_t* edge : (*edgeiter).second) {
+          efwd.push_back(edge);
+        }
+        //std::copy((*edgeiter).second.begin(), (*edgeiter).second.end(), std::back_inserter(efwd));
 
         edgeiter = complex_edges.find(vpair_t(next, vert));
-        std::copy((*edgeiter).second.begin(), (*edgeiter).second.end(), std::back_inserter(erev));
+        for (edge_t* edge : (*edgeiter).second) {
+          erev.push_back(edge);
+        }
+        //std::copy((*edgeiter).second.begin(), (*edgeiter).second.end(), std::back_inserter(erev));
 
         path.push_back(vert);
 

@@ -70,6 +70,7 @@ namespace carve {
       size_t idx;
       small_vector_on_stack* vec;
     public:
+      iter() : idx(0), vec(nullptr) { }
       iter(size_t idx, small_vector_on_stack* vec) : idx(idx), vec(vec) { }
 
       iter operator++() {
@@ -80,6 +81,10 @@ namespace carve {
       iter operator+(size_t inc) {
         idx += inc;
         return *this;
+      }
+
+      size_t index() const {
+        return idx;
       }
 
       bool operator==(const iter& other) const {
@@ -114,6 +119,7 @@ namespace carve {
 
     public:
       const_iter(size_t idx, const small_vector_on_stack* vec) : idx(idx), vec(vec) { }
+      const_iter() : idx(0), vec(nullptr) { }
     
       const_iter operator++() {
         ++idx;
@@ -123,6 +129,10 @@ namespace carve {
       const_iter operator+(size_t inc) {
         idx += inc;
         return *this;
+      }
+
+      size_t index() const {
+        return idx;
       }
     
       bool operator==(const const_iter& other) const {
@@ -261,8 +271,30 @@ namespace carve {
       }
     }
 
-    T& front() const {
+    iter erase(iter at) {
+      size_t idx = at.index();
+      if (heapStorage == nullptr) {
+        for (size_t i = idx; i < _size - 1; ++i) {
+          stackStorage[i] = stackStorage[i + 1];
+        }
+        --_size;
+      }
+      else {
+        for (size_t i = idx; i < heapStorage->size() - 1; ++i) {
+          heapStorage[i] = heapStorage[i + 1];
+        }
+        heapStorage->pop_back();
+      }
+
+      return at;
+    }
+
+    T& front() {
       return stackStorage[0];
+    }
+
+    const T& front() const {
+        return stackStorage[0];
     }
 
     iter begin() {

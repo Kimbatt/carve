@@ -498,7 +498,7 @@ namespace carve {
         typedef Face<3> face_t;
 
         typedef std::pair<const vertex_t *, const vertex_t *> vpair_t;
-        typedef std::vector<edge_t *> edgelist_t;
+        typedef carve::small_vector_on_stack<edge_t *> edgelist_t;
         typedef carve::unordered_flat_map<vpair_t, edgelist_t, carve::mesh::hash_vertex_pair, std::equal_to<vpair_t>, 80> edge_map_t;
         typedef carve::unordered_node_map<const vertex_t *, std::set<const vertex_t *> > edge_graph_t;
 
