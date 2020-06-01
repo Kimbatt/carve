@@ -11,7 +11,6 @@
 
 CSGMesh::CSGMesh()
 {
-
 }
 
 CSGMesh::~CSGMesh()
@@ -153,9 +152,6 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
                 data.reserveVertices(mesh->getVertexCount());
                 data.reserveFaces(mesh->getTriangleCount(), 3);
 
-                carve::input::Options options;
-                //options.insert({ "avoid_cavities", "true" });
-
                 int numVertexValues = mesh->getVertexCount() * 3;
                 const float* meshVerts = mesh->getVertices();
                 for (int vi = 0; vi < numVertexValues; vi += 3)
@@ -177,7 +173,7 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
                     data.addFace(tri1, tri2, tri3);
                 }
 
-                models[i] = data.createMesh(options);
+                models[i] = data.createMesh(carve::input::Options());
             }
         }
         catch (...)
@@ -245,14 +241,13 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
 
             for (Vertex_t* vertex : resultVertices)
             {
-                verts.push_back((float)vertex->v.x);
-                verts.push_back((float)vertex->v.y);
-                verts.push_back((float)vertex->v.z);
-
                 auto vertexIndexIt = vertexIndexMap.insert({ (size_t)vertex, vertexIndex });
                 if (vertexIndexIt.second)
                 {
                     ++vertexIndex;
+                    verts.push_back((float)vertex->v.x);
+                    verts.push_back((float)vertex->v.y);
+                    verts.push_back((float)vertex->v.z);
                 }
 
                 int index = vertexIndexIt.first->second;

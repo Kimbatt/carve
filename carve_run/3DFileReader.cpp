@@ -289,9 +289,9 @@ void StlWriter::writeToFile(const Mesh* mesh, std::string fileName)
 
         size_t meshIndex = i * 3;
 
-        float3 v0 = mesh->vertices[meshIndex];
-        float3 v1 = mesh->vertices[meshIndex + 1];
-        float3 v2 = mesh->vertices[meshIndex + 2];
+        float3 v0 = mesh->vertices[mesh->indices[meshIndex]];
+        float3 v1 = mesh->vertices[mesh->indices[meshIndex + 1]];
+        float3 v2 = mesh->vertices[mesh->indices[meshIndex + 2]];
 
         float3 normal = ((v1 - v0).cross(v2 - v1)).normalized();
 

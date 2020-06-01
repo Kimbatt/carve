@@ -283,7 +283,7 @@ namespace carve {
           edge_map_t::iterator j = edges.find(vpair_t(ev.second, ev.first));
           if (j == edges.end()) {
             for (edgelist_t::iterator k = (*i).second.begin(); k != (*i).second.end(); ++k) {
-              is_open[ (*k)->face->id] = true;
+              is_open[(*k)->face->id] = true;
             }
           } else if ((*i).second.size() != 1 || (*j).second.size() != 1) {
             std::swap(complex_edges[(*i).first], (*i).second);
