@@ -20,6 +20,8 @@ public:
     CSGMesh();
     ~CSGMesh();
 
+    void stealVertices(std::vector<float>& vertices);
+    void stealTriangles(std::vector<int>& triangles);
     void setVertices(int vertexCount, const float* vertices);
     void setTriangles(int triangleCount, const int* triangles);
     int getVertexCount() const;

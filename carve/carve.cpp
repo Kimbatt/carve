@@ -17,6 +17,16 @@ CSGMesh::~CSGMesh()
 {
 }
 
+void CSGMesh::stealVertices(std::vector<float>& vertices)
+{
+    m_vertices.swap(vertices);
+}
+
+void CSGMesh::stealTriangles(std::vector<int>& triangles)
+{
+    m_triangles.swap(triangles);
+}
+
 void CSGMesh::setVertices(int vertexCount, const float* vertices)
 {
     m_vertices.resize((size_t)vertexCount * 3);
@@ -258,8 +268,8 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
         delete res;
 
         CSGMesh* mesh = new CSGMesh();
-        mesh->setVertices((int)(verts.size() / 3), verts.data());
-        mesh->setTriangles((int)(tris.size() / 3), tris.data());
+        mesh->stealVertices(verts);
+        mesh->stealTriangles(tris);
         return mesh;
     }
     catch (carve::exception& ex)

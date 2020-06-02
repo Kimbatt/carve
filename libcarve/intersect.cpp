@@ -1127,7 +1127,7 @@ void carve::csg::CSG::makeFaceEdges(carve::csg::EdgeClassification &eclass,
 #endif
           // record the edge, with class information.
           if (v1 > v2) std::swap(v1, v2);
-          eclass[ordered_edge(v1, v2)] = carve::csg::EC2(carve::csg::EdgeClass::EDGE_ON, carve::csg::EdgeClass::EDGE_ON);
+          //eclass[ordered_edge(v1, v2)] = carve::csg::EC2(carve::csg::EdgeClass::EDGE_ON, carve::csg::EdgeClass::EDGE_ON);
           data.face_split_edges[face_a].insert(std::make_pair(v1, v2));
           data.face_split_edges[face_b].insert(std::make_pair(v1, v2));
         }
@@ -1171,7 +1171,7 @@ void carve::csg::CSG::makeFaceEdges(carve::csg::EdgeClassification &eclass,
 #endif
             // record the edge, with class information.
             if (v1 > v2) std::swap(v1, v2);
-            eclass[ordered_edge(v1, v2)] = carve::csg::EC2(carve::csg::EdgeClass::EDGE_ON, carve::csg::EdgeClass::EDGE_ON);
+            //eclass[ordered_edge(v1, v2)] = carve::csg::EC2(carve::csg::EdgeClass::EDGE_ON, carve::csg::EdgeClass::EDGE_ON);
             data.face_split_edges[face_a].insert(std::make_pair(v1, v2));
             data.face_split_edges[face_b].insert(std::make_pair(v1, v2));
           }
@@ -1429,7 +1429,7 @@ carve::mesh::MeshSet<3> *carve::csg::CSG::compute(meshset_t *a,
   carve::TimingBlock block(FUNC_NAME);
 
   VertexClassification vclass;
-  EdgeClassification eclass;
+  EdgeClassification eclass; // unused
 
   FLGroupList a_loops_grouped;
   FLGroupList b_loops_grouped;
@@ -1440,17 +1440,30 @@ carve::mesh::MeshSet<3> *carve::csg::CSG::compute(meshset_t *a,
   size_t a_edge_count;
   size_t b_edge_count;
 
+  vclass.reserve((size_t)((a->vertex_storage.size() + b->vertex_storage.size()) * 1.5));
+
   std::auto_ptr<face_rtree_t> a_rtree(face_rtree_t::construct_STR(a->faceBegin(), a->faceEnd(), 4, 4));
   std::auto_ptr<face_rtree_t> b_rtree(face_rtree_t::construct_STR(b->faceBegin(), b->faceEnd(), 4, 4));
 
   {
     static carve::TimingName FUNC_NAME("CSG::compute - calc()");
     carve::TimingBlock block(FUNC_NAME);
-    calc(a, a_rtree.get(), b, b_rtree.get(), vclass, eclass,a_face_loops, b_face_loops, a_edge_count, b_edge_count);
+    calc(a, a_rtree.get(), b, b_rtree.get(), vclass, eclass, a_face_loops, b_face_loops, a_edge_count, b_edge_count);
   }
 
   detail::LoopEdges a_edge_map;
   detail::LoopEdges b_edge_map;
+
+  auto calc_num_edges = [](meshset_t* meshset) {
+    size_t count = 0;
+    for (meshset_t::mesh_t* mesh : meshset->meshes) {
+      count += mesh->open_edges.size() + mesh->closed_edges.size();
+    }
+    return count;
+  };
+
+  a_edge_map.reserve(calc_num_edges(a) * 3);
+  b_edge_map.reserve(calc_num_edges(b) * 3);
 
   {
     static carve::TimingName FUNC_NAME("CSG::compute - makeEdgeMap()");

@@ -309,7 +309,7 @@ namespace carve {
         std::vector<data_aabb_t> data;
         data.reserve(std::distance(begin, end));
         for (iter_t i = begin; i != end; ++i) {
-          data.push_back(*i);
+          data.emplace_back(*i);
         }
         return construct_STR(data, leaf_size, internal_size);
       }
