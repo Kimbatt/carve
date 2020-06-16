@@ -135,6 +135,51 @@ EXPORT const int* STDCALL leoCSGMeshGetTrianglePointer(const CSGMesh* mesh)
 
 EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB, CSGOp op, char* errorMessage, int errorMessageLength)
 {
+    auto emptyMesh = [op](const CSGMesh* mesh, bool isA)
+    {
+        CSGMesh* newMesh = new CSGMesh();
+
+        switch (op)
+        {
+        case CSGOp::Union:
+        case CSGOp::SymmetricDifference:
+            // just return the non-empty mesh
+            newMesh->setVertices(mesh->getVertexCount(), mesh->getVertices());
+            newMesh->setTriangles(mesh->getTriangleCount(), mesh->getTriangles());
+            break;
+        case CSGOp::Intersection:
+        default:
+            // no overlap, return an empty mesh
+            break;
+        case CSGOp::AMinusB:
+            // return the non-empty mesh if we are subtracting an empty mesh from it
+            if (isA)
+            {
+                newMesh->setVertices(mesh->getVertexCount(), mesh->getVertices());
+                newMesh->setTriangles(mesh->getTriangleCount(), mesh->getTriangles());
+            }
+            break;
+        case CSGOp::BMinusA:
+            if (!isA)
+            {
+                newMesh->setVertices(mesh->getVertexCount(), mesh->getVertices());
+                newMesh->setTriangles(mesh->getTriangleCount(), mesh->getTriangles());
+            }
+            break;
+        }
+
+        return newMesh;
+    };
+
+    if (meshA->getTriangleCount() == 0)
+    {
+        return emptyMesh(meshB, false);
+    }
+    else if (meshB->getTriangleCount() == 0)
+    {
+        return emptyMesh(meshA, true);
+    }
+
     auto setErrorMessage = [=](const char* errorMsg)
     {
         if (errorMessage != nullptr)

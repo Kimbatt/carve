@@ -194,6 +194,46 @@ void Mesh::translate(float3 tr)
     }
 }
 
+void Mesh::rotate(float angleInDegrees, float3 axisDirection, float3 axisPoint)
+{
+    float angle = angleInDegrees / 180.0f * 3.14159265f;
+	float sin = sinf(angle);
+	float cos = cosf(angle);
+	float oneMinusCos = 1.0f - cos;
+
+    axisDirection = axisDirection.normalized();
+	float axisXsin = sin * axisDirection.x;
+	float axisYsin = sin * axisDirection.y;
+	float axisZsin = sin * axisDirection.z;
+
+	float axisXXoneMinusCos = axisDirection.x * axisDirection.x * oneMinusCos;
+	float axisXYoneMinusCos = axisDirection.x * axisDirection.y * oneMinusCos;
+	float axisXZoneMinusCos = axisDirection.x * axisDirection.z * oneMinusCos;
+	float axisYYoneMinusCos = axisDirection.y * axisDirection.y * oneMinusCos;
+	float axisYZoneMinusCos = axisDirection.y * axisDirection.z * oneMinusCos;
+	float axisZZoneMinusCos = axisDirection.z * axisDirection.z * oneMinusCos;
+
+	float3 rotationMatrixRow1(axisXXoneMinusCos + cos, axisXYoneMinusCos - axisZsin, axisXZoneMinusCos + axisYsin);
+	float3 rotationMatrixRow2(axisXYoneMinusCos + axisZsin, axisYYoneMinusCos + cos, axisYZoneMinusCos - axisXsin);
+	float3 rotationMatrixRow3(axisXZoneMinusCos - axisYsin, axisYZoneMinusCos + axisXsin, axisZZoneMinusCos + cos);
+
+    auto rot = [=](float3 point)
+    {
+        point = point - axisPoint;
+        float3 rotated(
+            rotationMatrixRow1.x * point.x + rotationMatrixRow1.y * point.y + rotationMatrixRow1.z * point.z,
+            rotationMatrixRow2.x * point.x + rotationMatrixRow2.y * point.y + rotationMatrixRow2.z * point.z,
+            rotationMatrixRow3.x * point.x + rotationMatrixRow3.y * point.y + rotationMatrixRow3.z * point.z
+        );
+        return rotated + axisPoint;
+    };
+
+    for (size_t i = 0; i < vertices.size(); ++i)
+    {
+        vertices[i] = rot(vertices[i]);
+    }
+}
+
 void Mesh::weldVertices()
 {
     std::vector<float3> uniqueVerts;    // new list of unique vertices
@@ -313,5 +353,30 @@ void StlWriter::writeToFile(const Mesh* mesh, std::string fileName)
     }
 
     file.write((char*)fileData.data(), fileData.size());
+    file.close();
+}
+
+void ObjWriter::writeToFile(const Mesh* mesh, std::string fileName)
+{
+    std::ofstream file(fileName, std::ios::binary, std::ios::trunc);
+    if (file.fail())
+    {
+        return;
+    }
+
+    for (size_t i = 0; i < mesh->vertices.size(); ++i)
+    {
+        float3 vertex = mesh->vertices[i];
+        file << "v " << std::to_string(vertex.x) << ' ' << std::to_string(vertex.y) << ' ' << std::to_string(vertex.z) << '\n';
+    }
+
+    for (size_t i = 0; i < mesh->indices.size(); i += 3)
+    {
+        int i0 = mesh->indices[i] + 1;
+        int i1 = mesh->indices[i + 1] + 1;
+        int i2 = mesh->indices[i + 2] + 1;
+        file << "f " << i0 << ' ' << i1 << ' ' << i2 << '\n';
+    }
+
     file.close();
 }

@@ -97,6 +97,7 @@ struct Mesh
 
     void scale(float3 sc);
     void translate(float3 tr);
+    void rotate(float angleInDegrees, float3 axisDirection, float3 axisPoint);
     void weldVertices();
 };
 
@@ -111,6 +112,12 @@ private:
 };
 
 class StlWriter
+{
+public:
+    static void writeToFile(const Mesh* mesh, std::string fileName);
+};
+
+class ObjWriter
 {
 public:
     static void writeToFile(const Mesh* mesh, std::string fileName);

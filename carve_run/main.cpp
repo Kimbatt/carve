@@ -3,6 +3,7 @@
 #include "3DFileReader.h"
 
 #include <iostream>
+#include <chrono>
 
 void logMesh(CSGMesh* mesh)
 {
@@ -240,34 +241,58 @@ void testCustom()
 
 int main()
 {
+    // from https://www.ozeki.hu/attachments/16/Stanford_Bunny_sample.stl
     Mesh* meshA = StlReader::loadFromFile("../stl_test/Stanford_Bunny_sample.stl");
-    Mesh* meshB = StlReader::loadFromFile("../stl_test/Menger_sponge_sample.stl");
-    meshB->scale(float3(20, 20, 20));
-    meshB->translate(float3(0, 0, 40));
+    Mesh* meshB = StlReader::loadFromFile("../stl_test/Stanford_Bunny_sample.stl");
+
+    if (meshA == nullptr)
+    {
+        std::cerr << "Cannot load meshA" << std::endl;
+        return 1;
+    }
+    else if (meshB == nullptr)
+    {
+        std::cerr << "Cannot load meshB" << std::endl;
+        return 1;
+    }
+
+    //meshB->scale(float3(20, 20, 20));
+    //meshB->translate(float3(0, 0, 40));
+    meshB->rotate(90.0f, float3(0.0f, 1.0f, 1.0f), float3(0.0f, -100.0f, 0.0f));
+    meshB->translate(float3(70.0f, 0.0f, 0.0f));
     meshA->weldVertices();
     meshB->weldVertices();
 
     CSGMesh* csgMeshA = meshA->makeNewCSGMesh();
     CSGMesh* csgMeshB = meshB->makeNewCSGMesh();
 
-
-    char errorMsg[2048];
-    CSGMesh* result = leoPerformCSG(csgMeshA, csgMeshB, CSGOp::Union, errorMsg, 2048);
-
-    if (result != nullptr)
+    constexpr int iterationCount = 5;
+    for (size_t i = 0; i < iterationCount; i++)
     {
-        Mesh* resultMesh = Mesh::fromCSGMesh(result);
+        char errorMsg[2048];
+        auto start = std::chrono::steady_clock::now();
+        CSGMesh* result = leoPerformCSG(csgMeshA, csgMeshB, CSGOp::Union, errorMsg, 2048);
+        auto end = std::chrono::steady_clock::now();
+        auto elapsedMilliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
-        StlWriter::writeToFile(resultMesh, "../stl_test/csg_result.stl");
+        if (result != nullptr)
+        {
+            Mesh* resultMesh = Mesh::fromCSGMesh(result);
 
-        delete resultMesh;
-        leoDestroyCSGMesh(result);
+            StlWriter::writeToFile(resultMesh, "../stl_test/csg_result.stl");
+            //ObjWriter::writeToFile(resultMesh, "../stl_test/csg_result.obj");
+
+            delete resultMesh;
+            leoDestroyCSGMesh(result);
+            std::cout << "CSG OK" << std::endl;
+        }
+        else
+        {
+            std::cout << errorMsg << std::endl;
+        }
+
+        std::cout << "Iteration " << i << " finished in " << elapsedMilliseconds << "ms" << std::endl;
     }
-    else
-    {
-        std::cout << errorMsg << std::endl;
-    }
-
 
     leoDestroyCSGMesh(csgMeshA);
     leoDestroyCSGMesh(csgMeshB);
