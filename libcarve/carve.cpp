@@ -23,14 +23,12 @@
 // SOFTWARE.
 
 
-
-
-
 #include <carve/carve.hpp>
 
 #define DEF_EPSILON 1.4901161193847656e-08
 
-namespace carve {
-  double EPSILON = DEF_EPSILON;
-  double EPSILON2 = DEF_EPSILON * DEF_EPSILON;
-}
+namespace carve
+{
+double EPSILON = DEF_EPSILON;
+double EPSILON2 = DEF_EPSILON * DEF_EPSILON;
+} // namespace carve

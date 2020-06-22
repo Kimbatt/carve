@@ -1,0 +1,7 @@
+BasedOnStyle: Microsoft
+PointerAlignment: Left
+Cpp11BracedListStyle: false
+BreakBeforeBraces: Allman
+ColumnLimit: 160
+MaxEmptyLinesToKeep: 2
+AccessModifierOffset: -4

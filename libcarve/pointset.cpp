@@ -23,43 +23,48 @@
 // SOFTWARE.
 
 
-
-
 #include <carve/geom.hpp>
 #include <carve/pointset.hpp>
 
-namespace carve {
-  namespace point {
+namespace carve
+{
+namespace point
+{
 
-    PointSet::PointSet(const std::vector<carve::geom3d::Vector> &points) {
-      vertices.resize(points.size());
-      for (size_t i = 0; i < points.size(); ++i) {
+PointSet::PointSet(const std::vector<carve::geom3d::Vector>& points)
+{
+    vertices.resize(points.size());
+    for (size_t i = 0; i < points.size(); ++i)
+    {
         vertices[i].v = points[i];
-      }
-      aabb.fit(points.begin(), points.end());
     }
+    aabb.fit(points.begin(), points.end());
+}
 
-    void PointSet::sortVertices(const carve::geom3d::Vector &axis) {
-      std::vector<std::pair<double, size_t> > temp;
-      temp.reserve(vertices.size());
-      for (size_t i = 0; i < vertices.size(); ++i) {
+void PointSet::sortVertices(const carve::geom3d::Vector& axis)
+{
+    std::vector<std::pair<double, size_t>> temp;
+    temp.reserve(vertices.size());
+    for (size_t i = 0; i < vertices.size(); ++i)
+    {
         temp.push_back(std::make_pair(dot(axis, vertices[i].v), i));
-      }
-      std::sort(temp.begin(), temp.end());
+    }
+    std::sort(temp.begin(), temp.end());
 
-      std::vector<Vertex> vnew;
-      vnew.reserve(vertices.size());
+    std::vector<Vertex> vnew;
+    vnew.reserve(vertices.size());
 
-      // std::vector<int> revmap;
-      // revmap.resize(vertices.size());
+    // std::vector<int> revmap;
+    // revmap.resize(vertices.size());
 
-      for (size_t i = 0; i < vertices.size(); ++i) {
+    for (size_t i = 0; i < vertices.size(); ++i)
+    {
         vnew.push_back(vertices[temp[i].second]);
         // revmap[temp[i].second] = i;
-      }
+    }
 
-      vertices.swap(vnew);
-   }
-
-  }
+    vertices.swap(vnew);
 }
+
+} // namespace point
+} // namespace carve

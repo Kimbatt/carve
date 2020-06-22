@@ -2,12 +2,12 @@
 #include "../carve/carve.h"
 #include "3DFileReader.h"
 
-#include <iostream>
 #include <chrono>
+#include <iostream>
 
 void logMesh(CSGMesh* mesh)
 {
-    
+
     int numTris = leoCSGMeshGetTriangleCount(mesh);
     int numVerts = leoCSGMeshGetVertexCount(mesh);
 
@@ -36,33 +36,11 @@ void logMesh(CSGMesh* mesh)
 
 void testPyramids()
 {
-    const float vertsA[] =
-    {
-        -1.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 1.0f,
-        -1.0f, 0.0f, -1.0f,
-        1.0f, 0.0f, -1.0f,
-        0.0f, 1.0f, 0.0f
-    };
+    const float vertsA[] = { -1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, -1.0f, 0.0f, -1.0f, 1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f };
 
-    const float vertsB[] =
-    {
-        1.0f, 1.5f, 1.0f,
-        -1.0f, 1.5f, 1.0f,
-        1.0f, 1.5f, -1.0f,
-        -1.0f, 1.5f, -1.0f,
-        0.0f, 0.5f, 0.0f
-    };
+    const float vertsB[] = { 1.0f, 1.5f, 1.0f, -1.0f, 1.5f, 1.0f, 1.0f, 1.5f, -1.0f, -1.0f, 1.5f, -1.0f, 0.0f, 0.5f, 0.0f };
 
-    const int tris[] =
-    {
-        0, 1, 4,
-        1, 3, 4,
-        3, 2, 4,
-        2, 0, 4,
-        0, 2, 1,
-        1, 2, 3
-    };
+    const int tris[] = { 0, 1, 4, 1, 3, 4, 3, 2, 4, 2, 0, 4, 0, 2, 1, 1, 2, 3 };
 
     CSGMesh* meshA = leoCreateCSGMesh();
     leoCSGMeshSetVertices(meshA, 5, vertsA);
@@ -86,45 +64,13 @@ void testPyramids()
 
 void testCubes()
 {
-    const float vertsA[] =
-    {
-        1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, 1.0f,
-        -1.0f, -1.0f, 1.0f,
-        -1.0f, -1.0f, -1.0f,
-        1.0f, 1.0f, -1.0f,
-        1.0f, 1.0f, 1.0f,
-        -1.0f, 1.0f, 1.0f,
-        -1.0f, 1.0f, -1.0f
-    };
+    const float vertsA[] = { 1.0f, -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, -1.0f,
+                             1.0f, 1.0f,  -1.0f, 1.0f, 1.0f,  1.0f, -1.0f, 1.0f,  1.0f, -1.0f, 1.0f,  -1.0f };
 
-    const float vertsB[] =
-    {
-        2.0f, -1.2f, -0.8f,
-        2.0f, -1.2f, 0.8f,
-        0.0f, -1.2f, 0.8f,
-        0.0f, -1.2f, -0.8f,
-        2.0f, 1.2f, -0.8f,
-        2.0f, 1.2f, 0.8f,
-        0.0f, 1.2f, 0.8f,
-        0.0f, 1.2f, -0.8f
-    };
+    const float vertsB[] = { 2.0f, -1.2f, -0.8f, 2.0f, -1.2f, 0.8f, 0.0f, -1.2f, 0.8f, 0.0f, -1.2f, -0.8f,
+                             2.0f, 1.2f,  -0.8f, 2.0f, 1.2f,  0.8f, 0.0f, 1.2f,  0.8f, 0.0f, 1.2f,  -0.8f };
 
-    const int tris[] =
-    {
-        0, 1, 2,
-        0, 2, 3,
-        4, 7, 6,
-        4, 6, 5,
-        0, 4, 5,
-        0, 5, 1,
-        1, 5, 6,
-        1, 6, 2,
-        2, 6, 7,
-        2, 7, 3,
-        4, 0, 3,
-        4, 3, 7
-    };
+    const int tris[] = { 0, 1, 2, 0, 2, 3, 4, 7, 6, 4, 6, 5, 0, 4, 5, 0, 5, 1, 1, 5, 6, 1, 6, 2, 2, 6, 7, 2, 7, 3, 4, 0, 3, 4, 3, 7 };
 
     CSGMesh* meshA = leoCreateCSGMesh();
     leoCSGMeshSetVertices(meshA, 8, vertsA);
@@ -148,76 +94,22 @@ void testCubes()
 
 void testCustom()
 {
-    const float vertsA[] =
-    {
-        1.07f, -1.5f, 1.5f,
-        -1.93f, -1.5f, 1.5f,
-        1.07f, 1.5f, 1.5f,
-        -1.93f, 1.5f, 1.5f,
-        1.07f, 1.5f, -1.5f,
-        -1.93f, 1.5f, -1.5f,
-        1.07f, -1.5f, -1.5f,
-        -1.93f, -1.5f, -1.5f,
-        1.07f, 1.5f, 1.5f,
-        -1.93f, 1.5f, 1.5f,
-        1.07f, 1.5f, -1.5f,
-        -1.93f, 1.5f, -1.5f,
-        1.07f, -1.5f, -1.5f,
-        1.07f, -1.5f, 1.5f,
-        -1.93f, -1.5f, 1.5f,
-        -1.93f, -1.5f, -1.5f,
-        -1.93f, -1.5f, 1.5f,
-        -1.93f, 1.5f, 1.5f,
-        -1.93f, 1.5f, -1.5f,
-        -1.93f, -1.5f, -1.5f,
-        1.07f, -1.5f, -1.5f,
-        1.07f, 1.5f, -1.5f,
-        1.07f, 1.5f, 1.5f,
-        1.07f, -1.5f, 1.5f,
+    const float vertsA[] = {
+        1.07f,  -1.5f, 1.5f,  -1.93f, -1.5f, 1.5f,  1.07f,  1.5f,  1.5f,  -1.93f, 1.5f,  1.5f,  1.07f,  1.5f,  -1.5f, -1.93f, 1.5f,  -1.5f,
+        1.07f,  -1.5f, -1.5f, -1.93f, -1.5f, -1.5f, 1.07f,  1.5f,  1.5f,  -1.93f, 1.5f,  1.5f,  1.07f,  1.5f,  -1.5f, -1.93f, 1.5f,  -1.5f,
+        1.07f,  -1.5f, -1.5f, 1.07f,  -1.5f, 1.5f,  -1.93f, -1.5f, 1.5f,  -1.93f, -1.5f, -1.5f, -1.93f, -1.5f, 1.5f,  -1.93f, 1.5f,  1.5f,
+        -1.93f, 1.5f,  -1.5f, -1.93f, -1.5f, -1.5f, 1.07f,  -1.5f, -1.5f, 1.07f,  1.5f,  -1.5f, 1.07f,  1.5f,  1.5f,  1.07f,  -1.5f, 1.5f,
     };
 
-    const float vertsB[] =
-    {
-        7.28f, -2.0f, 2.0f,
-        3.28f, -2.0f, 2.0f,
-        7.28f, 2.0f, 2.0f,
-        3.28f, 2.0f, 2.0f,
-        7.28f, 2.0f, -2.0f,
-        3.28f, 2.0f, -2.0f,
-        7.28f, -2.0f, -2.0f,
-        3.28f, -2.0f, -2.0f,
-        7.28f, 2.0f, 2.0f,
-        3.28f, 2.0f, 2.0f,
-        7.28f, 2.0f, -2.0f,
-        3.28f, 2.0f, -2.0f,
-        7.28f, -2.0f, -2.0f,
-        7.28f, -2.0f, 2.0f,
-        3.28f, -2.0f, 2.0f,
-        3.28f, -2.0f, -2.0f,
-        3.28f, -2.0f, 2.0f,
-        3.28f, 2.0f, 2.0f,
-        3.28f, 2.0f, -2.0f,
-        3.28f, -2.0f, -2.0f,
-        7.28f, -2.0f, -2.0f,
-        7.28f, 2.0f, -2.0f,
-        7.28f, 2.0f, 2.0f,
-        7.28f, -2.0f, 2.0f,
+    const float vertsB[] = {
+        7.28f, -2.0f, 2.0f,  3.28f, -2.0f, 2.0f,  7.28f, 2.0f,  2.0f,  3.28f, 2.0f,  2.0f,  7.28f, 2.0f,  -2.0f, 3.28f, 2.0f,  -2.0f,
+        7.28f, -2.0f, -2.0f, 3.28f, -2.0f, -2.0f, 7.28f, 2.0f,  2.0f,  3.28f, 2.0f,  2.0f,  7.28f, 2.0f,  -2.0f, 3.28f, 2.0f,  -2.0f,
+        7.28f, -2.0f, -2.0f, 7.28f, -2.0f, 2.0f,  3.28f, -2.0f, 2.0f,  3.28f, -2.0f, -2.0f, 3.28f, -2.0f, 2.0f,  3.28f, 2.0f,  2.0f,
+        3.28f, 2.0f,  -2.0f, 3.28f, -2.0f, -2.0f, 7.28f, -2.0f, -2.0f, 7.28f, 2.0f,  -2.0f, 7.28f, 2.0f,  2.0f,  7.28f, -2.0f, 2.0f,
     };
 
-    const int tris[] =
-    {
-        0, 3, 2,
-        0, 1, 3,
-        8, 5, 4,
-        8, 9, 5,
-        10, 7, 6,
-        10, 11, 7,
-        12, 14, 13,
-        12, 15, 14,
-        16, 18, 17,
-        16, 19, 18,
-        20, 22, 21,
-        20, 23, 22,
+    const int tris[] = {
+        0, 3, 2, 0, 1, 3, 8, 5, 4, 8, 9, 5, 10, 7, 6, 10, 11, 7, 12, 14, 13, 12, 15, 14, 16, 18, 17, 16, 19, 18, 20, 22, 21, 20, 23, 22,
     };
 
     CSGMesh* meshA = leoCreateCSGMesh();
@@ -256,8 +148,8 @@ int main()
         return 1;
     }
 
-    //meshB->scale(float3(20, 20, 20));
-    //meshB->translate(float3(0, 0, 40));
+    // meshB->scale(float3(20, 20, 20));
+    // meshB->translate(float3(0, 0, 40));
     meshB->rotate(90.0f, float3(0.0f, 1.0f, 1.0f), float3(0.0f, -100.0f, 0.0f));
     meshB->translate(float3(70.0f, 0.0f, 0.0f));
     meshA->weldVertices();
@@ -280,7 +172,7 @@ int main()
             Mesh* resultMesh = Mesh::fromCSGMesh(result);
 
             StlWriter::writeToFile(resultMesh, "../stl_test/csg_result.stl");
-            //ObjWriter::writeToFile(resultMesh, "../stl_test/csg_result.obj");
+            // ObjWriter::writeToFile(resultMesh, "../stl_test/csg_result.obj");
 
             delete resultMesh;
             leoDestroyCSGMesh(result);
@@ -300,8 +192,8 @@ int main()
     delete meshA;
     delete meshB;
 
-    //testCubes();
-    //testPyramids();
-    //testCustom();
+    // testCubes();
+    // testPyramids();
+    // testCustom();
     return 0;
 }

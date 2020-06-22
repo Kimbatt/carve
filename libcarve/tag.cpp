@@ -23,8 +23,6 @@
 // SOFTWARE.
 
 
-
-
 #include <carve/tag.hpp>
 
 int carve::tagable::s_count = 0;

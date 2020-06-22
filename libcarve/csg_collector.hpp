@@ -23,10 +23,10 @@
 // SOFTWARE.
 
 
-namespace carve {
-  namespace csg {
-    CSG::Collector *makeCollector(CSG::CSG_OP op,
-                                  const carve::mesh::MeshSet<3> *poly_a,
-                                  const carve::mesh::MeshSet<3> *poly_b);
-  }
+namespace carve
+{
+namespace csg
+{
+CSG::Collector* makeCollector(CSG::CSG_OP op, const carve::mesh::MeshSet<3>* poly_a, const carve::mesh::MeshSet<3>* poly_b);
 }
+} // namespace carve

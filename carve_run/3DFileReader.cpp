@@ -1,9 +1,9 @@
 
+#include "3DFileReader.h"
+#include <../libcarve/carve/robin_hood.hpp>
 #include <fstream>
 #include <regex>
-#include "3DFileReader.h"
 #include <unordered_map>
-#include <../libcarve/carve/robin_hood.hpp>
 
 Mesh* StlReader::loadFromFile(std::string path)
 {
@@ -55,8 +55,7 @@ Mesh* StlReader::loadBinary(std::vector<unsigned char>& data)
     mesh->vertices.resize(numFacets * 3);
     mesh->indices.resize(numFacets * 3);
 
-    auto readFloat = [](unsigned char* ptr)
-    {
+    auto readFloat = [](unsigned char* ptr) {
         float f;
         std::memcpy(&f, ptr, 4);
         return f;
@@ -70,8 +69,10 @@ Mesh* StlReader::loadBinary(std::vector<unsigned char>& data)
 
         size_t meshIndex = i * 3;
         mesh->vertices[meshIndex] = float3(readFloat(dataPtr + arrayIndex + 12), readFloat(dataPtr + arrayIndex + 16), readFloat(dataPtr + arrayIndex + 20));
-        mesh->vertices[meshIndex + 1] = float3(readFloat(dataPtr + arrayIndex + 24), readFloat(dataPtr + arrayIndex + 28), readFloat(dataPtr + arrayIndex + 32));
-        mesh->vertices[meshIndex + 2] = float3(readFloat(dataPtr + arrayIndex + 36), readFloat(dataPtr + arrayIndex + 40), readFloat(dataPtr + arrayIndex + 44));
+        mesh->vertices[meshIndex + 1] =
+            float3(readFloat(dataPtr + arrayIndex + 24), readFloat(dataPtr + arrayIndex + 28), readFloat(dataPtr + arrayIndex + 32));
+        mesh->vertices[meshIndex + 2] =
+            float3(readFloat(dataPtr + arrayIndex + 36), readFloat(dataPtr + arrayIndex + 40), readFloat(dataPtr + arrayIndex + 44));
 
         mesh->indices[meshIndex] = (int)meshIndex;
         mesh->indices[meshIndex + 1] = (int)meshIndex + 1;
@@ -87,9 +88,11 @@ Mesh* StlReader::loadAscii(std::vector<unsigned char>& data)
 
     const static std::string numberRegex = "(-?\\d+(\\.\\d+)?(e(\\+|\\-)?\\d+)?)";
     constexpr int captureGroupsPerNumber = 4;
-    const static std::string regexString = "facet normal " + numberRegex + " " + numberRegex + " " + numberRegex + "\\s+outer loop\\s+vertex " + numberRegex + " " + numberRegex + " " + numberRegex + "\\s+vertex " + numberRegex + " " + numberRegex + " " + numberRegex + "\\s+vertex " + numberRegex + " " + numberRegex + " " + numberRegex + "\\s+endloop\\s+endfacet";
+    const static std::string regexString = "facet normal " + numberRegex + " " + numberRegex + " " + numberRegex + "\\s+outer loop\\s+vertex " + numberRegex +
+                                           " " + numberRegex + " " + numberRegex + "\\s+vertex " + numberRegex + " " + numberRegex + " " + numberRegex +
+                                           "\\s+vertex " + numberRegex + " " + numberRegex + " " + numberRegex + "\\s+endloop\\s+endfacet";
     const static std::regex regexp(regexString);
-    
+
     std::string::const_iterator searchStart = fileContents.cbegin();
 
     Mesh* mesh = new Mesh();
@@ -165,11 +168,7 @@ Mesh* Mesh::fromCSGMesh(CSGMesh* csgMesh)
 
     for (size_t i = 0; i < numVertices; ++i)
     {
-        mesh->vertices[i] = float3(
-            floatVertices[i * 3],
-            floatVertices[i * 3 + 1],
-            floatVertices[i * 3 + 2]
-        );
+        mesh->vertices[i] = float3(floatVertices[i * 3], floatVertices[i * 3 + 1], floatVertices[i * 3 + 2]);
     }
 
     mesh->indices.resize(numIndices);
@@ -197,34 +196,31 @@ void Mesh::translate(float3 tr)
 void Mesh::rotate(float angleInDegrees, float3 axisDirection, float3 axisPoint)
 {
     float angle = angleInDegrees / 180.0f * 3.14159265f;
-	float sin = sinf(angle);
-	float cos = cosf(angle);
-	float oneMinusCos = 1.0f - cos;
+    float sin = sinf(angle);
+    float cos = cosf(angle);
+    float oneMinusCos = 1.0f - cos;
 
     axisDirection = axisDirection.normalized();
-	float axisXsin = sin * axisDirection.x;
-	float axisYsin = sin * axisDirection.y;
-	float axisZsin = sin * axisDirection.z;
+    float axisXsin = sin * axisDirection.x;
+    float axisYsin = sin * axisDirection.y;
+    float axisZsin = sin * axisDirection.z;
 
-	float axisXXoneMinusCos = axisDirection.x * axisDirection.x * oneMinusCos;
-	float axisXYoneMinusCos = axisDirection.x * axisDirection.y * oneMinusCos;
-	float axisXZoneMinusCos = axisDirection.x * axisDirection.z * oneMinusCos;
-	float axisYYoneMinusCos = axisDirection.y * axisDirection.y * oneMinusCos;
-	float axisYZoneMinusCos = axisDirection.y * axisDirection.z * oneMinusCos;
-	float axisZZoneMinusCos = axisDirection.z * axisDirection.z * oneMinusCos;
+    float axisXXoneMinusCos = axisDirection.x * axisDirection.x * oneMinusCos;
+    float axisXYoneMinusCos = axisDirection.x * axisDirection.y * oneMinusCos;
+    float axisXZoneMinusCos = axisDirection.x * axisDirection.z * oneMinusCos;
+    float axisYYoneMinusCos = axisDirection.y * axisDirection.y * oneMinusCos;
+    float axisYZoneMinusCos = axisDirection.y * axisDirection.z * oneMinusCos;
+    float axisZZoneMinusCos = axisDirection.z * axisDirection.z * oneMinusCos;
 
-	float3 rotationMatrixRow1(axisXXoneMinusCos + cos, axisXYoneMinusCos - axisZsin, axisXZoneMinusCos + axisYsin);
-	float3 rotationMatrixRow2(axisXYoneMinusCos + axisZsin, axisYYoneMinusCos + cos, axisYZoneMinusCos - axisXsin);
-	float3 rotationMatrixRow3(axisXZoneMinusCos - axisYsin, axisYZoneMinusCos + axisXsin, axisZZoneMinusCos + cos);
+    float3 rotationMatrixRow1(axisXXoneMinusCos + cos, axisXYoneMinusCos - axisZsin, axisXZoneMinusCos + axisYsin);
+    float3 rotationMatrixRow2(axisXYoneMinusCos + axisZsin, axisYYoneMinusCos + cos, axisYZoneMinusCos - axisXsin);
+    float3 rotationMatrixRow3(axisXZoneMinusCos - axisYsin, axisYZoneMinusCos + axisXsin, axisZZoneMinusCos + cos);
 
-    auto rot = [=](float3 point)
-    {
+    auto rot = [=](float3 point) {
         point = point - axisPoint;
-        float3 rotated(
-            rotationMatrixRow1.x * point.x + rotationMatrixRow1.y * point.y + rotationMatrixRow1.z * point.z,
-            rotationMatrixRow2.x * point.x + rotationMatrixRow2.y * point.y + rotationMatrixRow2.z * point.z,
-            rotationMatrixRow3.x * point.x + rotationMatrixRow3.y * point.y + rotationMatrixRow3.z * point.z
-        );
+        float3 rotated(rotationMatrixRow1.x * point.x + rotationMatrixRow1.y * point.y + rotationMatrixRow1.z * point.z,
+                       rotationMatrixRow2.x * point.x + rotationMatrixRow2.y * point.y + rotationMatrixRow2.z * point.z,
+                       rotationMatrixRow3.x * point.x + rotationMatrixRow3.y * point.y + rotationMatrixRow3.z * point.z);
         return rotated + axisPoint;
     };
 
@@ -236,10 +232,9 @@ void Mesh::rotate(float angleInDegrees, float3 axisDirection, float3 axisPoint)
 
 void Mesh::weldVertices()
 {
-    std::vector<float3> uniqueVerts;    // new list of unique vertices
+    std::vector<float3> uniqueVerts; // new list of unique vertices
 
-    auto hasher = [](float3 value)
-    {
+    auto hasher = [](float3 value) {
         std::hash<int> hasher;
 
         int x = *(int*)(&value.x);
@@ -254,10 +249,7 @@ void Mesh::weldVertices()
         return seed;
     };
 
-    auto eq = [](float3 a, float3 b)
-    {
-        return a == b;
-    };
+    auto eq = [](float3 a, float3 b) { return a == b; };
 
     // maps vertices to index in unique vertex list
     robin_hood::unordered_flat_map<float3, size_t, decltype(hasher), decltype(eq)> vertexMap(vertices.size(), hasher, eq);
@@ -316,10 +308,7 @@ void StlWriter::writeToFile(const Mesh* mesh, std::string fileName)
     fileData[82] = (numTriangles >> 16) & 255;
     fileData[83] = (numTriangles >> 24) & 255;
 
-    auto writeFloat = [](unsigned char* ptr, float value)
-    {
-        std::memcpy(ptr, &value, 4);
-    };
+    auto writeFloat = [](unsigned char* ptr, float value) { std::memcpy(ptr, &value, 4); };
 
     unsigned char* dataPtr = fileData.data();
 

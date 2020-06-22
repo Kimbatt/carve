@@ -5,8 +5,8 @@
 
 #include <carve/carve.hpp>
 #include <carve/csg.hpp>
-#include <carve/input.hpp>
 #include <carve/csg_triangulator.hpp>
+#include <carve/input.hpp>
 #include <carve/interpolator.hpp>
 
 CSGMesh::CSGMesh()
@@ -135,8 +135,7 @@ EXPORT const int* STDCALL leoCSGMeshGetTrianglePointer(const CSGMesh* mesh)
 
 EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB, CSGOp op, char* errorMessage, int errorMessageLength)
 {
-    auto emptyMesh = [op](const CSGMesh* mesh, bool isA)
-    {
+    auto emptyMesh = [op](const CSGMesh* mesh, bool isA) {
         CSGMesh* newMesh = new CSGMesh();
 
         switch (op)
@@ -180,8 +179,7 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
         return emptyMesh(meshA, true);
     }
 
-    auto setErrorMessage = [=](const char* errorMsg)
-    {
+    auto setErrorMessage = [=](const char* errorMsg) {
         if (errorMessage != nullptr)
         {
             strncpy_s(errorMessage, strlen(errorMsg) + 1, errorMsg, errorMessageLength);

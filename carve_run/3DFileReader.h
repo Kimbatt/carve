@@ -1,17 +1,20 @@
 #ifndef THREED_FILE_READER_H
 #define THREED_FILE_READER_H
 
-#include <vector>
-#include <string>
 #include "../carve/carve.h"
+#include <string>
+#include <vector>
 
-template <typename T>
-struct Vector3
+template <typename T> struct Vector3
 {
     T x, y, z;
 
-    Vector3() : x(0), y(0), z(0) { }
-    Vector3(T x, T y, T z) : x(x), y(y), z(z) { }
+    Vector3() : x(0), y(0), z(0)
+    {
+    }
+    Vector3(T x, T y, T z) : x(x), y(y), z(z)
+    {
+    }
 
     T dot(Vector3 other) const
     {
@@ -30,11 +33,7 @@ struct Vector3
 
     Vector3 cross(Vector3 other)
     {
-        return Vector3(
-            y * other.z - z * other.y,
-            z * other.x - x * other.z,
-            x * other.y - y * other.z
-        );
+        return Vector3(y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.z);
     }
 
     Vector3 operator+(const Vector3& other)
