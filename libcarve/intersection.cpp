@@ -25,10 +25,10 @@
 
 #include <algorithm>
 
-#include <carve/carve.hpp>
-#include <carve/intersection.hpp>
-#include <carve/poly.hpp>
-#include <carve/timing.hpp>
+#include <include/carve.hpp>
+#include <include/intersection.hpp>
+#include <include/poly.hpp>
+#include <include/timing.hpp>
 
 
 void carve::csg::Intersections::collect(const IObj& obj, std::vector<carve::mesh::MeshSet<3>::vertex_t*>* collect_v,

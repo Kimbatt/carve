@@ -27,18 +27,18 @@
 #define DEBUG_CONTAINS_VERTEX
 #endif
 
-#include <carve/djset.hpp>
+#include <include/djset.hpp>
 
-#include <carve/geom.hpp>
-#include <carve/poly.hpp>
+#include <include/geom.hpp>
+#include <include/poly.hpp>
 
-#include <carve/octree_impl.hpp>
+#include <include/octree_impl.hpp>
 
-#include <carve/timing.hpp>
+#include <include/timing.hpp>
 
 #include <algorithm>
 
-#include <carve/mesh.hpp>
+#include <include/mesh.hpp>
 
 namespace
 {

@@ -23,8 +23,8 @@
 // SOFTWARE.
 
 
-#include <carve/csg.hpp>
-#include <carve/triangulator.hpp>
+#include <include/csg.hpp>
+#include <include/triangulator.hpp>
 
 #include <fstream>
 #include <sstream>

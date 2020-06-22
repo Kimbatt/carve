@@ -25,13 +25,13 @@
 
 #pragma once
 
-#include <carve/carve.hpp>
-#include <carve/geom2d.hpp>
-#include <carve/heap.hpp>
-#include <carve/mesh.hpp>
-#include <carve/mesh_ops.hpp>
-#include <carve/rtree.hpp>
-#include <carve/triangle_intersection.hpp>
+#include <include/carve.hpp>
+#include <include/geom2d.hpp>
+#include <include/heap.hpp>
+#include <include/mesh.hpp>
+#include <include/mesh_ops.hpp>
+#include <include/rtree.hpp>
+#include <include/triangle_intersection.hpp>
 
 #include <algorithm>
 #include <fstream>

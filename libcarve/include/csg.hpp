@@ -29,18 +29,18 @@
 #include <list>
 #include <vector>
 
-#include <carve/carve.hpp>
+#include <include/carve.hpp>
 
-#include <carve/geom3d.hpp>
+#include <include/geom3d.hpp>
 
-#include <carve/mesh.hpp>
+#include <include/mesh.hpp>
 
-#include <carve/classification.hpp>
-#include <carve/collection_types.hpp>
-#include <carve/faceloop.hpp>
-#include <carve/intersection.hpp>
-#include <carve/iobj.hpp>
-#include <carve/rtree.hpp>
+#include <include/classification.hpp>
+#include <include/collection_types.hpp>
+#include <include/faceloop.hpp>
+#include <include/intersection.hpp>
+#include <include/iobj.hpp>
+#include <include/rtree.hpp>
 
 namespace carve
 {

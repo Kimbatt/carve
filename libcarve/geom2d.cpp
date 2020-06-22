@@ -23,9 +23,9 @@
 // SOFTWARE.
 
 
-#include <carve/aabb.hpp>
-#include <carve/geom2d.hpp>
-#include <carve/math.hpp>
+#include <include/aabb.hpp>
+#include <include/geom2d.hpp>
+#include <include/math.hpp>
 
 #include <algorithm>
 #include <iostream>

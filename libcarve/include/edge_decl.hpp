@@ -25,10 +25,11 @@
 
 #pragma once
 
-#include <carve/carve.hpp>
+#include <include/carve.hpp>
+#include <include/vertex_decl.hpp>
 
-#include <carve/tag.hpp>
-#include <carve/vector.hpp>
+#include <include/tag.hpp>
+#include <include/vector.hpp>
 
 #include <list>
 #include <vector>

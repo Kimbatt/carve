@@ -23,9 +23,9 @@
 // SOFTWARE.
 
 
-#include <carve/csg.hpp>
-#include <carve/pointset.hpp>
-#include <carve/polyline.hpp>
+#include <include/csg.hpp>
+#include <include/pointset.hpp>
+#include <include/polyline.hpp>
 
 #include <iostream>
 #include <list>
@@ -42,7 +42,7 @@
 
 #include "csg_collector.hpp"
 
-#include <carve/timing.hpp>
+#include <include/timing.hpp>
 
 #include <memory>
 

@@ -24,9 +24,9 @@
 
 #pragma once
 
-#include <carve/carve.hpp>
+#include <include/carve.hpp>
 
-#include <carve/geom.hpp>
+#include <include/geom.hpp>
 
 #include <vector>
 
@@ -151,4 +151,4 @@ typedef carve::geom::aabb<3> AABB;
 }
 } // namespace carve
 
-#include <carve/aabb_impl.hpp>
+#include <include/aabb_impl.hpp>

@@ -25,13 +25,13 @@
 
 #pragma once
 
-#include <carve/carve.hpp>
+#include <include/carve.hpp>
 
-#include <carve/geom3d.hpp>
+#include <include/geom3d.hpp>
 
-#include <carve/collection_types.hpp>
-#include <carve/octree_decl.hpp>
-#include <carve/polyhedron_base.hpp>
+#include <include/collection_types.hpp>
+#include <include/octree_decl.hpp>
+#include <include/polyhedron_base.hpp>
 
 #include <assert.h>
 #include <list>

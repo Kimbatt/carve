@@ -23,8 +23,8 @@
 // SOFTWARE.
 
 
-#include <carve/geom.hpp>
-#include <carve/pointset.hpp>
+#include <include/geom.hpp>
+#include <include/pointset.hpp>
 
 namespace carve
 {

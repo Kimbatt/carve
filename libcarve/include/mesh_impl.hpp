@@ -24,9 +24,9 @@
 
 #pragma once
 
-#include <carve/djset.hpp>
-#include <carve/geom2d.hpp>
-#include <carve/geom3d.hpp>
+#include <include/djset.hpp>
+#include <include/geom2d.hpp>
+#include <include/geom3d.hpp>
 
 #include <algorithm>
 #include <deque>

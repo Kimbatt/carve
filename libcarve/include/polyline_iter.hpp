@@ -29,7 +29,7 @@
 #include <limits>
 #include <list>
 
-#include <carve/polyline_decl.hpp>
+#include <include/polyline_decl.hpp>
 
 namespace carve
 {

@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include <carve/carve.hpp>
+#include <include/carve.hpp>
 
-#include <carve/math_constants.hpp>
+#include <include/math_constants.hpp>
 
 #include <math.h>
 

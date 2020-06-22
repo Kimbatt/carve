@@ -25,13 +25,13 @@
 
 #pragma once
 
-#include <carve/carve.hpp>
+#include <include/carve.hpp>
 
-#include <carve/aabb.hpp>
-#include <carve/edge_decl.hpp>
-#include <carve/face_decl.hpp>
-#include <carve/geom.hpp>
-#include <carve/vertex_decl.hpp>
+#include <include/aabb.hpp>
+#include <include/edge_decl.hpp>
+#include <include/face_decl.hpp>
+#include <include/geom.hpp>
+#include <include/vertex_decl.hpp>
 
 namespace carve
 {

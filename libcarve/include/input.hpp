@@ -28,11 +28,11 @@
 #include <map>
 #include <string>
 
-#include <carve/carve.hpp>
-#include <carve/mesh.hpp>
-#include <carve/pointset.hpp>
-#include <carve/poly.hpp>
-#include <carve/polyline.hpp>
+#include <include/carve.hpp>
+#include <include/mesh.hpp>
+#include <include/pointset.hpp>
+#include <include/poly.hpp>
+#include <include/polyline.hpp>
 
 
 namespace carve

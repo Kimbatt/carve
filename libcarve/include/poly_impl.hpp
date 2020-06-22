@@ -25,8 +25,8 @@
 
 #pragma once
 
-#include <carve/carve.hpp>
+#include <include/carve.hpp>
 
-#include <carve/edge_impl.hpp>
-#include <carve/face_impl.hpp>
-#include <carve/polyhedron_impl.hpp>
+#include <include/edge_impl.hpp>
+#include <include/face_impl.hpp>
+#include <include/polyhedron_impl.hpp>

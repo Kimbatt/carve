@@ -23,8 +23,8 @@
 // SOFTWARE.
 
 
-#include <carve/math.hpp>
-#include <carve/matrix.hpp>
+#include <include/math.hpp>
+#include <include/matrix.hpp>
 
 #include <iostream>
 #include <limits>

@@ -25,11 +25,11 @@
 
 #pragma once
 
-#include <carve/carve.hpp>
-#include <carve/csg.hpp>
-#include <carve/geom2d.hpp>
-#include <carve/mesh.hpp>
-#include <carve/poly.hpp>
+#include <include/carve.hpp>
+#include <include/csg.hpp>
+#include <include/geom2d.hpp>
+#include <include/mesh.hpp>
+#include <include/poly.hpp>
 
 namespace carve
 {

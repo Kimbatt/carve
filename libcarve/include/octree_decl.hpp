@@ -25,12 +25,12 @@
 
 #pragma once
 
-#include <carve/carve.hpp>
+#include <include/carve.hpp>
 
-#include <carve/aabb.hpp>
-#include <carve/geom3d.hpp>
+#include <include/aabb.hpp>
+#include <include/geom3d.hpp>
 
-#include <carve/polyhedron_base.hpp>
+#include <include/polyhedron_base.hpp>
 
 namespace carve
 {

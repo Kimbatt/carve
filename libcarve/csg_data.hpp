@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include <carve/csg.hpp>
+#include <include/csg.hpp>
 
 #include "csg_detail.hpp"
 

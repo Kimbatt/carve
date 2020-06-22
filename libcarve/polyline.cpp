@@ -23,9 +23,9 @@
 // SOFTWARE.
 
 
-#include <carve/geom.hpp>
-#include <carve/polyline.hpp>
-#include <carve/vector.hpp>
+#include <include/geom.hpp>
+#include <include/polyline.hpp>
+#include <include/vector.hpp>
 
 namespace carve
 {

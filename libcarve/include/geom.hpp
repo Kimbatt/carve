@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include <carve/carve.hpp>
+#include <include/carve.hpp>
 
 #include <vector>
 
@@ -441,4 +441,4 @@ template <unsigned base, unsigned ndigits> struct quantize
 } // namespace carve
 
 
-#include <carve/geom_impl.hpp>
+#include <include/geom_impl.hpp>

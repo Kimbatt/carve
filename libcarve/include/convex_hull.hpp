@@ -29,9 +29,9 @@
 #include <list>
 #include <vector>
 
-#include <carve/carve.hpp>
+#include <include/carve.hpp>
 
-#include <carve/geom2d.hpp>
+#include <include/geom2d.hpp>
 
 namespace carve
 {

@@ -23,8 +23,8 @@
 // SOFTWARE.
 
 
-#include <carve/csg.hpp>
-#include <carve/debug_hooks.hpp>
+#include <include/csg.hpp>
+#include <include/debug_hooks.hpp>
 
 #include <iostream>
 #include <list>

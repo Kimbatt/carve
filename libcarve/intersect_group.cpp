@@ -23,8 +23,8 @@
 // SOFTWARE.
 
 
-#include <carve/csg.hpp>
-#include <carve/timing.hpp>
+#include <include/csg.hpp>
+#include <include/timing.hpp>
 
 #include "csg_detail.hpp"
 #include "intersect_common.hpp"
@@ -42,7 +42,7 @@ void carve::csg::CSG::makeEdgeMap(const carve::csg::FaceLoopList& loops, size_t 
     }
 }
 
-#include <carve/polyline.hpp>
+#include <include/polyline.hpp>
 
 #if defined(CARVE_DEBUG_WRITE_PLY_DATA)
 void writePLY(const std::string& out_file, const carve::mesh::MeshSet<3>* poly, bool ascii);

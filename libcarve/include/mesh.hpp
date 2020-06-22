@@ -25,14 +25,14 @@
 
 #pragma once
 
-#include <carve/carve.hpp>
+#include <include/carve.hpp>
 
-#include <carve/aabb.hpp>
-#include <carve/djset.hpp>
-#include <carve/geom.hpp>
-#include <carve/geom3d.hpp>
-#include <carve/rtree.hpp>
-#include <carve/tag.hpp>
+#include <include/aabb.hpp>
+#include <include/djset.hpp>
+#include <include/geom.hpp>
+#include <include/geom3d.hpp>
+#include <include/rtree.hpp>
+#include <include/tag.hpp>
 
 #include <iostream>
 
@@ -1041,4 +1041,4 @@ poly::Polyhedron* polyhedronFromMesh(const mesh::MeshSet<3>*, int manifold_id);
 
 }; // namespace carve
 
-#include <carve/mesh_impl.hpp>
+#include <include/mesh_impl.hpp>

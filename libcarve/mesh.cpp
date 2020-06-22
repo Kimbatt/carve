@@ -23,12 +23,12 @@
 // SOFTWARE.
 
 
-#include <carve/mesh.hpp>
-#include <carve/mesh_impl.hpp>
-#include <carve/rtree.hpp>
+#include <include/mesh.hpp>
+#include <include/mesh_impl.hpp>
+#include <include/rtree.hpp>
 
-#include <carve/poly.hpp>
 #include <functional>
+#include <include/poly.hpp>
 
 namespace
 {

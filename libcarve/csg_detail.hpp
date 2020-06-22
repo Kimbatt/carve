@@ -25,9 +25,12 @@
 
 #pragma once
 
-#include <carve/carve.hpp>
+#include <include/carve.hpp>
+#include <include/mesh.hpp>
 
-#include <carve/polyhedron_base.hpp>
+#include <include/collection_types.hpp>
+#include <include/faceloop.hpp>
+#include <include/polyhedron_base.hpp>
 
 namespace carve
 {

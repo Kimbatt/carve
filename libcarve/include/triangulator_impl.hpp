@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include <carve/geom2d.hpp>
+#include <include/geom2d.hpp>
 
 #if defined(CARVE_DEBUG)
 #include <iostream>

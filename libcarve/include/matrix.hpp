@@ -27,10 +27,10 @@
 
 #include <cstring>
 
-#include <carve/carve.hpp>
+#include <include/carve.hpp>
 
-#include <carve/geom.hpp>
-#include <carve/math.hpp>
+#include <include/geom.hpp>
+#include <include/math.hpp>
 
 namespace carve
 {

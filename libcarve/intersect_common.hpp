@@ -36,7 +36,7 @@ static inline bool facesAreCoplanar(const carve::mesh::MeshSet<3>::face_t* a, co
 
 #if defined(CARVE_DEBUG)
 
-#include <carve/debug_hooks.hpp>
+#include <include/debug_hooks.hpp>
 
 #endif
 

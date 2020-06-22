@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include <carve/carve.hpp>
+#include <include/carve.hpp>
 
-#include <carve/mesh.hpp>
+#include <include/mesh.hpp>
 
 #include <fstream>
 #include <iostream>

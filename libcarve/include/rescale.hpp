@@ -25,11 +25,11 @@
 
 #pragma once
 
-#include <carve/carve.hpp>
+#include <include/carve.hpp>
 
-#include <carve/aabb.hpp>
-#include <carve/matrix.hpp>
-#include <carve/vector.hpp>
+#include <include/aabb.hpp>
+#include <include/matrix.hpp>
+#include <include/vector.hpp>
 
 #include <limits>
 

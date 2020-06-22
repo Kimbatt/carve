@@ -29,9 +29,9 @@
 #include <list>
 #include <vector>
 
-#include <carve/carve.hpp>
+#include <include/carve.hpp>
 
-#include <carve/geom2d.hpp>
+#include <include/geom2d.hpp>
 
 namespace carve
 {
@@ -179,4 +179,4 @@ static inline void improve(const std::vector<carve::geom2d::P2>& poly, std::vect
 } // namespace triangulate
 } // namespace carve
 
-#include <carve/triangulator_impl.hpp>
+#include <include/triangulator_impl.hpp>

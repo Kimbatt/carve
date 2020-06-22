@@ -24,7 +24,7 @@
 
 
 #include "csg_detail.hpp"
-#include <carve/csg.hpp>
+#include <include/csg.hpp>
 
 
 const char* carve::csg::ENUM(carve::csg::FaceClass f)

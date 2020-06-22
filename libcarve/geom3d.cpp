@@ -23,8 +23,8 @@
 // SOFTWARE.
 
 
-#include <carve/geom3d.hpp>
-#include <carve/math.hpp>
+#include <include/geom3d.hpp>
+#include <include/math.hpp>
 
 #include <algorithm>
 

@@ -29,12 +29,12 @@
 #include <limits>
 #include <list>
 
-#include <carve/aabb.hpp>
-#include <carve/carve.hpp>
-#include <carve/geom.hpp>
-#include <carve/geom3d.hpp>
-#include <carve/kd_node.hpp>
-#include <carve/tag.hpp>
+#include <include/aabb.hpp>
+#include <include/carve.hpp>
+#include <include/geom.hpp>
+#include <include/geom3d.hpp>
+#include <include/kd_node.hpp>
+#include <include/tag.hpp>
 
 namespace carve
 {

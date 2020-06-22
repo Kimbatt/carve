@@ -25,10 +25,10 @@
 
 #pragma once
 
-#include <carve/carve.hpp>
+#include <include/carve.hpp>
 
-#include <carve/aabb.hpp>
-#include <carve/geom.hpp>
+#include <include/aabb.hpp>
+#include <include/geom.hpp>
 
 #include <iostream>
 

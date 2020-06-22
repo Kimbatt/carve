@@ -25,12 +25,12 @@
 
 #pragma once
 
-#include <carve/carve.hpp>
+#include <include/carve.hpp>
 
-#include <carve/math.hpp>
-#include <carve/math_constants.hpp>
+#include <include/math.hpp>
+#include <include/math_constants.hpp>
 
-#include <carve/geom.hpp>
+#include <include/geom.hpp>
 
 #include <vector>
 
@@ -41,7 +41,7 @@
 #endif
 
 #if defined CARVE_USE_EXACT_PREDICATES
-#include <carve/shewchuk_predicates.hpp>
+#include <include/shewchuk_predicates.hpp>
 #endif
 
 namespace carve

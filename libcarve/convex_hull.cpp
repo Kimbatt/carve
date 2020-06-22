@@ -23,8 +23,8 @@
 // SOFTWARE.
 
 
-#include <carve/convex_hull.hpp>
-#include <carve/csg.hpp>
+#include <include/convex_hull.hpp>
+#include <include/csg.hpp>
 
 #include <algorithm>
 

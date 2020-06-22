@@ -25,11 +25,11 @@
 #ifndef CSG_TRIANGULATOR_H
 #define CSG_TRIANGULATOR_H
 
-#include <carve/csg.hpp>
-#include <carve/poly.hpp>
-#include <carve/tag.hpp>
-#include <carve/triangulator.hpp>
 #include <deque>
+#include <include/csg.hpp>
+#include <include/poly.hpp>
+#include <include/tag.hpp>
+#include <include/triangulator.hpp>
 
 namespace carve
 {

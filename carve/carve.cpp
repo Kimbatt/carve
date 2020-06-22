@@ -3,11 +3,11 @@
 
 #include <vector>
 
-#include <carve/carve.hpp>
-#include <carve/csg.hpp>
-#include <carve/csg_triangulator.hpp>
-#include <carve/input.hpp>
-#include <carve/interpolator.hpp>
+#include <include/carve.hpp>
+#include <include/csg.hpp>
+#include <include/csg_triangulator.hpp>
+#include <include/input.hpp>
+#include <include/interpolator.hpp>
 
 CSGMesh::CSGMesh()
 {

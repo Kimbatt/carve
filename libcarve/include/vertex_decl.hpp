@@ -25,14 +25,14 @@
 
 #pragma once
 
-#include <carve/carve.hpp>
+#include <include/carve.hpp>
 
-#include <carve/aabb.hpp>
-#include <carve/geom2d.hpp>
-#include <carve/geom3d.hpp>
-#include <carve/matrix.hpp>
-#include <carve/tag.hpp>
-#include <carve/vector.hpp>
+#include <include/aabb.hpp>
+#include <include/geom2d.hpp>
+#include <include/geom3d.hpp>
+#include <include/matrix.hpp>
+#include <include/tag.hpp>
+#include <include/vector.hpp>
 
 #include <list>
 #include <map>

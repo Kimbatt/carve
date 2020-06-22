@@ -23,10 +23,10 @@
 // SOFTWARE.
 
 
-#include <carve/octree_decl.hpp>
-#include <carve/octree_impl.hpp>
+#include <include/octree_decl.hpp>
+#include <include/octree_impl.hpp>
 
-#include <carve/poly_decl.hpp>
+#include <include/poly_decl.hpp>
 
 namespace carve
 {

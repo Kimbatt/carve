@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include <carve/math.hpp>
+#include <include/math.hpp>
 
 namespace carve
 {

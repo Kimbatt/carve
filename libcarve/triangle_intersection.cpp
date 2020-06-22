@@ -23,11 +23,11 @@
 // SOFTWARE.
 
 
-#include <carve/triangle_intersection.hpp>
+#include <include/triangle_intersection.hpp>
 
-#include <carve/geom2d.hpp>
-#include <carve/geom3d.hpp>
-#include <carve/shewchuk_predicates.hpp>
+#include <include/geom2d.hpp>
+#include <include/geom3d.hpp>
+#include <include/shewchuk_predicates.hpp>
 
 #include <cstdlib>
 

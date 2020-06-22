@@ -25,11 +25,11 @@
 
 #pragma once
 
-#include <carve/carve.hpp>
+#include <include/carve.hpp>
 
-#include <carve/matrix.hpp>
-#include <carve/rescale.hpp>
-#include <carve/timing.hpp>
+#include <include/matrix.hpp>
+#include <include/rescale.hpp>
+#include <include/timing.hpp>
 
 namespace carve
 {

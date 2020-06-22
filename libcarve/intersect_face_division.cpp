@@ -23,11 +23,11 @@
 // SOFTWARE.
 
 
-#include <carve/csg.hpp>
-#include <carve/debug_hooks.hpp>
-#include <carve/polyline.hpp>
-#include <carve/timing.hpp>
-#include <carve/triangulator.hpp>
+#include <include/csg.hpp>
+#include <include/debug_hooks.hpp>
+#include <include/polyline.hpp>
+#include <include/timing.hpp>
+#include <include/triangulator.hpp>
 
 #include <iostream>
 #include <list>

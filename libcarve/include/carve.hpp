@@ -24,10 +24,10 @@
 
 #pragma once
 
-#include <carve/config.h>
+#include <include/config.h>
 
 #if defined(WIN32)
-#include <carve/win32.h>
+#include <include/win32.h>
 #endif
 
 #include <math.h>
@@ -40,13 +40,13 @@
 #include <string>
 #include <vector>
 
-#include <carve/collection.hpp>
+#include <include/collection.hpp>
 
-#include <carve/util.hpp>
+#include <include/util.hpp>
 
 #include <stdarg.h>
 
-#include <carve/robin_hood.hpp>
+#include <include/robin_hood.hpp>
 #include <unordered_map>
 #include <unordered_set>
 

@@ -25,8 +25,8 @@
 
 #pragma once
 
-#include <carve/carve.hpp>
+#include <include/carve.hpp>
 
-#include <carve/polyline_decl.hpp>
-#include <carve/polyline_impl.hpp>
-#include <carve/polyline_iter.hpp>
+#include <include/polyline_decl.hpp>
+#include <include/polyline_impl.hpp>
+#include <include/polyline_iter.hpp>

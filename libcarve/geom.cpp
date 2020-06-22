@@ -27,7 +27,7 @@
 #include <carve_config.h>
 #endif
 
-#include <carve/geom.hpp>
+#include <include/geom.hpp>
 
 namespace carve
 {

@@ -24,7 +24,7 @@
 
 
 #include "intersect_debug.hpp"
-#include <carve/csg.hpp>
+#include <include/csg.hpp>
 #include <iostream>
 
 #if defined(CARVE_DEBUG_WRITE_PLY_DATA)
