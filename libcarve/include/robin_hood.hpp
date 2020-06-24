@@ -1315,7 +1315,7 @@ private:
             } while (inc == static_cast<int>(sizeof(size_t)));
         }
 
-        friend class Table<IsFlat, MaxLoadFactor100, key_type, mapped_type, hasher, key_equal>;
+        friend class Table<IsFlat, MaxLoadFactor100, key_type, mapped_type, hasher, key_equal, AllocatorMin, AllocatorMax>;
         NodePtr mKeyVals{ nullptr };
         uint8_t const* mInfo{ nullptr };
     };

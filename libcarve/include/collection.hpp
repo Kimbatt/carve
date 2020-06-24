@@ -208,9 +208,38 @@ public:
     small_vector_on_stack() : stackStorage(), heapStorage(nullptr), _size(0)
     {
     }
+
+    small_vector_on_stack(size_t size) : stackStorage(), heapStorage(nullptr), _size(size)
+    {
+        if (size >= SizeOnStack)
+        {
+            heapStorage = new std::vector<T>(size);
+            _size = 0;
+        }
+    }
+
     ~small_vector_on_stack()
     {
         delete heapStorage;
+    }
+
+    void move_from(small_vector_on_stack<T, SizeOnStack>& other)
+    {
+        if (other.heapStorage == nullptr)
+        {
+            _size = other._size;
+            stackStorage = other.stackStorage;
+            heapStorage = nullptr;
+        }
+        else
+        {
+            _size = 0;
+            stackStorage = std::array<T, SizeOnStack>();
+            heapStorage = other.heapStorage;
+        }
+
+        other._size = 0;
+        other.heapStorage = nullptr;
     }
 
     void push_back(const T& value)
@@ -368,6 +397,30 @@ public:
     const T& front() const
     {
         return stackStorage[0];
+    }
+
+    T& back()
+    {
+        if (heapStorage == null)
+        {
+            return stackStorage[size - 1];
+        }
+        else
+        {
+            return heapStorage->back();
+        }
+    }
+
+    const T& back() const
+    {
+        if (heapStorage == null)
+        {
+            return stackStorage[size - 1];
+        }
+        else
+        {
+            return heapStorage->back();
+        }
     }
 
     iter begin()

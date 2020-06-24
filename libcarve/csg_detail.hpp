@@ -40,23 +40,23 @@ namespace detail
 {
 typedef std::map<carve::mesh::MeshSet<3>::vertex_t*, std::set<std::pair<carve::mesh::MeshSet<3>::face_t*, double>>> EdgeIntInfo;
 
-typedef carve::unordered_set<carve::mesh::MeshSet<3>::vertex_t*> VSet;
-typedef carve::unordered_set<carve::mesh::MeshSet<3>::face_t*> FSet;
+typedef carve::unordered_flat_set<carve::mesh::MeshSet<3>::vertex_t*> VSet;
+typedef carve::unordered_flat_set<carve::mesh::MeshSet<3>::face_t*> FSet;
 
 typedef std::set<carve::mesh::MeshSet<3>::vertex_t*> VSetSmall;
 typedef std::set<csg::V2> V2SetSmall;
 typedef std::set<carve::mesh::MeshSet<3>::face_t*> FSetSmall;
 
 typedef carve::unordered_map<carve::mesh::MeshSet<3>::vertex_t*, VSetSmall> VVSMap;
-typedef carve::unordered_map<carve::mesh::MeshSet<3>::edge_t*, EdgeIntInfo> EIntMap;
-typedef carve::unordered_map<carve::mesh::MeshSet<3>::face_t*, VSetSmall> FVSMap;
+typedef carve::unordered_node_map<carve::mesh::MeshSet<3>::edge_t*, EdgeIntInfo, 64> EIntMap;
+typedef carve::unordered_node_map<carve::mesh::MeshSet<3>::face_t*, VSetSmall, 64> FVSMap;
 
-typedef carve::unordered_map<carve::mesh::MeshSet<3>::vertex_t*, FSetSmall> VFSMap;
-typedef carve::unordered_map<carve::mesh::MeshSet<3>::face_t*, V2SetSmall> FV2SMap;
+typedef carve::unordered_node_map<carve::mesh::MeshSet<3>::vertex_t*, FSetSmall, 64> VFSMap;
+typedef carve::unordered_node_map<carve::mesh::MeshSet<3>::face_t*, V2SetSmall, 64> FV2SMap;
 
-typedef carve::unordered_map<carve::mesh::MeshSet<3>::edge_t*, std::vector<carve::mesh::MeshSet<3>::vertex_t*>> EVVMap;
+typedef carve::unordered_node_map<carve::mesh::MeshSet<3>::edge_t*, std::vector<carve::mesh::MeshSet<3>::vertex_t*>, 64> EVVMap;
 
-typedef carve::unordered_map<carve::mesh::MeshSet<3>::vertex_t*, std::vector<carve::mesh::MeshSet<3>::edge_t*>> VEVecMap;
+typedef carve::unordered_node_map<carve::mesh::MeshSet<3>::vertex_t*, std::vector<carve::mesh::MeshSet<3>::edge_t*>, 64> VEVecMap;
 
 
 class LoopEdges : public carve::unordered_flat_map<V2, std::list<FaceLoop*>, hash_pair>

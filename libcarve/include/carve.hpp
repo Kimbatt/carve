@@ -263,8 +263,8 @@ inline double rangeSeparation(const std::pair<double, double>& a, const std::pai
 }
 
 
-template <typename Key, typename Hash = robin_hood::hash<Key>, typename KeyEqual = std::equal_to<Key>, size_t MaxLoadFactor100 = 80, uint32_t AllocatorMin = 4,
-          uint32_t AllocatorMax = 16384>
+template <typename Key, uint32_t AllocatorMin = 4, uint32_t AllocatorMax = 16384, typename Hash = robin_hood::hash<Key>, typename KeyEqual = std::equal_to<Key>,
+          size_t MaxLoadFactor100 = 80>
 using unordered_node_set = robin_hood::unordered_node_set<Key, Hash, KeyEqual, MaxLoadFactor100, AllocatorMin, AllocatorMax>;
 
 
@@ -272,8 +272,8 @@ template <class _Kty, class _Hasher = std::hash<_Kty>, class _Keyeq = std::equal
 using unordered_set = std::unordered_set<_Kty, _Hasher, _Keyeq, _Alloc>;
 
 
-template <typename Key, typename T, typename Hash = robin_hood::hash<Key>, typename KeyEqual = std::equal_to<Key>, size_t MaxLoadFactor100 = 80,
-          uint32_t AllocatorMin = 4, uint32_t AllocatorMax = 16384>
+template <typename Key, typename T, uint32_t AllocatorMin = 4, uint32_t AllocatorMax = 16384, typename Hash = robin_hood::hash<Key>,
+          typename KeyEqual = std::equal_to<Key>, size_t MaxLoadFactor100 = 80>
 using unordered_node_map = robin_hood::unordered_node_map<Key, T, Hash, KeyEqual, MaxLoadFactor100, AllocatorMin, AllocatorMax>;
 
 

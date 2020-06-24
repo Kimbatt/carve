@@ -704,16 +704,16 @@ template <> inline int Mesh<3>::orientationAtVertex(edge_t* e_base)
     vertex_t::vector_t v_base = e->v1()->v;
     std::vector<vertex_t::vector_t> v_edge;
 
-    if (v_edge.size() < 3)
-    {
-        return 0;
-    }
-
     do
     {
         v_edge.push_back(e->v2()->v);
         e = e->rev->next;
     } while (e != e_base);
+
+    if (v_edge.size() < 3)
+    {
+        return 0;
+    }
 
     const size_t N = v_edge.size();
 
@@ -728,7 +728,7 @@ template <> inline int Mesh<3>::orientationAtVertex(edge_t* e_base)
         {
             double o = carve::geom3d::orient3d(v_edge[i], v_base, v_edge[j], v_edge[k]);
             o_hi = std::max(o_hi, o);
-            o_lo = std::max(o_lo, o);
+            o_lo = std::min(o_lo, o);
         }
 
         if (o_lo >= 0.0)
@@ -742,6 +742,10 @@ template <> inline int Mesh<3>::orientationAtVertex(edge_t* e_base)
 
 template <unsigned ndim> void Mesh<ndim>::calcOrientation()
 {
+    is_negative = false;
+
+#if false // not used
+
     if (open_edges.size() || !closed_edges.size())
     {
         is_negative = false;
@@ -771,6 +775,8 @@ template <unsigned ndim> void Mesh<ndim>::calcOrientation()
 #endif
 
     is_negative = orientation == -1;
+
+#endif
 }
 
 template <unsigned ndim> Mesh<ndim>* Mesh<ndim>::clone(const vertex_t* old_base, vertex_t* new_base) const
