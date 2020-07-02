@@ -178,7 +178,11 @@ static Counts& counts()
 #define ROBIN_HOOD_LIKELY_ATTRIBUTE
 #define ROBIN_HOOD_UNLIKELY_ATTRIBUTE
 #endif
-
+#elif __EMSCRIPTEN__
+#    define ROBIN_HOOD_LIKELY_ATTRIBUTE
+#    define ROBIN_HOOD_UNLIKELY_ATTRIBUTE
+#    define ROBIN_HOOD_LIKELY(condition) condition
+#    define ROBIN_HOOD_UNLIKELY(condition) condition
 #else
 #define ROBIN_HOOD_LIKELY(condition) __builtin_expect(condition, 1)
 #define ROBIN_HOOD_UNLIKELY(condition) __builtin_expect(condition, 0)

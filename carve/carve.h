@@ -36,9 +36,13 @@ private:
     std::vector<int> m_triangles;
 };
 
-
+#if __EMSCRIPTEN__
+#define EXPORT
+#define STDCALL
+#else
 #define EXPORT __declspec(dllexport)
 #define STDCALL __stdcall
+#endif
 
 extern "C"
 {
