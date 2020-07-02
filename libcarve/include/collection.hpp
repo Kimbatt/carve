@@ -83,6 +83,12 @@ public:
         small_vector_on_stack* vec;
 
     public:
+        using difference_type = std::ptrdiff_t;
+        using value_type = T;
+        using pointer = T*;
+        using reference = T&;
+        using iterator_category = std::random_access_iterator_tag;
+
         iter() : idx(0), vec(nullptr)
         {
         }
@@ -145,6 +151,12 @@ public:
         const small_vector_on_stack* vec;
 
     public:
+        using difference_type = std::ptrdiff_t;
+        using value_type = T;
+        using pointer = const T*;
+        using reference = const T&;
+        using iterator_category = std::random_access_iterator_tag;
+
         const_iter(size_t idx, const small_vector_on_stack* vec) : idx(idx), vec(vec)
         {
         }
@@ -203,7 +215,6 @@ public:
 public:
     using iterator = iter;
     using const_iterator = const_iter;
-    using value_type = T;
 
     small_vector_on_stack() : stackStorage(), heapStorage(nullptr), _size(0)
     {
@@ -453,4 +464,5 @@ public:
         return const_iter(size(), this);
     }
 };
+
 } // namespace carve
