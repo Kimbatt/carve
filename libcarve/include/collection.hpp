@@ -401,9 +401,9 @@ public:
 
     T& back()
     {
-        if (heapStorage == null)
+        if (heapStorage == nullptr)
         {
-            return stackStorage[size - 1];
+            return stackStorage[_size - 1];
         }
         else
         {
@@ -413,9 +413,9 @@ public:
 
     const T& back() const
     {
-        if (heapStorage == null)
+        if (heapStorage == nullptr)
         {
-            return stackStorage[size - 1];
+            return stackStorage[_size - 1];
         }
         else
         {
