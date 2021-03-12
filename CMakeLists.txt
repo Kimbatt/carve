@@ -1,111 +1,39 @@
 cmake_minimum_required (VERSION 3.0.0)
 
-set(CARVE_SRC
-    carve.cpp
-    convex_hull.cpp
-    csg.cpp
-    csg_collector.cpp
-    csg_collector.hpp
-    csg_data.hpp
-    csg_detail.hpp
-    face.cpp
-    geom.cpp
-    geom2d.cpp
-    geom3d.cpp
-    intersect.cpp
-    intersection.cpp
-    intersect_classify_common.hpp
-    intersect_classify_common_impl.hpp
-    intersect_classify_edge.cpp
-    intersect_classify_group.cpp
-    intersect_common.hpp
-    intersect_debug.cpp
-    intersect_debug.hpp
-    intersect_face_division.cpp
-    intersect_group.cpp
-    intersect_half_classify_group.cpp
-    math.cpp
-    mesh.cpp
-    octree.cpp
-    pointset.cpp
-    polyhedron.cpp
-    polyline.cpp
-    shewchuk_predicates.cpp
-    tag.cpp
-    triangle_intersection.cpp
-    triangulator.cpp
+option (DEBUG "DEBUG" OFF)
+option (COMPILE_WITH_CLANG "COMPILE_WITH_CLANG" OFF)
 
-    include/aabb.hpp
-    include/aabb_impl.hpp
-    include/carve.hpp
-    include/classification.hpp
-    include/collection.hpp
-    include/collection_types.hpp
-    include/config.h
-    include/convex_hull.hpp
-    include/csg.hpp
-    include/csg_triangulator.hpp
-    include/debug_hooks.hpp
-    include/djset.hpp
-    include/edge_decl.hpp
-    include/edge_impl.hpp
-    include/exact.hpp
-    include/faceloop.hpp
-    include/face_decl.hpp
-    include/face_impl.hpp
-    include/geom.hpp
-    include/geom2d.hpp
-    include/geom3d.hpp
-    include/geom_impl.hpp
-    include/heap.hpp
-    include/input.hpp
-    include/interpolator.hpp
-    include/intersection.hpp
-    include/iobj.hpp
-    include/kd_node.hpp
-    include/math.hpp
-    include/math_constants.hpp
-    include/matrix.hpp
-    include/mesh.hpp
-    include/mesh_impl.hpp
-    include/mesh_ops.hpp
-    include/mesh_simplify.hpp
-    include/octree_decl.hpp
-    include/octree_impl.hpp
-    include/pointset.hpp
-    include/pointset_decl.hpp
-    include/pointset_impl.hpp
-    include/poly.hpp
-    include/polyhedron_base.hpp
-    include/polyhedron_decl.hpp
-    include/polyhedron_impl.hpp
-    include/polyline.hpp
-    include/polyline_decl.hpp
-    include/polyline_impl.hpp
-    include/polyline_iter.hpp
-    include/poly_decl.hpp
-    include/poly_impl.hpp
-    include/rescale.hpp
-    include/rtree.hpp
-    include/shewchuk_predicates.hpp
-    include/spacetree.hpp
-    include/tag.hpp
-    include/timing.hpp
-    include/tree.hpp
-    include/triangle_intersection.hpp
-    include/triangulator.hpp
-    include/triangulator_impl.hpp
-    include/util.hpp
-    include/vector.hpp
-    include/vertex_decl.hpp
-    include/win32.h
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-    include/robin_hood.hpp
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-    debugVisualizers.natvis
-)
+if (WIN32)
+    if (COMPILE_WITH_CLANG)
+        set(CMAKE_GENERATOR_TOOLSET "clangcl")
+    endif (COMPILE_WITH_CLANG)
+    # Enable enhanced instruction set:      Advanced Vector Extensions 2 (/arch:AVX2)
+    # Enable intrinsic functions:           Yes (/Oi)
+    # Favor size or speed:                  Favor fast code (/Ot)
+    # Inline function expansion:            Any Suitable (/Ob2)
+    set(CARVE_RELEASE_COMPILER_FLAGS   "/arch:AVX2 /Oi /Ot /Ob2")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ${CARVE_RELEASE_COMPILER_FLAGS}")
+    set(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE} ${CARVE_RELEASE_COMPILER_FLAGS}")
+else (WIN32)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+    if (EMSCRIPTEN)
+	set(CMAKE_EXECUTABLE_SUFFIX ".bc")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s EXPORT_ALL=1")
+    else (EMSCRIPTEN)
+    endif (EMSCRIPTEN)
+endif (WIN32)
 
-add_library(libcarve STATIC ${CARVE_SRC})
+project (Carve)
 
-target_include_directories(libcarve PRIVATE ${CMAKE_SOURCE_DIR})
-target_include_directories(libcarve PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin/)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin/)
+
+add_subdirectory(libcarve)
+add_subdirectory(carve)
+
+#add_subdirectory(carve_run)

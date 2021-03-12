@@ -1,0 +1,111 @@
+cmake_minimum_required (VERSION 3.0.0)
+
+set(CARVE_SRC
+    carve.cpp
+    convex_hull.cpp
+    csg.cpp
+    csg_collector.cpp
+    csg_collector.hpp
+    csg_data.hpp
+    csg_detail.hpp
+    face.cpp
+    geom.cpp
+    geom2d.cpp
+    geom3d.cpp
+    intersect.cpp
+    intersection.cpp
+    intersect_classify_common.hpp
+    intersect_classify_common_impl.hpp
+    intersect_classify_edge.cpp
+    intersect_classify_group.cpp
+    intersect_common.hpp
+    intersect_debug.cpp
+    intersect_debug.hpp
+    intersect_face_division.cpp
+    intersect_group.cpp
+    intersect_half_classify_group.cpp
+    math.cpp
+    mesh.cpp
+    octree.cpp
+    pointset.cpp
+    polyhedron.cpp
+    polyline.cpp
+    shewchuk_predicates.cpp
+    tag.cpp
+    triangle_intersection.cpp
+    triangulator.cpp
+
+    include/aabb.hpp
+    include/aabb_impl.hpp
+    include/carve.hpp
+    include/classification.hpp
+    include/collection.hpp
+    include/collection_types.hpp
+    include/config.h
+    include/convex_hull.hpp
+    include/csg.hpp
+    include/csg_triangulator.hpp
+    include/debug_hooks.hpp
+    include/djset.hpp
+    include/edge_decl.hpp
+    include/edge_impl.hpp
+    include/exact.hpp
+    include/faceloop.hpp
+    include/face_decl.hpp
+    include/face_impl.hpp
+    include/geom.hpp
+    include/geom2d.hpp
+    include/geom3d.hpp
+    include/geom_impl.hpp
+    include/heap.hpp
+    include/input.hpp
+    include/interpolator.hpp
+    include/intersection.hpp
+    include/iobj.hpp
+    include/kd_node.hpp
+    include/math.hpp
+    include/math_constants.hpp
+    include/matrix.hpp
+    include/mesh.hpp
+    include/mesh_impl.hpp
+    include/mesh_ops.hpp
+    include/mesh_simplify.hpp
+    include/octree_decl.hpp
+    include/octree_impl.hpp
+    include/pointset.hpp
+    include/pointset_decl.hpp
+    include/pointset_impl.hpp
+    include/poly.hpp
+    include/polyhedron_base.hpp
+    include/polyhedron_decl.hpp
+    include/polyhedron_impl.hpp
+    include/polyline.hpp
+    include/polyline_decl.hpp
+    include/polyline_impl.hpp
+    include/polyline_iter.hpp
+    include/poly_decl.hpp
+    include/poly_impl.hpp
+    include/rescale.hpp
+    include/rtree.hpp
+    include/shewchuk_predicates.hpp
+    include/spacetree.hpp
+    include/tag.hpp
+    include/timing.hpp
+    include/tree.hpp
+    include/triangle_intersection.hpp
+    include/triangulator.hpp
+    include/triangulator_impl.hpp
+    include/util.hpp
+    include/vector.hpp
+    include/vertex_decl.hpp
+    include/win32.h
+
+    include/robin_hood.hpp
+
+    debugVisualizers.natvis
+)
+
+add_library(libcarve STATIC ${CARVE_SRC})
+
+target_include_directories(libcarve PRIVATE ${CMAKE_SOURCE_DIR})
+target_include_directories(libcarve PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
