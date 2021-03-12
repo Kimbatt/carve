@@ -142,6 +142,11 @@ public:
         {
             return b.idx - a.idx;
         }
+
+	    size_t operator -(const iter& other)
+	    {
+	        return distance(*this, other);
+	    }
     };
 
     class const_iter
@@ -206,10 +211,15 @@ public:
             return vec->operator[](idx);
         }
 
-        static size_t distance(const iter& a, const iter& b)
+        static size_t distance(const const_iter& a, const const_iter& b)
         {
             return b.idx - a.idx;
         }
+
+	    size_t operator -(const const_iter& other)
+	    {
+	        return distance(*this, other);
+	    }
     };
 
 public:

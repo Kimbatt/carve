@@ -177,15 +177,14 @@ static Counts& counts()
 #else
 #define ROBIN_HOOD_LIKELY_ATTRIBUTE
 #define ROBIN_HOOD_UNLIKELY_ATTRIBUTE
+#define ROBIN_HOOD_LIKELY(condition) condition
+#define ROBIN_HOOD_UNLIKELY(condition) condition
 #endif
-#elif __EMSCRIPTEN__
+#else
 #    define ROBIN_HOOD_LIKELY_ATTRIBUTE
 #    define ROBIN_HOOD_UNLIKELY_ATTRIBUTE
 #    define ROBIN_HOOD_LIKELY(condition) condition
 #    define ROBIN_HOOD_UNLIKELY(condition) condition
-#else
-#define ROBIN_HOOD_LIKELY(condition) __builtin_expect(condition, 1)
-#define ROBIN_HOOD_UNLIKELY(condition) __builtin_expect(condition, 0)
 #endif
 
 // workaround missing "is_trivially_copyable" in g++ < 5.0

@@ -182,10 +182,10 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
     auto setErrorMessage = [=](const char* errorMsg) {
         if (errorMessage != nullptr)
         {
-#if __EMSCRIPTEN__
-            strncpy(errorMessage, errorMsg, errorMessageLength);
-#else
+#if _WIN32
             strncpy_s(errorMessage, strlen(errorMsg) + 1, errorMsg, errorMessageLength);
+#else
+            strncpy(errorMessage, errorMsg, errorMessageLength);
 #endif
         }
     };
