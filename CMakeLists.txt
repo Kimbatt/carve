@@ -25,7 +25,7 @@ else (WIN32)
 	set(CMAKE_EXECUTABLE_SUFFIX ".bc")
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s EXPORT_ALL=1")
     else (EMSCRIPTEN)
-	add_definitions(-g -fPIC)
+        add_definitions(-g -fPIC)
     endif (EMSCRIPTEN)
 endif (WIN32)
 
