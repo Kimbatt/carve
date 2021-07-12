@@ -1,5 +1,6 @@
 
 #include "carve.h"
+#include "custom_collector.h"
 
 #include <vector>
 
@@ -80,6 +81,87 @@ void CSGMesh::log(std::ostream& stream) const
     }
     stream << std::endl;
 }
+
+class FaceCollector : public carve::csg::CSG::Hook
+{
+public:
+    FaceCollector() : carve::csg::CSG::Hook()
+    {
+        _vertexCount = 0;
+    }
+
+    std::vector<float>& getVertices()
+    {
+        return _uniqueVertices;
+    }
+
+    std::vector<int>& getTriangles()
+    {
+        return _triangles;
+    }
+
+protected:
+    virtual void resultFace(const carve::csg::CSG::meshset_t::face_t* newFace, const carve::csg::CSG::meshset_t::face_t* originalFace, bool flipped) override
+    {
+        using Edge = carve::mesh::Edge<3>;
+
+        const Edge* startEdge = newFace->edge;
+        int startVertexIndex = tryAddVertex(startEdge->vert);
+
+        const Edge* currentEdge = startEdge->next;
+        int currentVertexIndex = tryAddVertex(currentEdge->vert);
+
+        while (currentEdge->next != startEdge)
+        {
+            const Edge* nextEdge = currentEdge->next;
+            int nextVertexIndex = tryAddVertex(nextEdge->vert);
+
+            if (flipped)
+            {
+                _triangles.push_back(startVertexIndex);
+                _triangles.push_back(nextVertexIndex);
+                _triangles.push_back(currentVertexIndex);
+            }
+            else
+            {
+                _triangles.push_back(startVertexIndex);
+                _triangles.push_back(currentVertexIndex);
+                _triangles.push_back(nextVertexIndex);
+            }
+
+            currentEdge = nextEdge;
+            currentVertexIndex = nextVertexIndex;
+        }
+    }
+
+    virtual void resultNumFaces(size_t numFaces) override
+    {
+        _triangles.reserve(numFaces * 3);
+        _uniqueVertices.reserve(numFaces * 3); // guess
+        _vertexIndexMap.reserve(numFaces); // guess
+    }
+
+private:
+    int tryAddVertex(carve::mesh::Vertex<3>* vertex)
+    {
+        auto vertexIndexIt = _vertexIndexMap.insert({ vertex, _vertexCount });
+        if (vertexIndexIt.second)
+        {
+            ++_vertexCount;
+            _uniqueVertices.push_back((float)vertex->v.x);
+            _uniqueVertices.push_back((float)vertex->v.y);
+            _uniqueVertices.push_back((float)vertex->v.z);
+        }
+
+        return vertexIndexIt.first->second;
+    }
+
+private:
+    int _vertexCount;
+    robin_hood::unordered_flat_map<carve::mesh::Vertex<3>*, int> _vertexIndexMap;
+    std::vector<float> _uniqueVertices;
+    std::vector<int> _triangles;
+};
 
 EXPORT CSGMesh* STDCALL leoCreateCSGMesh()
 {
@@ -243,80 +325,45 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
 
         csg.hooks.registerHook(new carve::csg::CarveTriangulatorWithImprovement(), carve::csg::CSG::Hooks::PROCESS_OUTPUT_FACE_BIT);
 
-        carve::csg::CSG::meshset_t* res = nullptr;
+        FaceCollector* faceCollector = new FaceCollector(); // deleted in csg's destructor
+        csg.hooks.registerHook(faceCollector, carve::csg::CSG::Hooks::RESULT_FACE_BIT);
+
         carve::csg::CSG::meshset_t* meshA = models[0];
         carve::csg::CSG::meshset_t* meshB = models[1];
 
+        carve::csg::CSG::Collector* csgCollector = nullptr;
         switch (op)
         {
         case CSGOp::Union:
-            res = csg.compute(meshA, meshB, carve::csg::CSG::CSG_OP::UNION);
+            csgCollector = new UnionCollectorWithoutResultMeshset(meshA, meshB);
             break;
         case CSGOp::Intersection:
-            res = csg.compute(meshA, meshB, carve::csg::CSG::CSG_OP::INTERSECTION);
+            csgCollector = new IntersectionCollectorWithoutResultMeshset(meshA, meshB);
             break;
         case CSGOp::AMinusB:
-            res = csg.compute(meshA, meshB, carve::csg::CSG::CSG_OP::A_MINUS_B);
+            csgCollector = new AMinusBCollectorWithoutResultMeshset(meshA, meshB);
             break;
         case CSGOp::BMinusA:
-            res = csg.compute(meshA, meshB, carve::csg::CSG::CSG_OP::B_MINUS_A);
+            csgCollector = new BMinusACollectorWithoutResultMeshset(meshA, meshB);
             break;
         case CSGOp::SymmetricDifference:
-            res = csg.compute(meshA, meshB, carve::csg::CSG::CSG_OP::SYMMETRIC_DIFFERENCE);
+            csgCollector = new SymmetricDifferenceCollectorWithoutResultMeshset(meshA, meshB);
             break;
+        default:
+            // unknown op
+            return nullptr;
         }
+
+        csg.compute(meshA, meshB, *csgCollector);
+
+        delete csgCollector;
 
         delete meshA;
         delete meshB;
 
-        if (res == nullptr)
-        {
-            setErrorMessage("Cannot perform CSG operation");
-            return nullptr;
-        }
-
-        std::vector<float> verts;
-        std::vector<int> tris;
-
-        size_t resultNumFaces = res->numFaces();
-        verts.reserve(resultNumFaces * 9);
-        tris.reserve(resultNumFaces * 3);
-
-        std::vector<Vertex_t*> resultVertices;
-        resultVertices.reserve(3);
-
-        int vertexIndex = 0;
-        robin_hood::unordered_flat_map<size_t, int> vertexIndexMap;
-        vertexIndexMap.reserve(res->vertex_storage.size());
-
-        for (auto it = res->faceBegin(), end = res->faceEnd(); it != end; ++it)
-        {
-            const Face_t* face = *it;
-
-            face->getVertices(resultVertices);
-            assert(resultVertices.size() == 3);
-
-            for (Vertex_t* vertex : resultVertices)
-            {
-                auto vertexIndexIt = vertexIndexMap.insert({ (size_t)vertex, vertexIndex });
-                if (vertexIndexIt.second)
-                {
-                    ++vertexIndex;
-                    verts.push_back((float)vertex->v.x);
-                    verts.push_back((float)vertex->v.y);
-                    verts.push_back((float)vertex->v.z);
-                }
-
-                int index = vertexIndexIt.first->second;
-                tris.push_back(index);
-            }
-        }
-
-        delete res;
-
         CSGMesh* mesh = new CSGMesh();
-        mesh->stealVertices(verts);
-        mesh->stealTriangles(tris);
+        mesh->stealVertices(faceCollector->getVertices());
+        mesh->stealTriangles(faceCollector->getTriangles());
         return mesh;
     }
     catch (carve::exception& ex)

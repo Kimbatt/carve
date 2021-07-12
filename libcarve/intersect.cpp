@@ -413,6 +413,14 @@ void carve::csg::CSG::Hooks::processOutputFace(std::vector<meshset_t::face_t*>& 
     }
 }
 
+void carve::csg::CSG::Hooks::resultNumFaces(size_t num_faces)
+{
+    for (std::list<Hook*>::iterator j = hooks[RESULT_FACE_HOOK].begin(); j != hooks[RESULT_FACE_HOOK].end(); ++j)
+    {
+        (*j)->resultNumFaces(num_faces);
+    }
+}
+
 void carve::csg::CSG::Hooks::resultFace(const meshset_t::face_t* new_face, const meshset_t::face_t* orig_face, bool flipped)
 {
     for (std::list<Hook*>::iterator j = hooks[RESULT_FACE_HOOK].begin(); j != hooks[RESULT_FACE_HOOK].end(); ++j)

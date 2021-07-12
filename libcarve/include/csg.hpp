@@ -95,6 +95,9 @@ public:
         virtual void processOutputFace(std::vector<meshset_t::face_t*>& /* faces */, const meshset_t::face_t* /* orig_face */, bool /* flipped */)
         {
         }
+        virtual void resultNumFaces(size_t /* num_faces */)
+        {
+        }
         virtual void resultFace(const meshset_t::face_t* /* new_face */, const meshset_t::face_t* /* orig_face */, bool /* flipped */)
         {
         }
@@ -138,6 +141,7 @@ public:
 
         void processOutputFace(std::vector<meshset_t::face_t*>& faces, const meshset_t::face_t* orig_face, bool flipped);
 
+        void resultNumFaces(size_t num_faces);
         void resultFace(const meshset_t::face_t* new_face, const meshset_t::face_t* orig_face, bool flipped);
 
         void edgeDivision(const meshset_t::edge_t* orig_edge, size_t orig_edge_idx, const meshset_t::vertex_t* v1, const meshset_t::vertex_t* v2);

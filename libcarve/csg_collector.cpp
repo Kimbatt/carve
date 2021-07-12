@@ -230,6 +230,7 @@ protected:
 
         if (hooks.hasHook(carve::csg::CSG::Hooks::RESULT_FACE_HOOK))
         {
+            hooks.resultNumFaces(faces.size());
             for (std::list<face_data_t>::iterator i = faces.begin(); i != faces.end(); ++i)
             {
                 hooks.resultFace((*i).face, (*i).orig_face, (*i).flipped);

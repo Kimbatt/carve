@@ -3,6 +3,8 @@ cmake_minimum_required (VERSION 3.0)
 set(FILES_SRC
     carve.h
     carve.cpp
+
+    custom_collector.h
 )
 
 include_directories(
