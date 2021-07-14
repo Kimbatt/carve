@@ -381,10 +381,10 @@ static void classifyAB(const GrpEdgeSurfMap& a_edge_surfaces, const GrpEdgeSurfM
 }
 
 
-static bool processForwardEdgeSurfaces(GrpEdgeSurfMap& edge_surfaces, const std::list<FaceLoop*>& fwd, const carve::geom3d::Vector& edge_vector,
+static bool processForwardEdgeSurfaces(GrpEdgeSurfMap& edge_surfaces, const carve::small_vector_on_stack<FaceLoop*>& fwd, const carve::geom3d::Vector& edge_vector,
                                        const carve::geom3d::Vector& base_vector)
 {
-    for (std::list<FaceLoop*>::const_iterator i = fwd.begin(), e = fwd.end(); i != e; ++i)
+    for (carve::small_vector_on_stack<FaceLoop*>::const_iterator i = fwd.begin(), e = fwd.end(); i != e; ++i)
     {
         EdgeSurface& es = (edge_surfaces[(*i)->orig_face->mesh]);
         if (es.fwd != NULL)
@@ -395,10 +395,10 @@ static bool processForwardEdgeSurfaces(GrpEdgeSurfMap& edge_surfaces, const std:
     return true;
 }
 
-static bool processReverseEdgeSurfaces(GrpEdgeSurfMap& edge_surfaces, const std::list<FaceLoop*>& rev, const carve::geom3d::Vector& edge_vector,
+static bool processReverseEdgeSurfaces(GrpEdgeSurfMap& edge_surfaces, const carve::small_vector_on_stack<FaceLoop*>& rev, const carve::geom3d::Vector& edge_vector,
                                        const carve::geom3d::Vector& base_vector)
 {
-    for (std::list<FaceLoop*>::const_iterator i = rev.begin(), e = rev.end(); i != e; ++i)
+    for (carve::small_vector_on_stack<FaceLoop*>::const_iterator i = rev.begin(), e = rev.end(); i != e; ++i)
     {
         EdgeSurface& es = (edge_surfaces[(*i)->orig_face->mesh]);
         if (es.rev != NULL)

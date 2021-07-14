@@ -102,9 +102,21 @@ public:
             return *this;
         }
 
-        iter operator+(size_t inc)
+        iter operator+(difference_type diff)
         {
-            idx += inc;
+            idx += diff;
+            return *this;
+        }
+
+        iter operator--()
+        {
+            --idx;
+            return *this;
+        }
+
+        iter operator-(difference_type diff)
+        {
+            idx -= diff;
             return *this;
         }
 
@@ -133,20 +145,20 @@ public:
             return idx > other.idx;
         }
 
-        T& operator*()
+        T& operator*() const
         {
             return vec->operator[](idx);
         }
 
-        static size_t distance(const iter& a, const iter& b)
+        static difference_type distance(const iter& a, const iter& b)
         {
-            return b.idx - a.idx;
+            return (difference_type)b.idx - (difference_type)a.idx;
         }
 
-	    size_t operator -(const iter& other)
-	    {
-	        return distance(*this, other);
-	    }
+        difference_type operator -(const iter& other) const
+        {
+            return distance(*this, other);
+        }
     };
 
     class const_iter
@@ -175,9 +187,21 @@ public:
             return *this;
         }
 
-        const_iter operator+(size_t inc)
+        const_iter operator+(difference_type diff)
         {
-            idx += inc;
+            idx += diff;
+            return *this;
+        }
+
+        const_iter operator--()
+        {
+            --idx;
+            return *this;
+        }
+
+        const_iter operator-(difference_type diff)
+        {
+            idx -= diff;
             return *this;
         }
 
@@ -206,20 +230,20 @@ public:
             return idx > other.idx;
         }
 
-        const T& operator*()
+        const T& operator*() const
         {
             return vec->operator[](idx);
         }
 
-        static size_t distance(const const_iter& a, const const_iter& b)
+        static difference_type distance(const const_iter& a, const const_iter& b)
         {
-            return b.idx - a.idx;
+            return (difference_type)b.idx - (difference_type)a.idx;
         }
 
-	    size_t operator -(const const_iter& other)
-	    {
-	        return distance(*this, other);
-	    }
+        difference_type operator -(const const_iter& other) const
+        {
+            return distance(*this, other);
+        }
     };
 
 public:
@@ -343,6 +367,41 @@ public:
         {
             push_back(*it);
         }
+    }
+
+    void remove(const T& value)
+    {
+        iter it = find(value);
+        if (it != end())
+        {
+            erase(it);
+        }
+    }
+
+    iter find(const T& value)
+    {
+        for (iter it = begin(); it != end(); ++it)
+        {
+            if (*it == value)
+            {
+                return it;
+            }
+        }
+
+        return end();
+    }
+
+    const_iter find(const T& value) const
+    {
+        for (const_iter it = cbegin(); it != cend(); ++it)
+        {
+            if (*it == value)
+            {
+                return it;
+            }
+        }
+
+        return cend();
     }
 
     void reverse()

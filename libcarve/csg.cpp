@@ -76,7 +76,7 @@ void carve::csg::detail::LoopEdges::sortFaceLoopLists()
 {
     for (super::iterator i = begin(), e = end(); i != e; ++i)
     {
-        (*i).second.sort();
+        std::sort((*i).second.begin(), (*i).second.end());
     }
 }
 

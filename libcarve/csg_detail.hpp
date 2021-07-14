@@ -59,9 +59,9 @@ typedef carve::unordered_node_map<carve::mesh::MeshSet<3>::edge_t*, std::vector<
 typedef carve::unordered_node_map<carve::mesh::MeshSet<3>::vertex_t*, std::vector<carve::mesh::MeshSet<3>::edge_t*>, 64> VEVecMap;
 
 
-class LoopEdges : public carve::unordered_flat_map<V2, std::list<FaceLoop*>, hash_pair>
+class LoopEdges : public carve::unordered_flat_map<V2, carve::small_vector_on_stack<FaceLoop*>, hash_pair>
 {
-    typedef carve::unordered_flat_map<V2, std::list<FaceLoop*>, hash_pair> super;
+    typedef carve::unordered_flat_map<V2, carve::small_vector_on_stack<FaceLoop*>, hash_pair> super;
 
 public:
     void addFaceLoop(FaceLoop* fl);

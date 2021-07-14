@@ -207,7 +207,7 @@ void carve::csg::CSG::groupFaceLoops(carve::mesh::MeshSet<3>* src, carve::csg::F
                     j = loop_edges.find(std::make_pair(v1, v2));
                     if (j != loop_edges.end())
                     {
-                        for (std::list<carve::csg::FaceLoop*>::const_iterator k = (*j).second.begin(), ke = (*j).second.end(); k != ke; ++k)
+                        for (carve::small_vector_on_stack<carve::csg::FaceLoop*>::const_iterator k = (*j).second.begin(), ke = (*j).second.end(); k != ke; ++k)
                         {
                             if ((*k)->group != NULL || (*k)->orig_face->mesh != expand->orig_face->mesh)
                                 continue;
@@ -220,7 +220,7 @@ void carve::csg::CSG::groupFaceLoops(carve::mesh::MeshSet<3>* src, carve::csg::F
                     j = loop_edges.find(std::make_pair(v2, v1));
                     if (j != loop_edges.end())
                     {
-                        for (std::list<carve::csg::FaceLoop*>::const_iterator k = (*j).second.begin(), ke = (*j).second.end(); k != ke; ++k)
+                        for (carve::small_vector_on_stack<carve::csg::FaceLoop*>::const_iterator k = (*j).second.begin(), ke = (*j).second.end(); k != ke; ++k)
                         {
                             if ((*k)->group != NULL || (*k)->orig_face->mesh != expand->orig_face->mesh)
                                 continue;
