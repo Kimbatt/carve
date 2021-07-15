@@ -405,7 +405,8 @@ void carve::csg::CSG::Hooks::intersectionVertex(const meshset_t::vertex_t* verte
     }
 }
 
-void carve::csg::CSG::Hooks::processOutputFace(std::vector<meshset_t::face_t*>& faces, const meshset_t::face_t* orig_face, bool flipped)
+void carve::csg::CSG::Hooks::processOutputFace(carve::small_vector_on_stack<carve::mesh::MeshSet<3>::face_t*, 16>& faces,
+                                               const meshset_t::face_t* orig_face, bool flipped)
 {
     for (std::list<Hook*>::iterator j = hooks[PROCESS_OUTPUT_FACE_HOOK].begin(); j != hooks[PROCESS_OUTPUT_FACE_HOOK].end(); ++j)
     {

@@ -432,7 +432,7 @@ public:
     void init(vertex_t* a, vertex_t* b, vertex_t* c, vertex_t* d);
 
     void getVertices(std::vector<vertex_t*>& verts) const;
-    void getProjectedVertices(std::vector<carve::geom::vector<2>>& verts) const;
+    void getProjectedVertices(carve::small_vector_on_stack<carve::geom::vector<2>, 16>& verts) const;
 
     projection_mapping projector() const
     {

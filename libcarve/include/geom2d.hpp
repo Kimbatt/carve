@@ -67,7 +67,7 @@ struct p2_adapt_ident
 };
 
 
-typedef std::vector<P2> P2Vector;
+typedef carve::small_vector_on_stack<P2, 16> P2Vector;
 
 /**
  * \brief Return the orientation of c with respect to the ray defined by a->b.
@@ -295,14 +295,14 @@ template <typename T, typename adapt_t> inline bool quadIsConvex(const T& a, con
 }
 
 
-double signedArea(const std::vector<P2>& points);
+double signedArea(const carve::small_vector_on_stack<P2, 16>& points);
 
 static inline double signedArea(const P2& a, const P2& b, const P2& c)
 {
     return ((b.y + a.y) * (b.x - a.x) + (c.y + b.y) * (c.x - b.x) + (a.y + c.y) * (a.x - c.x)) / 2.0;
 }
 
-template <typename T, typename adapt_t> double signedArea(const std::vector<T>& points, adapt_t adapt)
+template <typename T, typename adapt_t> double signedArea(const carve::small_vector_on_stack<T, 16>& points, adapt_t adapt)
 {
     P2Vector::size_type l = points.size();
     double A = 0.0;
@@ -312,6 +312,20 @@ template <typename T, typename adapt_t> double signedArea(const std::vector<T>& 
         A += (adapt(points[i + 1]).y + adapt(points[i]).y) * (adapt(points[i + 1]).x - adapt(points[i]).x);
     }
     A += (adapt(points[0]).y + adapt(points[l - 1]).y) * (adapt(points[0]).x - adapt(points[l - 1]).x);
+
+    return A / 2.0;
+}
+
+template <typename T> double signedArea(const std::vector<T>& points)
+{
+    P2Vector::size_type l = points.size();
+    double A = 0.0;
+
+    for (P2Vector::size_type i = 0; i < l - 1; i++)
+    {
+        A += points[i + 1].y + points[i].y * (points[i + 1].x - points[i].x);
+    }
+    A += (points[0].y + points[l - 1].y) * (points[0].x - points[l - 1].x);
 
     return A / 2.0;
 }
@@ -339,7 +353,7 @@ template <typename iter_t, typename adapt_t> double signedArea(iter_t begin, ite
 }
 
 
-bool pointInPolySimple(const std::vector<P2>& points, const P2& p);
+bool pointInPolySimple(const carve::small_vector_on_stack<P2, 16>& points, const P2& p);
 
 template <typename Points, typename adapt_t> bool pointInPolySimple(const Points& points, adapt_t adapt, const P2& p)
 {
@@ -373,7 +387,7 @@ template <typename Points, typename adapt_t> bool pointInPolySimple(const Points
 }
 
 
-PolyInclusionInfo pointInPoly(const std::vector<P2>& points, const P2& p);
+PolyInclusionInfo pointInPoly(const carve::small_vector_on_stack<P2, 16>& points, const P2& p);
 
 template <typename Points, typename adapt_t> PolyInclusionInfo pointInPoly(const Points& points, adapt_t adapt, const P2& p)
 {

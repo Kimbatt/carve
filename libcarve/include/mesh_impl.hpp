@@ -459,10 +459,9 @@ template <unsigned ndim> void Face<ndim>::getVertices(std::vector<vertex_t*>& ve
     } while (e != edge);
 }
 
-template <unsigned ndim> void Face<ndim>::getProjectedVertices(std::vector<carve::geom::vector<2>>& verts) const
+template <unsigned ndim> void Face<ndim>::getProjectedVertices(carve::small_vector_on_stack<carve::geom::vector<2>, 16>& verts) const
 {
     verts.clear();
-    verts.reserve(n_edges);
     const edge_t* e = edge;
     do
     {

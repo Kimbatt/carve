@@ -249,6 +249,7 @@ public:
 public:
     using iterator = iter;
     using const_iterator = const_iter;
+    using size_type = size_t;
 
     small_vector_on_stack() : stackStorage(), heapStorage(nullptr), _size(0)
     {

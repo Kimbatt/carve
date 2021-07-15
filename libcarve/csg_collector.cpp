@@ -71,8 +71,7 @@ protected:
     void FWD(const carve::mesh::MeshSet<3>::face_t* orig_face, const std::vector<carve::mesh::MeshSet<3>::vertex_t*>& vertices,
              carve::geom3d::Vector /* normal */, bool /* poly_a */, FaceClass face_class, CSG::Hooks& hooks)
     {
-        std::vector<carve::mesh::MeshSet<3>::face_t*> new_faces;
-        new_faces.reserve(1);
+        carve::small_vector_on_stack<carve::mesh::MeshSet<3>::face_t*, 16> new_faces;
         new_faces.push_back(orig_face->create(vertices.begin(), vertices.end(), false));
         hooks.processOutputFace(new_faces, orig_face, false);
         for (size_t i = 0; i < new_faces.size(); ++i)
@@ -92,8 +91,7 @@ protected:
              carve::geom3d::Vector /* normal */, bool /* poly_a */, FaceClass face_class, CSG::Hooks& hooks)
     {
         // normal = -normal;
-        std::vector<carve::mesh::MeshSet<3>::face_t*> new_faces;
-        new_faces.reserve(1);
+        carve::small_vector_on_stack<carve::mesh::MeshSet<3>::face_t*, 16> new_faces;
         new_faces.push_back(orig_face->create(vertices.begin(), vertices.end(), true));
         hooks.processOutputFace(new_faces, orig_face, true);
         for (size_t i = 0; i < new_faces.size(); ++i)

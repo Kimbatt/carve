@@ -92,7 +92,8 @@ public:
         virtual void intersectionVertex(const meshset_t::vertex_t* /* vertex */, const IObjPairSet& /* intersections */)
         {
         }
-        virtual void processOutputFace(std::vector<meshset_t::face_t*>& /* faces */, const meshset_t::face_t* /* orig_face */, bool /* flipped */)
+        virtual void processOutputFace(carve::small_vector_on_stack<carve::mesh::MeshSet<3>::face_t*, 16>& /* faces */,
+                                       const meshset_t::face_t* /* orig_face */, bool /* flipped */)
         {
         }
         virtual void resultNumFaces(size_t /* num_faces */)
@@ -139,7 +140,8 @@ public:
 
         void intersectionVertex(const meshset_t::vertex_t* vertex, const IObjPairSet& intersections);
 
-        void processOutputFace(std::vector<meshset_t::face_t*>& faces, const meshset_t::face_t* orig_face, bool flipped);
+        void processOutputFace(carve::small_vector_on_stack<carve::mesh::MeshSet<3>::face_t*, 16>& faces,
+                               const meshset_t::face_t* orig_face, bool flipped);
 
         void resultNumFaces(size_t num_faces);
         void resultFace(const meshset_t::face_t* new_face, const meshset_t::face_t* orig_face, bool flipped);

@@ -266,11 +266,11 @@ static inline bool pointInTriangle(const vertex_info* a, const vertex_info* b, c
 }
 
 
-size_t removeDegeneracies(vertex_info*& begin, std::vector<carve::triangulate::tri_idx>& result);
+size_t removeDegeneracies(vertex_info*& begin, carve::small_vector_on_stack<carve::triangulate::tri_idx, 16>& result);
 
-bool splitAndResume(vertex_info* begin, std::vector<carve::triangulate::tri_idx>& result);
+bool splitAndResume(vertex_info* begin, carve::small_vector_on_stack<carve::triangulate::tri_idx, 16>& result);
 
-bool doTriangulate(vertex_info* begin, std::vector<carve::triangulate::tri_idx>& result);
+bool doTriangulate(vertex_info* begin, carve::small_vector_on_stack<carve::triangulate::tri_idx, 16>& result);
 
 
 typedef std::pair<unsigned, unsigned> vert_edge_t;
@@ -832,7 +832,8 @@ static std::vector<vert_t> incorporateHolesIntoPolygon(const project_t& project,
 }
 
 
-template <typename project_t, typename vert_t> void triangulate(const project_t& project, const std::vector<vert_t>& poly, std::vector<tri_idx>& result)
+template <typename project_t, typename vert_t> void triangulate(const project_t& project, const std::vector<vert_t>& poly,
+                                                                carve::small_vector_on_stack<tri_idx, 16>& result)
 {
     std::vector<detail::vertex_info*> vinfo;
     const size_t N = poly.size();
@@ -842,8 +843,6 @@ template <typename project_t, typename vert_t> void triangulate(const project_t&
     {
         return;
     }
-
-    result.reserve(poly.size() - 2);
 
     if (N == 3)
     {
@@ -879,7 +878,7 @@ template <typename project_t, typename vert_t> void triangulate(const project_t&
 
 
 template <typename project_t, typename vert_t, typename distance_calc_t>
-void improve(const project_t& project, const std::vector<vert_t>& poly, distance_calc_t dist, std::vector<tri_idx>& result)
+void improve(const project_t& project, const std::vector<vert_t>& poly, distance_calc_t dist, carve::small_vector_on_stack<tri_idx, 16>& result)
 {
     detail::tri_pairs_t tri_pairs;
 
@@ -958,7 +957,8 @@ void improve(const project_t& project, const std::vector<vert_t>& poly, distance
 }
 
 
-template <typename project_t, typename vert_t> void improve(const project_t& project, const std::vector<vert_t>& poly, std::vector<tri_idx>& result)
+template <typename project_t, typename vert_t> void improve(const project_t& project, const std::vector<vert_t>& poly,
+                                                            carve::small_vector_on_stack<tri_idx, 16>& result)
 {
     improve(project, poly, carve::geom::distance_functor(), result);
 }

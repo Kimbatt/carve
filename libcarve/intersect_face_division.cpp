@@ -396,8 +396,10 @@ static void splitFace(carve::mesh::MeshSet<3>::face_t* face, const carve::csg::V
             edge = out;
         }
 
-        std::vector<carve::mesh::MeshSet<3>::vertex_t*> loop(len);
-        std::vector<carve::geom2d::P2> projected(len);
+        carve::small_vector_on_stack<carve::mesh::MeshSet<3>::vertex_t*, 16> loop;
+        loop.resize(len);
+        carve::small_vector_on_stack<carve::geom2d::P2, 16> projected;
+        projected.resize(len);
 
         edge = start;
         for (int i = 0; i < len; ++i)
@@ -414,12 +416,20 @@ static void splitFace(carve::mesh::MeshSet<3>::face_t* face, const carve::csg::V
         if (carve::geom2d::signedArea(projected) < 0)
         {
             face_loops.push_back(std::vector<carve::mesh::MeshSet<3>::vertex_t*>());
-            face_loops.back().swap(loop);
+
+            for (const auto& elem : loop)
+            {
+                face_loops.back().push_back(elem);
+            }
         }
         else
         {
             hole_loops.push_back(std::vector<carve::mesh::MeshSet<3>::vertex_t*>());
-            hole_loops.back().swap(loop);
+
+            for (const auto& elem : loop)
+            {
+                hole_loops.back().push_back(elem);
+            }
         }
     }
 }
@@ -517,7 +527,7 @@ static void computeContainment(carve::mesh::MeshSet<3>::face_t* face, std::vecto
     std::cerr << "input: " << face_loops.size() << "faces, " << hole_loops.size() << "holes." << std::endl;
 #endif
 
-    std::vector<std::vector<carve::geom2d::P2>> face_loops_projected, hole_loops_projected;
+    std::vector<carve::small_vector_on_stack<carve::geom2d::P2, 16>> face_loops_projected, hole_loops_projected;
     std::vector<carve::geom::aabb<2>> face_loop_aabb, hole_loop_aabb;
     std::vector<std::vector<unsigned>> face_loops_sorted, hole_loops_sorted;
 
@@ -538,7 +548,6 @@ static void computeContainment(carve::mesh::MeshSet<3>::face_t* face, std::vecto
     for (size_t m = 0; m < face_loops.size(); ++m)
     {
         const std::vector<carve::mesh::MeshSet<3>::vertex_t*>& f_loop = (face_loops[m]);
-        face_loops_projected[m].reserve(f_loop.size());
         face_loops_sorted[m].reserve(f_loop.size());
         for (size_t n = 0; n < f_loop.size(); ++n)
         {
@@ -556,8 +565,6 @@ static void computeContainment(carve::mesh::MeshSet<3>::face_t* face, std::vecto
     for (size_t m = 0; m < hole_loops.size(); ++m)
     {
         const std::vector<carve::mesh::MeshSet<3>::vertex_t*>& h_loop = (hole_loops[m]);
-        hole_loops_projected[m].reserve(h_loop.size());
-        hole_loops_projected[m].reserve(h_loop.size());
         for (size_t n = 0; n < h_loop.size(); ++n)
         {
             hole_loops_projected[m].push_back(face->project(h_loop[n]->v));
@@ -1260,7 +1267,7 @@ bool processCrossingEdges(carve::mesh::MeshSet<3>::face_t* face, const carve::cs
     // loops are part of it. use the old algorithm to combine these into
     // the divided base loop. if none, the divided base loop is just
     // output.
-    std::vector<std::vector<carve::geom2d::P2>> proj;
+    std::vector<carve::small_vector_on_stack<carve::geom2d::P2, 16>> proj;
     std::vector<carve::geom::aabb<2>> proj_aabb;
     proj.resize(divided_base_loop.size());
     proj_aabb.resize(divided_base_loop.size());
@@ -1269,7 +1276,6 @@ bool processCrossingEdges(carve::mesh::MeshSet<3>::face_t* face, const carve::cs
     // point-in-poly tests.
     for (size_t i = 0; i < divided_base_loop.size(); ++i)
     {
-        proj[i].reserve(divided_base_loop[i].size());
         for (size_t j = 0; j < divided_base_loop[i].size(); ++j)
         {
             proj[i].push_back(face->project(divided_base_loop[i][j]->v));
@@ -1796,8 +1802,7 @@ void generateOneFaceLoop(carve::mesh::MeshSet<3>::face_t* face, const carve::csg
         face_loops.back().reserve(loops[i].size() - 1);
         std::copy(loops[i].rbegin() + 1, loops[i].rend(), std::back_inserter(face_loops.back()));
 
-        std::vector<carve::geom2d::P2> projected;
-        projected.reserve(face_loops.back().size());
+        carve::small_vector_on_stack<carve::geom2d::P2, 16> projected;
         for (size_t i = 0; i < face_loops.back().size(); ++i)
         {
             projected.push_back(face->project(face_loops.back()[i]->v));

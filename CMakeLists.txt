@@ -37,4 +37,4 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin/)
 add_subdirectory(libcarve)
 add_subdirectory(carve)
 
-#add_subdirectory(carve_run)
+add_subdirectory(carve_run)

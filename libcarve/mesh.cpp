@@ -149,7 +149,7 @@ template <unsigned ndim> bool Face<ndim>::containsPoint(const vector_t& p) const
     if (!carve::math::ZERO(carve::geom::distance(plane, p)))
         return false;
     // return pointInPolySimple(vertices, projector(), (this->*project)(p));
-    std::vector<carve::geom::vector<2>> verts;
+    carve::small_vector_on_stack<carve::geom::vector<2>, 16> verts;
     getProjectedVertices(verts);
     return carve::geom2d::pointInPoly(verts, project(p)).iclass != carve::PointClass::POINT_OUT;
 }
@@ -157,7 +157,7 @@ template <unsigned ndim> bool Face<ndim>::containsPoint(const vector_t& p) const
 
 template <unsigned ndim> bool Face<ndim>::containsPointInProjection(const vector_t& p) const
 {
-    std::vector<carve::geom::vector<2>> verts;
+    carve::small_vector_on_stack<carve::geom::vector<2>, 16> verts;
     getProjectedVertices(verts);
     return carve::geom2d::pointInPoly(verts, project(p)).iclass != carve::PointClass::POINT_OUT;
 }
@@ -175,7 +175,7 @@ template <unsigned ndim> bool Face<ndim>::simpleLineSegmentIntersection(const ca
         return false;
     }
 
-    std::vector<carve::geom::vector<2>> verts;
+    carve::small_vector_on_stack<carve::geom::vector<2>, 16> verts;
     getProjectedVertices(verts);
     if (carve::geom2d::pointInPolySimple(verts, project(p)))
     {
@@ -199,7 +199,7 @@ template <unsigned ndim> IntersectionClass Face<ndim>::lineSegmentIntersection(c
         return intersects;
     }
 
-    std::vector<carve::geom::vector<2>> verts;
+    carve::small_vector_on_stack<carve::geom::vector<2>, 16> verts;
     getProjectedVertices(verts);
     carve::geom2d::PolyInclusionInfo pi = carve::geom2d::pointInPoly(verts, project(p));
     switch (pi.iclass)

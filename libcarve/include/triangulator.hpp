@@ -123,7 +123,7 @@ struct tri_idx
  */
 
 
-void triangulate(const std::vector<carve::geom2d::P2>& poly, std::vector<tri_idx>& result);
+void triangulate(const std::vector<carve::geom2d::P2>& poly, carve::small_vector_on_stack<tri_idx, 16>& result);
 
 /**
  * \brief Triangulate a polygon (templated).
@@ -137,7 +137,8 @@ void triangulate(const std::vector<carve::geom2d::P2>& poly, std::vector<tri_idx
  * @param [out] result A vector of triangles, represented as
  *                     indicies into poly.
  */
-template <typename project_t, typename vert_t> void triangulate(const project_t& project, const std::vector<vert_t>& poly, std::vector<tri_idx>& result);
+template <typename project_t, typename vert_t> void triangulate(const project_t& project, const std::vector<vert_t>& poly,
+                                                                carve::small_vector_on_stack<tri_idx, 16>& result);
 
 /**
  * \brief Improve a candidate triangulation of poly by minimising
@@ -156,7 +157,8 @@ template <typename project_t, typename vert_t> void triangulate(const project_t&
  *                       contents of the vector, returning an
  *                       improved triangulation.
  */
-template <typename project_t, typename vert_t> void improve(const project_t& project, const std::vector<vert_t>& poly, std::vector<tri_idx>& result);
+template <typename project_t, typename vert_t> void improve(const project_t& project, const std::vector<vert_t>& poly,
+                                                            carve::small_vector_on_stack<tri_idx, 16>& result);
 
 /**
  * \brief Improve a candidate triangulation of poly by minimising
@@ -171,7 +173,7 @@ template <typename project_t, typename vert_t> void improve(const project_t& pro
  *                       contents of the vector, returning an
  *                       improved triangulation.
  */
-static inline void improve(const std::vector<carve::geom2d::P2>& poly, std::vector<tri_idx>& result)
+static inline void improve(const std::vector<carve::geom2d::P2>& poly, carve::small_vector_on_stack<tri_idx, 16>& result)
 {
     improve(carve::geom2d::p2_adapt_ident(), poly, result);
 }

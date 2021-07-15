@@ -569,7 +569,7 @@ bool carve::triangulate::detail::vertex_info::isClipable() const
 }
 
 
-size_t carve::triangulate::detail::removeDegeneracies(vertex_info*& begin, std::vector<carve::triangulate::tri_idx>& result)
+size_t carve::triangulate::detail::removeDegeneracies(vertex_info*& begin, carve::small_vector_on_stack<carve::triangulate::tri_idx, 16>& result)
 {
     vertex_info* v;
     vertex_info* n;
@@ -637,7 +637,7 @@ size_t carve::triangulate::detail::removeDegeneracies(vertex_info*& begin, std::
 }
 
 
-bool carve::triangulate::detail::splitAndResume(vertex_info* begin, std::vector<carve::triangulate::tri_idx>& result)
+bool carve::triangulate::detail::splitAndResume(vertex_info* begin, carve::small_vector_on_stack<carve::triangulate::tri_idx, 16>& result)
 {
     vertex_info *v1, *v2;
 
@@ -678,7 +678,7 @@ bool carve::triangulate::detail::splitAndResume(vertex_info* begin, std::vector<
 }
 
 
-bool carve::triangulate::detail::doTriangulate(vertex_info* begin, std::vector<carve::triangulate::tri_idx>& result)
+bool carve::triangulate::detail::doTriangulate(vertex_info* begin, carve::small_vector_on_stack<carve::triangulate::tri_idx, 16>& result)
 {
 #if defined(CARVE_DEBUG)
     std::cerr << "entering doTriangulate" << std::endl;
@@ -1230,9 +1230,9 @@ std::vector<std::vector<std::pair<size_t, size_t>>> carve::triangulate::mergePol
 }
 
 
-void carve::triangulate::triangulate(const std::vector<carve::geom2d::P2>& poly, std::vector<carve::triangulate::tri_idx>& result)
+void carve::triangulate::triangulate(const std::vector<carve::geom2d::P2>& poly, carve::small_vector_on_stack<carve::triangulate::tri_idx, 16>& result)
 {
-    std::vector<detail::vertex_info*> vinfo;
+    carve::small_vector_on_stack<detail::vertex_info*, 16> vinfo;
     const size_t N = poly.size();
 
 #if defined(CARVE_DEBUG)
@@ -1248,8 +1248,6 @@ void carve::triangulate::triangulate(const std::vector<carve::geom2d::P2>& poly,
     {
         return;
     }
-
-    result.reserve(poly.size() - 2);
 
     if (N == 3)
     {

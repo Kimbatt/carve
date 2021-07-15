@@ -183,15 +183,16 @@ protected:
         {
             return carve::csg::CSG::Hooks::RESULT_FACE_BIT;
         }
-        virtual void resultFace(const meshset_t::face_t* new_face, const meshset_t::face_t* orig_face, bool flipped)
+        virtual void resultFace(const meshset_t::face_t* new_face, const meshset_t::face_t* orig_face, bool flipped) override
         {
             interpolator->resultFace(csg, new_face, orig_face, flipped);
         }
-        virtual void processOutputFace(std::vector<carve::mesh::MeshSet<3>::face_t*>& new_faces, const meshset_t::face_t* orig_face, bool flipped)
+        virtual void processOutputFace(carve::small_vector_on_stack<carve::mesh::MeshSet<3>::face_t*, 16>& new_faces,
+                                       const meshset_t::face_t* orig_face, bool flipped) override
         {
             interpolator->processOutputFace(csg, new_faces, orig_face, flipped);
         }
-        virtual void edgeDivision(const meshset_t::edge_t* orig_edge, size_t orig_edge_idx, const meshset_t::vertex_t* v1, const meshset_t::vertex_t* v2)
+        virtual void edgeDivision(const meshset_t::edge_t* orig_edge, size_t orig_edge_idx, const meshset_t::vertex_t* v1, const meshset_t::vertex_t* v2) override
         {
             interpolator->edgeDivision(csg, orig_edge, orig_edge_idx, v1, v2);
         }
@@ -214,8 +215,8 @@ protected:
     {
     }
 
-    virtual void processOutputFace(const carve::csg::CSG& csg, std::vector<carve::mesh::MeshSet<3>::face_t*>& new_faces, const meshset_t::face_t* orig_face,
-                                   bool flipped)
+    virtual void processOutputFace(const carve::csg::CSG& csg, carve::small_vector_on_stack<carve::mesh::MeshSet<3>::face_t*, 16>& new_faces,
+                                   const meshset_t::face_t* orig_face, bool flipped)
     {
     }
 
@@ -252,7 +253,7 @@ protected:
 
     attrmap_t attrs;
 
-    virtual void resultFace(const carve::csg::CSG& csg, const meshset_t::face_t* new_face, const meshset_t::face_t* orig_face, bool flipped)
+    virtual void resultFace(const carve::csg::CSG& csg, const meshset_t::face_t* new_face, const meshset_t::face_t* orig_face, bool flipped) override
     {
         std::vector<attr_t> vertex_attrs;
         attrvmap_t base_attrs;
@@ -332,7 +333,7 @@ protected:
     struct Hook : public Interpolator::Hook
     {
     public:
-        virtual unsigned hookBits() const
+		virtual unsigned hookBits() const override
         {
             return carve::csg::CSG::Hooks::PROCESS_OUTPUT_FACE_BIT | carve::csg::CSG::Hooks::EDGE_DIVISION_BIT;
         }
@@ -344,13 +345,13 @@ protected:
         }
     };
 
-    virtual Interpolator::Hook* makeHook(carve::csg::CSG& csg)
+    virtual Interpolator::Hook* makeHook(carve::csg::CSG& csg) override
     {
         return new Hook(this, csg);
     }
 
     virtual void edgeDivision(const carve::csg::CSG& csg, const meshset_t::edge_t* orig_edge, size_t orig_edge_idx, const meshset_t::vertex_t* v1,
-                              const meshset_t::vertex_t* v2)
+                              const meshset_t::vertex_t* v2) override
     {
         key_t k(orig_edge->face, orig_edge_idx);
         typename attrmap_t::const_iterator attr_i = attrs.find(k);
@@ -360,7 +361,7 @@ protected:
     }
 
     virtual void processOutputFace(const carve::csg::CSG& csg, std::vector<carve::mesh::MeshSet<3>::face_t*>& new_faces, const meshset_t::face_t* orig_face,
-                                   bool flipped)
+                                   bool flipped) override
     {
         edgedivmap_t undiv;
 
@@ -456,7 +457,7 @@ protected:
 
     attrmap_t attrs;
 
-    virtual void resultFace(const carve::csg::CSG& csg, const meshset_t::face_t* new_face, const meshset_t::face_t* orig_face, bool flipped)
+    virtual void resultFace(const carve::csg::CSG& csg, const meshset_t::face_t* new_face, const meshset_t::face_t* orig_face, bool flipped) override
     {
         typename attrmap_t::const_iterator i = attrs.find(key_t(orig_face));
         if (i != attrs.end())

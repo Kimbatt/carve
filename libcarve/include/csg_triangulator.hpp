@@ -50,9 +50,9 @@ public:
     {
     }
 
-    virtual void processOutputFace(std::vector<carve::mesh::MeshSet<3>::face_t*>& faces, const carve::mesh::MeshSet<3>::face_t* orig, bool flipped)
+    virtual void processOutputFace(carve::small_vector_on_stack<carve::mesh::MeshSet<3>::face_t*, 16>& faces, const carve::mesh::MeshSet<3>::face_t* orig, bool flipped) override
     {
-        std::vector<carve::mesh::MeshSet<3>::face_t*> out_faces;
+        carve::small_vector_on_stack<carve::mesh::MeshSet<3>::face_t*, 16> out_faces;
 
         size_t n_tris = 0;
         for (size_t f = 0; f < faces.size(); ++f)
@@ -60,8 +60,6 @@ public:
             CARVE_ASSERT(faces[f]->nVertices() >= 3);
             n_tris += faces[f]->nVertices() - 2;
         }
-
-        out_faces.reserve(n_tris);
 
         for (size_t f = 0; f < faces.size(); ++f)
         {
@@ -73,7 +71,7 @@ public:
                 continue;
             }
 
-            std::vector<triangulate::tri_idx> result;
+            carve::small_vector_on_stack<triangulate::tri_idx, 16> result;
 
             std::vector<carve::mesh::MeshSet<3>::vertex_t*> vloop;
             face->getVertices(vloop);
@@ -115,7 +113,8 @@ public:
     {
     }
 
-    virtual void processOutputFace(std::vector<carve::mesh::MeshSet<3>::face_t*>& faces, const carve::mesh::MeshSet<3>::face_t* orig, bool flipped)
+    virtual void processOutputFace(carve::small_vector_on_stack<carve::mesh::MeshSet<3>::face_t*, 16>& faces,
+                                   const carve::mesh::MeshSet<3>::face_t* orig, bool flipped) override
     {
         if (faces.size() == 1)
             return;
@@ -124,15 +123,12 @@ public:
         // just incorporating it into the triangulation hook.
 
         typedef std::map<carve::mesh::MeshSet<3>::vertex_t*, size_t> vert_map_t;
-        std::vector<carve::mesh::MeshSet<3>::face_t*> out_faces;
+        carve::small_vector_on_stack<carve::mesh::MeshSet<3>::face_t*, 16> out_faces;
         vert_map_t vert_map;
-
-        out_faces.reserve(faces.size());
-
 
         carve::mesh::MeshSet<3>::face_t::projection_mapping projector(faces[0]->project);
 
-        std::vector<triangulate::tri_idx> result;
+        carve::small_vector_on_stack<triangulate::tri_idx, 16> result;
 
         for (size_t f = 0; f < faces.size(); ++f)
         {
@@ -225,15 +221,14 @@ public:
         }
     }
 
-    virtual void processOutputFace(std::vector<carve::mesh::MeshSet<3>::face_t*>& faces, const carve::mesh::MeshSet<3>::face_t* orig, bool flipped)
+    virtual void processOutputFace(carve::small_vector_on_stack<carve::mesh::MeshSet<3>::face_t*, 16>& faces,
+                                   const carve::mesh::MeshSet<3>::face_t* orig, bool flipped) override
     {
         if (faces.size() == 1)
             return;
 
-        std::vector<carve::mesh::MeshSet<3>::face_t*> out_faces;
+        carve::small_vector_on_stack<carve::mesh::MeshSet<3>::face_t*, 16> out_faces;
         edge_map_t edge_map;
-
-        out_faces.reserve(faces.size());
 
         poly::p2_adapt_project<3> projector(faces[0]->project);
 
@@ -336,7 +331,7 @@ public:
     }
 
     void flood(size_t t1, size_t t2, size_t old_grp, size_t new_grp_1, size_t new_grp_2, std::vector<size_t>& grp,
-               const std::vector<triangulate::tri_idx>& tris, const std::map<std::pair<size_t, size_t>, size_t>& tri_edge)
+               const carve::small_vector_on_stack<triangulate::tri_idx, 16>& tris, const std::map<std::pair<size_t, size_t>, size_t>& tri_edge)
     {
         grp[t1] = new_grp_1;
         grp[t2] = new_grp_2;
@@ -400,9 +395,10 @@ public:
         } while (vert != start);
     }
 
-    virtual void processOutputFace(std::vector<carve::mesh::MeshSet<3>::face_t*>& faces, const carve::mesh::MeshSet<3>::face_t* orig, bool flipped)
+    virtual void processOutputFace(carve::small_vector_on_stack<carve::mesh::MeshSet<3>::face_t*, 16>& faces,
+                                   const carve::mesh::MeshSet<3>::face_t* orig, bool flipped) override
     {
-        std::vector<carve::mesh::MeshSet<3>::face_t*> out_faces;
+        carve::small_vector_on_stack<carve::mesh::MeshSet<3>::face_t*, 16> out_faces;
 
         for (size_t f = 0; f < faces.size(); ++f)
         {
@@ -424,7 +420,7 @@ public:
                 continue;
             }
 
-            std::vector<triangulate::tri_idx> result;
+            carve::small_vector_on_stack<triangulate::tri_idx, 16> result;
             triangulate::triangulate(carve::mesh::MeshSet<3>::face_t::projection_mapping(face->project), vloop, result);
 
             std::map<std::pair<size_t, size_t>, size_t> tri_edge;
