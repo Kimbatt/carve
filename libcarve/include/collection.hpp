@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <array>
 #include <vector>
+#include <cassert>
 
 namespace carve
 {
@@ -267,6 +268,8 @@ public:
     ~small_vector_on_stack()
     {
         delete heapStorage;
+        heapStorage = nullptr;
+        _size = 0;
     }
 
     void move_from(small_vector_on_stack<T, SizeOnStack>& other)
@@ -316,11 +319,13 @@ public:
 
     T& operator[](size_t idx)
     {
+        assert(heapStorage == nullptr ? idx < _size : true);
         return heapStorage == nullptr ? stackStorage[idx] : heapStorage->operator[](idx);
     }
 
     const T& operator[](size_t idx) const
     {
+        assert(heapStorage == nullptr ? idx < _size : true);
         return heapStorage == nullptr ? stackStorage[idx] : heapStorage->operator[](idx);
     }
 

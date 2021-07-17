@@ -23,9 +23,12 @@ namespace
             bool flipped;
             face_data_t(carve::mesh::MeshSet<3>::face_t* _face, const carve::mesh::MeshSet<3>::face_t* _orig_face, bool _flipped)
                 : face(_face), orig_face(_orig_face), flipped(_flipped) {};
+
+            face_data_t() = default;
         };
 
-        std::list<face_data_t> faces;
+        std::vector<carve::small_vector_on_stack<face_data_t, 3>> tmpFaces;
+        std::vector<face_data_t> faces;
 
         const carve::mesh::MeshSet<3>* src_a;
         const carve::mesh::MeshSet<3>* src_b;
@@ -38,47 +41,24 @@ namespace
         {
         }
 
-        void FWD(const carve::mesh::MeshSet<3>::face_t* orig_face, const std::vector<carve::mesh::MeshSet<3>::vertex_t*>& vertices,
-            carve::geom3d::Vector /* normal */, bool /* poly_a */, carve::csg::FaceClass face_class, carve::csg::CSG::Hooks& hooks)
+        void processFace(const carve::mesh::MeshSet<3>::face_t* orig_face, const std::vector<carve::mesh::MeshSet<3>::vertex_t*>& vertices,
+                carve::geom3d::Vector /* normal */, bool /* poly_a */, carve::csg::FaceClass face_class, carve::csg::CSG::Hooks& hooks, bool reversed, size_t index)
         {
             carve::small_vector_on_stack<carve::mesh::MeshSet<3>::face_t*, 16> new_faces;
-            new_faces.push_back(orig_face->create(vertices.begin(), vertices.end(), false));
-            hooks.processOutputFace(new_faces, orig_face, false);
-            for (size_t i = 0; i < new_faces.size(); ++i)
+            new_faces.push_back(orig_face->create(vertices.begin(), vertices.end(), reversed));
+            hooks.processOutputFace(new_faces, orig_face, reversed);
+
+            carve::small_vector_on_stack<face_data_t, 3>& resultFaces = tmpFaces[index];
+            size_t count = new_faces.size();
+            resultFaces.resize(count);
+            for (size_t i = 0; i < count; ++i)
             {
-                faces.push_back(face_data_t(new_faces[i], orig_face, false));
+                resultFaces[i] = face_data_t(new_faces[i], orig_face, reversed);
             }
-
-#if defined(CARVE_DEBUG) && defined(DEBUG_PRINT_RESULT_FACES)
-            std::cerr << "+" << ENUM(face_class) << " ";
-            for (unsigned i = 0; i < vertices.size(); ++i)
-                std::cerr << " " << vertices[i] << ":" << *vertices[i];
-            std::cerr << std::endl;
-#endif
-        }
-
-        void REV(const carve::mesh::MeshSet<3>::face_t* orig_face, const std::vector<carve::mesh::MeshSet<3>::vertex_t*>& vertices,
-            carve::geom3d::Vector /* normal */, bool /* poly_a */, carve::csg::FaceClass face_class, carve::csg::CSG::Hooks& hooks)
-        {
-            // normal = -normal;
-            carve::small_vector_on_stack<carve::mesh::MeshSet<3>::face_t*, 16> new_faces;
-            new_faces.push_back(orig_face->create(vertices.begin(), vertices.end(), true));
-            hooks.processOutputFace(new_faces, orig_face, true);
-            for (size_t i = 0; i < new_faces.size(); ++i)
-            {
-                faces.push_back(face_data_t(new_faces[i], orig_face, true));
-            }
-
-#if defined(CARVE_DEBUG) && defined(DEBUG_PRINT_RESULT_FACES)
-            std::cerr << "-" << ENUM(face_class) << " ";
-            for (unsigned i = 0; i < vertices.size(); ++i)
-                std::cerr << " " << vertices[i] << ":" << *vertices[i];
-            std::cerr << std::endl;
-#endif
         }
 
         virtual void collect(const carve::mesh::MeshSet<3>::face_t* orig_face, const std::vector<carve::mesh::MeshSet<3>::vertex_t*>& vertices,
-            carve::geom3d::Vector normal, bool poly_a, carve::csg::FaceClass face_class, carve::csg::CSG::Hooks& hooks) = 0;
+            carve::geom3d::Vector normal, bool poly_a, carve::csg::FaceClass face_class, carve::csg::CSG::Hooks& hooks, size_t index) = 0;
 
         virtual void collect(carve::csg::FaceLoopGroup* grp, carve::csg::CSG::Hooks& hooks) override
         {
@@ -98,7 +78,6 @@ namespace
 
             for (std::list<carve::csg::ClassificationInfo>::const_iterator i = grp->classification.begin(), e = grp->classification.end(); i != e; ++i)
             {
-
                 if ((*i).intersected_mesh == NULL)
                 {
                     // classifier only returns global info
@@ -157,10 +136,27 @@ namespace
 
             bool is_poly_a = grp->src == src_a;
 
-            for (carve::csg::FaceLoop* f = grp->face_loops.head; f; f = f->next)
+            auto process = [this, is_poly_a, fc, &hooks](const auto& data)
             {
-                collect(f->orig_face, f->vertices, f->orig_face->plane.N, is_poly_a, fc, hooks);
+                const carve::csg::FaceLoop* f = data.first;
+                size_t idx = data.second;
+                collect(f->orig_face, f->vertices, f->orig_face->plane.N, is_poly_a, fc, hooks, idx);
+            };
+
+            tmpFaces.resize(grp->face_loops.count);
+            faces.reserve(std::max(faces.capacity(), grp->face_loops.count * 2 + faces.size()));
+
+            carve::util::forEachParallel(grp->face_loops, process);
+
+            for (auto& it : tmpFaces)
+            {
+                for (auto& f : it)
+                {
+                    faces.push_back(f);
+                }
             }
+
+            tmpFaces.clear();
         }
 
         virtual carve::mesh::MeshSet<3>* done(carve::csg::CSG::Hooks& hooks) override
@@ -168,37 +164,13 @@ namespace
             if (hooks.hasHook(carve::csg::CSG::Hooks::RESULT_FACE_HOOK))
             {
                 hooks.resultNumFaces(faces.size());
-                for (std::list<face_data_t>::iterator i = faces.begin(); i != faces.end(); ++i)
+                for (std::vector<face_data_t>::iterator i = faces.begin(); i != faces.end(); ++i)
                 {
                     hooks.resultFace((*i).face, (*i).orig_face, (*i).flipped);
                 }
             }
 
             return NULL;
-        }
-    };
-
-
-    class AllCollectorWithoutResultMeshset : public BaseCollectorWithoutResultMeshset
-    {
-    public:
-        AllCollectorWithoutResultMeshset(const carve::mesh::MeshSet<3>* _src_a, const carve::mesh::MeshSet<3>* _src_b) : BaseCollectorWithoutResultMeshset(_src_a, _src_b)
-        {
-        }
-        virtual ~AllCollectorWithoutResultMeshset()
-        {
-        }
-        virtual void collect(carve::csg::FaceLoopGroup* grp, carve::csg::CSG::Hooks& hooks) override
-        {
-            for (carve::csg::FaceLoop* f = grp->face_loops.head; f; f = f->next)
-            {
-                FWD(f->orig_face, f->vertices, f->orig_face->plane.N, f->orig_face->mesh->meshset == src_a, carve::csg::FaceClass::FACE_OUT, hooks);
-            }
-        }
-        virtual void collect(const carve::mesh::MeshSet<3>::face_t* orig_face, const std::vector<carve::mesh::MeshSet<3>::vertex_t*>& vertices,
-            carve::geom3d::Vector normal, bool poly_a, carve::csg::FaceClass face_class, carve::csg::CSG::Hooks& hooks) override
-        {
-            FWD(orig_face, vertices, normal, poly_a, face_class, hooks);
         }
     };
 
@@ -213,11 +185,11 @@ namespace
         {
         }
         virtual void collect(const carve::mesh::MeshSet<3>::face_t* orig_face, const std::vector<carve::mesh::MeshSet<3>::vertex_t*>& vertices,
-            carve::geom3d::Vector normal, bool poly_a, carve::csg::FaceClass face_class, carve::csg::CSG::Hooks& hooks) override
+            carve::geom3d::Vector normal, bool poly_a, carve::csg::FaceClass face_class, carve::csg::CSG::Hooks& hooks, size_t index) override
         {
             if (face_class == carve::csg::FaceClass::FACE_OUT || (poly_a && face_class == carve::csg::FaceClass::FACE_ON_ORIENT_OUT))
             {
-                FWD(orig_face, vertices, normal, poly_a, face_class, hooks);
+                processFace(orig_face, vertices, normal, poly_a, face_class, hooks, false, index);
             }
         }
     };
@@ -233,11 +205,11 @@ namespace
         {
         }
         virtual void collect(const carve::mesh::MeshSet<3>::face_t* orig_face, const std::vector<carve::mesh::MeshSet<3>::vertex_t*>& vertices,
-            carve::geom3d::Vector normal, bool poly_a, carve::csg::FaceClass face_class, carve::csg::CSG::Hooks& hooks) override
+            carve::geom3d::Vector normal, bool poly_a, carve::csg::FaceClass face_class, carve::csg::CSG::Hooks& hooks, size_t idx) override
         {
             if (face_class == carve::csg::FaceClass::FACE_IN || (poly_a && face_class == carve::csg::FaceClass::FACE_ON_ORIENT_OUT))
             {
-                FWD(orig_face, vertices, normal, poly_a, face_class, hooks);
+                processFace(orig_face, vertices, normal, poly_a, face_class, hooks, false, idx);
             }
         }
     };
@@ -253,15 +225,15 @@ namespace
         {
         }
         virtual void collect(const carve::mesh::MeshSet<3>::face_t* orig_face, const std::vector<carve::mesh::MeshSet<3>::vertex_t*>& vertices,
-            carve::geom3d::Vector normal, bool poly_a, carve::csg::FaceClass face_class, carve::csg::CSG::Hooks& hooks) override
+            carve::geom3d::Vector normal, bool poly_a, carve::csg::FaceClass face_class, carve::csg::CSG::Hooks& hooks, size_t idx) override
         {
             if (face_class == carve::csg::FaceClass::FACE_OUT)
             {
-                FWD(orig_face, vertices, normal, poly_a, face_class, hooks);
+                processFace(orig_face, vertices, normal, poly_a, face_class, hooks, false, idx);
             }
             else if (face_class == carve::csg::FaceClass::FACE_IN)
             {
-                REV(orig_face, vertices, normal, poly_a, face_class, hooks);
+                processFace(orig_face, vertices, normal, poly_a, face_class, hooks, true, idx);
             }
         }
     };
@@ -277,15 +249,15 @@ namespace
         {
         }
         virtual void collect(const carve::mesh::MeshSet<3>::face_t* orig_face, const std::vector<carve::mesh::MeshSet<3>::vertex_t*>& vertices,
-            carve::geom3d::Vector normal, bool poly_a, carve::csg::FaceClass face_class, carve::csg::CSG::Hooks& hooks) override
+            carve::geom3d::Vector normal, bool poly_a, carve::csg::FaceClass face_class, carve::csg::CSG::Hooks& hooks, size_t idx) override
         {
             if ((face_class == carve::csg::FaceClass::FACE_OUT || face_class == carve::csg::FaceClass::FACE_ON_ORIENT_IN) && poly_a)
             {
-                FWD(orig_face, vertices, normal, poly_a, face_class, hooks);
+                processFace(orig_face, vertices, normal, poly_a, face_class, hooks, false, idx);
             }
             else if (face_class == carve::csg::FaceClass::FACE_IN && !poly_a)
             {
-                REV(orig_face, vertices, normal, poly_a, face_class, hooks);
+                processFace(orig_face, vertices, normal, poly_a, face_class, hooks, true, idx);
             }
         }
     };
@@ -301,15 +273,15 @@ namespace
         {
         }
         virtual void collect(const carve::mesh::MeshSet<3>::face_t* orig_face, const std::vector<carve::mesh::MeshSet<3>::vertex_t*>& vertices,
-            carve::geom3d::Vector normal, bool poly_a, carve::csg::FaceClass face_class, carve::csg::CSG::Hooks& hooks) override
+            carve::geom3d::Vector normal, bool poly_a, carve::csg::FaceClass face_class, carve::csg::CSG::Hooks& hooks, size_t idx) override
         {
             if ((face_class == carve::csg::FaceClass::FACE_OUT || face_class == carve::csg::FaceClass::FACE_ON_ORIENT_IN) && !poly_a)
             {
-                FWD(orig_face, vertices, normal, poly_a, face_class, hooks);
+                processFace(orig_face, vertices, normal, poly_a, face_class, hooks, false, idx);
             }
             else if (face_class == carve::csg::FaceClass::FACE_IN && poly_a)
             {
-                REV(orig_face, vertices, normal, poly_a, face_class, hooks);
+                processFace(orig_face, vertices, normal, poly_a, face_class, hooks, true, idx);
             }
         }
     };
@@ -329,8 +301,6 @@ carve::csg::CSG::Collector* makeCollectorWithoutResultMeshset(carve::csg::CSG::C
         return new BMinusACollectorWithoutResultMeshset(poly_a, poly_b);
     case carve::csg::CSG::CSG_OP::SYMMETRIC_DIFFERENCE:
         return new SymmetricDifferenceCollectorWithoutResultMeshset(poly_a, poly_b);
-    case carve::csg::CSG::CSG_OP::ALL:
-        return new AllCollectorWithoutResultMeshset(poly_a, poly_b);
     }
     return NULL;
 }

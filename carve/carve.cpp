@@ -116,18 +116,9 @@ protected:
             const Edge* nextEdge = currentEdge->next;
             int nextVertexIndex = tryAddVertex(nextEdge->vert);
 
-            if (flipped)
-            {
-                _triangles.push_back(startVertexIndex);
-                _triangles.push_back(nextVertexIndex);
-                _triangles.push_back(currentVertexIndex);
-            }
-            else
-            {
-                _triangles.push_back(startVertexIndex);
-                _triangles.push_back(currentVertexIndex);
-                _triangles.push_back(nextVertexIndex);
-            }
+            _triangles.push_back(startVertexIndex);
+            _triangles.push_back(currentVertexIndex);
+            _triangles.push_back(nextVertexIndex);
 
             currentEdge = nextEdge;
             currentVertexIndex = nextVertexIndex;
@@ -279,41 +270,46 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
         using Face_t = Meshset::face_t;
 
         Meshset* models[2] = { nullptr, nullptr };
+        const CSGMesh* inputMeshes[2] = { meshA, meshB };
+
         carve::csg::CSG csg;
 
         try
         {
-            for (int i = 0; i < 2; ++i)
-            {
-                const CSGMesh* mesh = i == 0 ? meshA : meshB;
-
-                carve::input::PolyhedronData data;
-                data.reserveVertices(mesh->getVertexCount());
-                data.reserveFaces(mesh->getTriangleCount(), 3);
-
-                int numVertexValues = mesh->getVertexCount() * 3;
-                const float* meshVerts = mesh->getVertices();
-                for (int vi = 0; vi < numVertexValues; vi += 3)
+            // create meshes in parallel
+            carve::util::forEachParallel<size_t>(0, 2, 1,
+                [&inputMeshes, &models](size_t i)
                 {
-                    float x = meshVerts[vi];
-                    float y = meshVerts[vi + 1];
-                    float z = meshVerts[vi + 2];
-                    data.addVertex(carve::geom::VECTOR(x, y, z));
+                    const CSGMesh* mesh = inputMeshes[i];
+
+                    carve::input::PolyhedronData data;
+                    data.reserveVertices(mesh->getVertexCount());
+                    data.reserveFaces(mesh->getTriangleCount(), 3);
+
+                    int numVertexValues = mesh->getVertexCount() * 3;
+                    const float* meshVerts = mesh->getVertices();
+                    for (int vi = 0; vi < numVertexValues; vi += 3)
+                    {
+                        float x = meshVerts[vi];
+                        float y = meshVerts[vi + 1];
+                        float z = meshVerts[vi + 2];
+                        data.addVertex(carve::geom::VECTOR(x, y, z));
+                    }
+
+                    int numIndices = mesh->getTriangleCount() * 3;
+                    const int* meshTris = mesh->getTriangles();
+                    for (int ti = 0; ti < numIndices; ti += 3)
+                    {
+                        int tri1 = meshTris[ti];
+                        int tri2 = meshTris[ti + 1];
+                        int tri3 = meshTris[ti + 2];
+
+                        data.addFace(tri1, tri2, tri3);
+                    }
+
+                    models[i] = data.createMesh(carve::input::Options());
                 }
-
-                int numIndices = mesh->getTriangleCount() * 3;
-                const int* meshTris = mesh->getTriangles();
-                for (int ti = 0; ti < numIndices; ti += 3)
-                {
-                    int tri1 = meshTris[ti];
-                    int tri2 = meshTris[ti + 1];
-                    int tri3 = meshTris[ti + 2];
-
-                    data.addFace(tri1, tri2, tri3);
-                }
-
-                models[i] = data.createMesh(carve::input::Options());
-            }
+            );
         }
         catch (...)
         {

@@ -31,9 +31,8 @@
 
 void carve::csg::CSG::makeEdgeMap(const carve::csg::FaceLoopList& loops, size_t edge_count, detail::LoopEdges& edge_map)
 {
-#if defined(UNORDERED_COLLECTIONS_SUPPORT_RESIZE)
-    edge_map.resize(edge_count);
-#endif
+    edge_map.clear();
+    edge_map.reserve(edge_count);
 
     for (carve::csg::FaceLoop* i = loops.head; i; i = i->next)
     {

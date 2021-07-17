@@ -105,7 +105,6 @@ set(CARVE_SRC
     debugVisualizers.natvis
 )
 
-add_definitions(-DCARVE_USE_EXACT_PREDICATES)
 add_library(libcarve STATIC ${CARVE_SRC})
 
 target_include_directories(libcarve PRIVATE ${CMAKE_SOURCE_DIR})

@@ -83,7 +83,7 @@ public:
                 triangulate::improve(carve::mesh::MeshSet<3>::face_t::projection_mapping(face->project), vloop, carve::mesh::vertex_distance(), result);
             }
 
-            std::vector<carve::mesh::MeshSet<3>::vertex_t*> fv;
+            carve::small_vector_on_stack<carve::mesh::MeshSet<3>::vertex_t*, 3> fv;
             fv.resize(3);
             for (size_t i = 0; i < result.size(); ++i)
             {

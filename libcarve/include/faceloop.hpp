@@ -52,6 +52,55 @@ struct FaceLoop
 
 struct FaceLoopList
 {
+    struct Iterator
+    {
+        using iterator_category = std::bidirectional_iterator_tag;
+        using value_type = FaceLoop;
+        using pointer = FaceLoop*;
+        using difference_type = std::ptrdiff_t;
+        using reference = FaceLoop&;
+
+        Iterator(FaceLoop* from, size_t idx)
+        {
+            current = from;
+            this->idx = idx;
+        }
+
+        Iterator()
+        {
+            current = nullptr;
+            idx = (size_t)(-1);
+        }
+
+        Iterator& operator++() noexcept
+        {
+            current = current->next;
+            ++idx;
+            return *this;
+        }
+
+        Iterator& operator--() noexcept
+        {
+            current = current->prev;
+            --idx;
+            return *this;
+        }
+
+        bool operator !=(const Iterator& other) noexcept
+        {
+            return current != other.current;
+        }
+
+		std::pair<FaceLoop*, size_t> operator *() noexcept
+        {
+            return { current, idx };
+        }
+
+    private:
+        FaceLoop* current;
+        size_t idx;
+    };
+
     FaceLoop *head, *tail;
     unsigned count;
 
@@ -86,6 +135,16 @@ struct FaceLoopList
     unsigned size() const
     {
         return count;
+    }
+
+    Iterator begin()
+    {
+        return Iterator(head, 0);
+    }
+
+    Iterator end()
+    {
+        return Iterator(NULL, (size_t)(-1));
     }
 
     FaceLoop* remove(FaceLoop* f)

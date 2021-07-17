@@ -437,7 +437,7 @@ void FaceStitcher::extractPath(std::vector<const vertex_t*>& path)
 
     while ((*iter).second.size() == 2)
     {
-        prev = *std::find_if((*iter).second.begin(), (*iter).second.end(), std::bind2nd(std::not_equal_to<const vertex_t*>(), next));
+        prev = *std::find_if((*iter).second.begin(), (*iter).second.end(), [next](const auto& elem) { return std::not_equal_to<const vertex_t*>()(elem, next); });
         next = vert;
         vert = prev;
         iter = edge_graph.find(vert);
@@ -475,7 +475,7 @@ void FaceStitcher::extractPath(std::vector<const vertex_t*>& path)
 
     while (vert != init && (*iter).second.size() == 2)
     {
-        next = *std::find_if((*iter).second.begin(), (*iter).second.end(), std::bind2nd(std::not_equal_to<const vertex_t*>(), prev));
+        next = *std::find_if((*iter).second.begin(), (*iter).second.end(), [prev](const auto& elem) { return std::not_equal_to<const vertex_t*>()(elem, prev); });
 
         edgeiter = complex_edges.find(vpair_t(vert, next));
         if ((*edgeiter).second.size() != efwd.size())
