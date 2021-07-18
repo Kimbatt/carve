@@ -71,6 +71,9 @@ template <typename set_t> inline set_insert_iterator<set_t> set_inserter(set_t& 
 
 template <typename T, int SizeOnStack = 4> class small_vector_on_stack
 {
+public:
+    using value_type = T;
+
 private:
     std::array<T, SizeOnStack> stackStorage;
     std::vector<T>* heapStorage;

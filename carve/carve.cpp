@@ -354,8 +354,13 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
 
         delete csgCollector;
 
-        delete meshA;
-        delete meshB;
+        // delete meshes in parallel too
+        carve::util::forEachParallel<size_t>(0, 2, 1,
+            [models](size_t i)
+            {
+                delete models[i];
+            }
+        );
 
         CSGMesh* mesh = new CSGMesh();
         mesh->stealVertices(faceCollector->getVertices());

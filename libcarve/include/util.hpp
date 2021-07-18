@@ -150,7 +150,7 @@ private:
 template<typename Enumerable, typename Func>
 inline void forEachParallel(Enumerable& enumerable, Func func)
 {
-#ifdef CARVE_MULTITHREADING
+#if defined(CARVE_MULTITHREADING) && defined(NDEBUG)
     std::for_each(std::execution::par_unseq, enumerable.begin(), enumerable.end(), func);
 #else
     for (auto&& element : enumerable)
@@ -163,7 +163,7 @@ inline void forEachParallel(Enumerable& enumerable, Func func)
 template <typename TIndex, typename Func>
 inline void forEachParallel(TIndex firstIndex, TIndex numElements, TIndex batchSize, Func func)
 {
-#ifdef CARVE_MULTITHREADING
+#if defined(CARVE_MULTITHREADING) && defined(NDEBUG)
     TIndex numBatches = numElements / batchSize;
     if (numElements % batchSize != 0)
     {

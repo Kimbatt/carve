@@ -34,7 +34,7 @@ namespace carve
 namespace djset
 {
 
-
+// https://en.wikipedia.org/wiki/Disjoint-set_data_structure
 class djset
 {
 
@@ -93,18 +93,32 @@ public:
 
     size_t find_set_head(size_t a)
     {
+        // Find the head of the current set, and update the parents of the nodes along the way.
+
         if (a == set[a].parent)
         {
+            // a is the head
             return a;
         }
 
-        size_t a_head = a;
-        while (set[a_head].parent != a_head)
+        // Find the head
+        size_t head = a;
+        size_t next = set[head].parent;
+        while (head != next)
         {
-            a_head = set[a_head].parent;
+            head = next;
+            next = set[head].parent;
         }
-        set[a].parent = a_head;
-        return a_head;
+
+        // Update all nodes along the way, set a_head as their parent
+        while (a != head)
+        {
+            size_t next = set[a].parent;
+            set[a].parent = head;
+            a = next;
+        }
+
+        return head;
     }
 
     bool same_set(size_t a, size_t b)
@@ -116,9 +130,14 @@ public:
     {
         a = find_set_head(a);
         b = find_set_head(b);
+
+        // If a == b, then they are already in the same set, no need to merge
         if (a != b)
         {
             n_sets--;
+
+            // Decide which set to merge into, based on the ranks.
+            // If the ranks are equal, then just merge into one of them, and increase its rank.
             if (set[a].rank < set[b].rank)
             {
                 set[a].parent = b;
