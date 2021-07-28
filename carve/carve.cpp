@@ -352,13 +352,23 @@ EXPORT CSGMesh* STDCALL leoPerformCSG(const CSGMesh* meshA, const CSGMesh* meshB
 
         csg.compute(meshA, meshB, *csgCollector);
 
-        delete csgCollector;
-
-        // delete meshes in parallel too
-        carve::util::forEachParallel<size_t>(0, 2, 1,
-            [models](size_t i)
+        auto makeDeleter = []<typename T>(T* ptr)
+        {
+            auto deleter = [ptr]()
             {
-                delete models[i];
+                delete ptr;
+            };
+
+            return deleter;
+        };
+
+        std::array<std::function<void()>, 3> toDelete = { makeDeleter(models[0]), makeDeleter(models[1]), makeDeleter(csgCollector) };
+
+        // delete in parallel
+        carve::util::forEachParallel<size_t>(0, toDelete.size(), 1,
+            [toDelete](size_t i)
+            {
+                toDelete[i]();
             }
         );
 

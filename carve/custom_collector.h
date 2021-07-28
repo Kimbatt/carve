@@ -39,6 +39,10 @@ namespace
 
         virtual ~BaseCollectorWithoutResultMeshset()
         {
+            for (face_data_t& data : faces)
+            {
+                delete data.face;
+            }
         }
 
         void processFace(const carve::mesh::MeshSet<3>::face_t* orig_face, const std::vector<carve::mesh::MeshSet<3>::vertex_t*>& vertices,

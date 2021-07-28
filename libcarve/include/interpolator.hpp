@@ -359,9 +359,9 @@ protected:
             return;
         edgediv[vpair_t(v1, v2)] = k;
     }
-
-    virtual void processOutputFace(const carve::csg::CSG& csg, std::vector<carve::mesh::MeshSet<3>::face_t*>& new_faces, const meshset_t::face_t* orig_face,
-                                   bool flipped) override
+    
+    virtual void processOutputFace(const carve::csg::CSG& csg, carve::small_vector_on_stack<carve::mesh::MeshSet<3>::face_t*, 16>& new_faces,
+                                   const meshset_t::face_t* orig_face, bool flipped) override
     {
         edgedivmap_t undiv;
 
